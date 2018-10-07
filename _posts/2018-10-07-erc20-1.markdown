@@ -1,0 +1,347 @@
+---
+layout: post
+title: "ERC-20 Token Contract(1/2)"
+date: 2018-10-07
+description: # Add post description (optional)
+img: workflow.jpg # Add image post (optional)
+tag: [Ethereum, Solidity, ERC-20, Truffle]
+---
+
+이더리움에서 토큰이란 이더리움 애플리케이션,  ÐApp의 자산을 말한다. ICO를 통해 투자금 유치를 목적으로 토큰을 판매할 수도 있고,  특정 토큰을 가져야만 ÐApp을 사용하게 할 수도 있다. 결국 토큰의 가치는  ÐApp의 가치라고 볼 수 있다.
+
+이더리움에는 이미 ETH가 있지만 일상에서도 화폐만으로 물건을 사거나 서비스를 이용할 수 있는 것은 아니라는 점을 생각해보면 토큰의 기능을 이해할 수 있을 것 같다.
+
+"토큰"이라는 용어를 "코인"과 구별해서 쓰지만 교환을 위한 매개수단이라는 의미에서, 각 블록체인마다 고유한 토큰이 있다고 말할 수도 있다(비트코인은 BTC, 이더리움은 ETH, 이오스의 EOS). 비탈릭 부테린이 ETH를 다음과 같이 설명한 것처럼 말이다.
+
+>If the account is an EOA, the state simply stores the account's balance in ether (Ethereum's internal crypto-token, similar to bitcoin or XRP in function) and a sequence number used to prevent transaction replay attacks. If the account is a contract, the state stores the contract's code, as well as the contract's storage, a key-value database.
+
+### ERC-20
+
+ERC-20은 “standard interface for tokens”에 관한 표준으로, 토큰에서 기본적으로 구현해야 할 "인터페이스"를 기술하고 있다.  ERC는 Ethereum Request for Comment의 약자로 RFC처럼 기술 표준을 정의한 문서들이라고 보면 되겠다.
+
+ERC-20 토큰을 구현한 예제들 중 가장 많이 활용되는 것이 [OpenZeppelin][open-zeppelin]에서 만든 구현체가 아닐까 싶다. 이 글에서는 이 소스를 가지고 FOO라는 토큰을 만들어 보기로 한다. 기본적인 토큰 컨트랙트와 함께 간단한 토큰 전송 화면도 함께 구현해보도록 하겠다(이 예제는 Truffle의 TutorialToken을 참고하여 구성했다).
+
+![fig33]({{site.baseurl}}/assets/img/erc-20/fig33.png)
+
+우선 기본 클래스로 사용할 ERC20Basic.sol을 살펴보도록 하자.
+
+
+{% highlight javascript %}
+pragma solidity ^0.4.24;
+
+/**
+ * @title ERC20Basic
+ * @dev Simpler version of ERC20 interface
+ * See https://github.com/ethereum/EIPs/issues/179
+ */
+contract ERC20Basic {
+  function totalSupply() public view returns (uint256);
+  function balanceOf(address who) public view returns (uint256);
+  function transfer(address to, uint256 value) public returns (bool);
+  event Transfer(address indexed from, address indexed to, uint256 value);
+}
+
+{% endhighlight %}
+
+이것은 ERC-20 표준의 기본 인터페이스에 해당한다. 여기에 없는 나머지 메소드들은 선택 사항이거나 ERC20.sol에 분리되어 있다. 따라서 ERC-20에서 정의한 모든 것을 구현하려면 ERC20.sol을 이용하거나 StandardToken.sol을 사용하면 되겠다. 이 글에서는 아래 기능은 필요없으므로 ERC20Basic.sol을 사용할 것이다
+(이 글이 작성된 후 OpenZeppelin의 소스가 바뀌었기 때문에 소스파일이 없거나 구조가 다를 수 있다).
+
+{% highlight javascript %}
+pragma solidity ^0.4.24;
+​
+import "./ERC20Basic.sol";
+​
+/**
+ * @title ERC20 interface
+ * @dev see https://github.com/ethereum/EIPs/issues/20
+ */
+contract ERC20 is ERC20Basic {
+  function allowance(address owner, address spender) public view returns (uint256);​
+  function transferFrom(address from, address to, uint256 value) public returns (bool);​
+  function approve(address spender, uint256 value) public returns (bool);
+  event Approval(address indexed owner, address indexed spender, uint256 value);
+}
+{% endhighlight %}
+
+각 메소드들이 어떤 기능을 해야 하는지 알아보자.
+
+### name
+OPTIONAL. 토큰의 이름을 리턴한다.
+{% highlight javascript %}
+function name() view returns (string name)
+{% endhighlight %}
+
+
+### symbol
+OPTIONAL. 토큰 표시를 리턴한다. 여기서는 `FOO`가 될 것이다.
+{% highlight javascript %}
+function symbol() view returns (string symbol)
+{% endhighlight %}
+
+### decimals
+OPTIONAL. 토큰이 소수점 몇 째자리까지 내려갈 수 있는지 리턴한다. 2라면 0.01까지 사용할 수 있다.
+{% highlight javascript %}
+function decimals() view returns (uint8 decimals)
+{% endhighlight %}
+
+### totalSupply
+토큰의 총 공급량을 리턴한다. 유통가능량이라고 보면 된다(공급된 토큰을 "소각"시킬 수 있으므로 없어지면 유통량도 줄어든다).
+{% highlight javascript %}
+function totalSupply() view returns (uint256 totalSupply)
+{% endhighlight %}
+
+### balanceOf
+계정주소 _owner가 소유한 토큰 개수를 리턴한다.
+{% highlight javascript %}
+function balanceOf(address _owner) view returns (uint256 balance)
+{% endhighlight %}
+
+### transfer
+_value 만큼의 토큰을  _to 주소로 보낸다. 전송 후 Transfer 이벤트를 발생시켜야 한다. _from 주소에 보내는 양만큼의 토큰이 없으면 예외가 발생한다. 보내는 토큰이 0이라도 정상 처리해야 한다.
+{% highlight javascript %}
+function transfer(address _to, uint256 _value) returns (bool success)
+{% endhighlight %}
+
+### Transfer
+transfer 실행 후 발생시키는 이벤트이다. 토큰이 새로 생성될 때는 _from 주소에 0x00으로 하여 이벤트를 발생시킨다.
+{% highlight javascript %}
+event Transfer(address indexed _from, address indexed _to, uint256 _value)
+{% endhighlight %}
+
+다음 메소드는 구현하지 않을 것이다.
+
+### transferFrom
+_from 주소에서 _to 주소로 _value  만큼의 토큰을 보낸다. Transfer 이벤트를 발생시킨다. transfer와는 달리 대리 송금 기능을 위한 것이다. 이 메소드를 호출하는 계정은 (당연히) 토큰 소유 계정으로 부터 대리 송금에 대한 승인(approve)이 있어야 하고 없는 경우 예외를 발생시켜야 한다.
+{% highlight javascript %}
+function transferFrom(address _from, address _to, uint256 _value) returns (bool success)
+{% endhighlight %}
+
+### approve
+_spender 가 _value  해당하는 토큰 이내에서 대리 송금할 수 있도록 승인한다. 만약에 기존에 승인된 정보가 있으면 overwrite한다.
+{% highlight javascript %}
+function approve(address _spender, uint256 _value) returns (bool success)
+{% endhighlight %}
+
+### allowance
+대리 송금자가 송금할 수 있는 토큰의 개수를 리턴한다.
+{% highlight javascript %}
+function allowance(address _owner, address _spender) view returns (uint256 remaining)
+{% endhighlight %}
+
+
+### Approval
+ approve가 호출되면 이벤트를 발생시킨다.
+{% highlight javascript %}
+event Approval(address indexed _owner, address indexed _spender, uint256 _value)
+{% endhighlight %}
+
+
+### 토큰 컨트랙트
+이제 토큰 컨트랙트를 작성한다. 앞서 기술한 메소드를 스펙에 맞게 구현하면 된다. 이번에는 윈도우 환경에서 Truffle과 Ganache GUI를 사용할 것이다.
+
+우선 프로젝트 폴더 FooToken을 생성하고 truffle init 으로 기본 폴더들을 생성한다.
+
+{% highlight shell %}
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-----     2018-06-10  오전 10:25                contracts
+d-----     2018-06-10  오전 10:25                migrations
+d-----     2018-06-10  오전 10:25                test
+-a----     2018-06-10  오전 10:25            545 truffle-config.js
+-a----     2018-06-10  오전 10:25            545 truffle.js
+{% endhighlight %}
+
+contracts 폴더에 다음과 같이 소스 파일 FooToken.sol을 작성한다.
+
+{% highlight javascript %}
+pragma solidity ^0.4.24;
+​
+import "./ERC20Basic.sol";
+import "./SafeMath.sol";
+​
+// ----------------------------------------------------------------------------
+// ERC20 token contract for Crowdsale
+// Symbol      : FOO, Not mintable
+// Name        : FOO Token for foo
+// Total supply: 1,000,000,000(1 billion)
+// Decimals    : 2
+// ----------------------------------------------------------------------------
+​
+contract FooToken is ERC20Basic {
+
+  using SafeMath for uint256;
+​
+  string public symbol;
+  string public name;
+  uint8 public decimals;
+  uint256 public totalSupply;
+  mapping(address => uint256) balances;
+
+  event Transfer(address indexed _from, address indexed _to, uint256 _tokens);
+
+  uint8 constant TOKEN_DECIMALS = 2;
+  uint256 public constant TOKEN_TOTAL = 1000000000;
+​
+  constructor() public {
+      symbol = "FOO";
+      name = "FOO Token for foo";
+      decimals = TOKEN_DECIMALS;
+      totalSupply = TOKEN_TOTAL;
+      balances[msg.sender] = totalSupply;
+  }
+​
+  function totalSupply() public view returns (uint256) {
+      return totalSupply;
+  }
+
+  function balanceOf(address _tokenOwner) public view returns (uint256 balance) {
+      return balances[_tokenOwner];
+  }
+​
+  function transfer(address _to, uint256 _tokens) public returns (bool) {
+​
+       require(_tokens <= balances[msg.sender], "Not enough tokens");
+​
+       balances[msg.sender] = balances[msg.sender].sub(_tokens);
+       balances[_to] = balances[_to].add(_tokens);
+​
+       emit Transfer(msg.sender, _to, _tokens);
+       return true;
+  }
+​
+}
+{% endhighlight %}
+
+OpenZeppelin의 소스를 활용하기 위해서는 보통 레포지토리의 전체를 내려받지만 여기서는 필요한 파일 ERC20Basic.sol과 SafeMath.sol 두 개만 사용한다. OpenZeppelin에서 제공하는 솔리디티 파일을 모두 설치하려면 다음과 같이 하면 된다.
+
+{% highlight shell %}
+npm install openzeppelin-solidity
+{% endhighlight %}
+
+솔리디티는 자바의 상속 처럼 컨트랙트를 상속받을 수 있다. ERC20Basic.sol은 구현된 부분이 없으므로 인터페이스처럼 보이지만 인터페이스는 모든 메소드를 구현해야 한다.
+
+{% highlight javascript %}
+contract FooToken is ERC20Basic
+{% endhighlight %}
+
+SafeMath.sol 은 라이브러리인데 using A for B 구문은 타입 B에 대해서만 라이브러리 A를 사용하겠다는 의미이다.
+이 라이브러리는 연산시 발생하는 오버플로를 방지하기 위한 것이므로 사용하는 것이 좋다.
+
+{% highlight javascript %}
+using SafeMath for uint256;
+{% endhighlight %}
+
+예를 들어 SafeMath.sol 에 있는 add 라는 메소드의 사용이 가능하다. 다음과 같이 두 가지 형태로 사용이 가능하다.
+
+{% highlight javascript %}
+sum1 = SafeMath.add(x, y);
+sum2 = x.add(y);
+{% endhighlight %}
+
+totalSupply는 10억개로 정했다. 상태 변수를 public으로 선언하면 getter에 해당하는 메소드를 자동으로 생성한다. decimals = 2 이므로 0.01 FOO의 사용이 가능하다.
+
+중요한 것은 토큰 장부에 해당하는 `mapping(address => uint256) balances` 이다. 솔리디티의 레퍼런스 타입으로 mapping 이라는 것이 있는데 key-value의 테이블 구조와 유사하다고 생각하면 되겠다. 의미는 다음 그림과 같다.
+
+![fig34]({{site.baseurl}}/assets/img/erc-20/fig34.png)
+
+
+mapping 타입을 선언할 때 key의 이름을 정하는 것이 아니라 타입을 정한다. address 타입이 key가 되고 부호없는 정수 unit256이 value가 되는 것이다. 이 자료구조에 어떤 계정 주소가 몇 개의 FOO 토큰을 소유하고 있는지 저장한다. 따라서 balanceOf메소드는 다음과 같이 구현될 것이다.
+
+{% highlight javascript %}
+function balanceOf(address _tokenOwner) public view returns (uint256 balance) {
+    return balances[_tokenOwner];
+}
+{% endhighlight %}
+
+transfer 메소드는 토큰 잔액이 송금하려는 토큰의 개수보다는 커야 하므로 require라는 예외 발생 구문이 들어간다. 조건이 false이면 예외를 발생시킨다. 예외 메시지는 개발자가 알아보기 위한 것이다. 송금 후에 토큰의 잔액을 가감해주는 것은 SafeMath를 사용하고 ERC-20 스펙에 의해 Transfer이벤트를 발생시킨다.
+
+이제 컴파일을 해보자.
+
+{% highlight shell %}
+PS C:\Users\foo\FooToken> truffle compile
+Compiling .\contracts\ERC20Basic.sol...
+Compiling .\contracts\FooToken.sol...
+Compiling .\contracts\SafeMath.sol...
+Writing artifacts to .\build\contracts
+{% endhighlight %}
+
+결과 디렉토리에 가보면 다음과 같은 json 파일들이 만들어진다.
+
+{% highlight shell %}
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+-a----     2018-06-10  오전 11:46          27821 ERC20Basic.json
+-a----     2018-06-10  오전 11:46         146854 FooToken.json
+-a----     2018-06-10   오후 8:43          52884 Migrations.json
+-a----     2018-06-10  오전 11:46          91184 SafeMath.json
+{% endhighlight %}
+
+배포 스크립트는 다음과 같이 작성하면 된다. FooToken.sol에 해당하는 것만 배포하면 된다.
+
+{% highlight shell %}
+var fooToken = artifacts.require("FooToken");
+module.exports = function(deployer) {
+     deployer.deploy(fooToken);
+};
+{% endhighlight %}
+
+truffle.js 설정 파일은 다음과 같다. 로컬 가상 이더리움에 해당하는 Ganache에 배포할 것이므로 Ganache의 디폴트 값으로 맞춘다.
+
+{% highlight shell %}
+module.exports = {
+  // See <http://truffleframework.com/docs/advanced/configuration>
+  // for more about customizing your Truffle configuration!
+  networks: {
+    development: {
+       host: "127.0.0.1",
+       port: 7545,
+       network_id: "5777"
+    }
+  }
+};
+{% endhighlight %}
+
+배포를 시작한다.
+
+{% highlight shell %}
+PS C:\Users\foo\FooToken> truffle migrate --network development
+Using network 'development'.
+​
+Running migration: 1_initial_migration.js
+  Deploying Migrations...
+  ... 0xd10131f42414b43ecdbc5c00d4183eae88821bf7a47876330f376ef6b2eb29c5
+  Migrations: 0x73d3e7f80413b35ac41e312bcd7eca2709175e4c
+Saving successful migration to network...
+  ... 0xe22116f4274c6059988ca623e1e4caacbdeb8abdaa80fa94f90025947a7468ad
+Saving artifacts...
+Running migration: 2_deploy_footoken.js
+  Deploying FooToken...
+  ... 0x7aff3c3b5375c658b4b869b273991e6e632e8135785bb16a7036ca1841c8ecc7
+  FooToken: 0xf2b988a35d6a7a3bfd08235eb1aa4775b14c690c
+Saving successful migration to network...
+  ... 0xcb3c38fac0c5130bcd1a7dab513141bb847d5b9f8c3f62d99d610cbbb76460c4
+Saving artifacts...
+{% endhighlight %}
+
+Ganache에서도 트랜잭션 조회가 가능하다.
+
+![fig35]({{site.baseurl}}/assets/img/erc-20/fig35.png)
+
+
+에러 없이 배포되었다면 truffle console에서 간단히 확인한다. 생성자에서 토큰이 처음 생성되면 발행된 토큰 10억개는 컨트랙트를 배포한 계정 소유가 되도록 했다(토큰 발행 만큼은 centralization이다).
+
+{% highlight shell %}
+PS C:\Users\foo\FooToken> truffle console
+truffle(development)> var foo = FooToken.at("0xf2b988a35d6a7a3bfd08235eb1aa4775b14c690c")
+undefined
+truffle(development)> foo.symbol()
+'FOO'
+truffle(development)> foo.balanceOf(web3.eth.accounts[0])
+BigNumber { s: 1, e: 9, c: [ 1000000000 ] }
+{% endhighlight %}
+
+다음 회차에서는 자바스크립트를 사용하여 간단한 화면을 구현해 보도록 하겠다.
+
+
+
+[open-zeppelin]: https://github.com/OpenZeppelin/openzeppelin-solidity/tree/master/contracts/token

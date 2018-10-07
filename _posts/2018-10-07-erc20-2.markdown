@@ -1,0 +1,29 @@
+---
+layout: post
+title: "ERC-20 Token Contract(2/2)"
+date: 2018-10-07
+description: # Add post description (optional)
+img: workflow.jpg # Add image post (optional)
+tag: [Ethereum, Solidity, ERC-20, Truffle]
+---
+
+### 화면 개발
+
+지금부터는 사실 스마트 컨트랙트와는 크게 관련이 없다. 그러나 블록체인과 웹을 어떻게 연동할 것인가 하는 문제는 애플리케이션 개발에서 궁금한 부분이긴 하다.
+
+Truffle TutorialToken의 예제는 자바스크립트 기반으로 구현되어 있으며 다음과 같은 라이브러리들을 사용하고 있다.
+
+* jquery.min.js
+* bootstrap.min.js
+* web3.min.js
+* truffle-contract.min.js
+
+처음 두 개는 자바스크립트에서 자주 쓰는 것이므로 익숙할 것이다. web3.js는 이더리움의 자바스크립트 라이브러리라고 보면 된다.
+특히 `truffle-contract.js`는 Truffle 컴파일 결과물을 자바스크립트에서 사용할 수 있도록 해주는 라이브러리이다.
+
+테스트 웹서버로 lite-server를 사용할 것이다. FooToken 폴더에서 다음을 실행한다. 그리고 웹 리소스들을 넣을 WebContent라는 폴더를 만든다.
+
+{% highlight shell %}
+npm init
+npm i lite-server --save-dev
+{% endhighlight %}
