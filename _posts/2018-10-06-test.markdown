@@ -3,7 +3,7 @@ layout: post
 title: "Jekyll and me"
 date: 2018-10-06
 description: # Add post description (optional)
-img: doors.jpg # Add image post (optional)
+img: exits.jpg # Add image post (optional)
 tag: [Mystery, Novel]
 ---
 
@@ -48,7 +48,7 @@ for (let i=0; i<10; i++) {
 |내용|내용|내용|
 
 
-아래는 아이템 예제입니다.
+아래는 항목 예제입니다.
 
 * Hexagon shoreditch beard
 * Intelligentsia narwhal austin
