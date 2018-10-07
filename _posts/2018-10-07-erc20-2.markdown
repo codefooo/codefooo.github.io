@@ -3,7 +3,7 @@ layout: post
 title: "ERC-20 Token Contract(2/2)"
 date: 2018-10-07
 description: # Add post description (optional)
-img: workflow.jpg # Add image post (optional)
+img: circuit.jpg # Add image post (optional)
 tag: [Ethereum, Solidity, ERC-20, Truffle]
 ---
 

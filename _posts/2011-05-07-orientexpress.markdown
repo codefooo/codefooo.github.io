@@ -2,16 +2,17 @@
 layout: post
 title: "Murder On The Orient Express(1974)"
 date: 2011-05-07
+img: leaves.jpg
 description: # Add post description (optional)
 tag: [Movie, Poirot]
 ---
-
-![cover]({{site.baseurl}}/assets/img/dpreview/PDVD.jpg)
 
 이 영화는 최근 16:9 와이드 스크린과 DD 5.1, 시드니 루멧 감독과 제작자들,
 숀 코너리, 제클린 비셋(세월은 미인에게도 예외를 두지 않는다) 등 쟁쟁한
 배우들이 등장하는 긴 스페셜 피쳐: Making Murder On The Orient Express가
 포함된 DVD로 새롭게 출시되었다.
+
+![cover]({{site.baseurl}}/assets/img/dpreview/PDVD.jpg)
 
 아가사 크리스티의 동명 추리소설을 영화화한 이 작품은 폭설에 갇힌 열차 안에서
 벌어진 의문의 살인사건을 풀어가는 명탐정 포와로의 활약을 그리고 있다. 포와로가
