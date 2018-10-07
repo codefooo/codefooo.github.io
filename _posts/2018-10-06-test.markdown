@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Jekyll and me"
+title: "Hello, Jekyll!"
 date: 2018-10-06
 description: # Add post description (optional)
 img: exits.jpg # Add image post (optional)
