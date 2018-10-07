@@ -1,0 +1,62 @@
+---
+layout: post
+title: "Woman in Cabin 10"
+date: 2018-10-06
+description: # Add post description (optional)
+img: workflow.jpg # Add image post (optional)
+tag: [Mystery, Novel]
+---
+
+지킬([Jekyll][jekyll-site])은 정적 웹사이트나 블로그를 만들어주는 프레임워크입니다(static site generator).
+
+지킬을 사용하면 Github Pages에 나만의 웹 사이트 또는 블로그를 배포하는 것이 가능합니다. 다양한 디자인의 테마들이 적용된 지킬 사이트를 사용할 수 있습니다.
+
+[지킬 테마 살펴보기][jekyll-theme]
+
+
+"Woman in Cabin 10"은 2016년 여름에 출간된 Ruth Ware의 두 번째 장편소설이다. 우리나라에서는 2017년 6월에 번역이 되었지만 그 전에 이 책을 우연히 접했고 나름의 번역을 시도해 보기로 마음 먹었다.
+한 해에도 수많은 미스터리-스릴러 소설들이 쏟아져 나오지만 이 책의 특징은 애거서 크리스티와 히치콕의 느낌을 뒤섞은 소설이라는 점이다.
+
+>여행 잡지사에서 일하는 로라는 혼자 사는 집에 도둑이 들어 불면증에 시달린다. 설상가상으로 남자친구인 주다와도 틀어진 상황. 화해할 시간도 없이 호화 유람선 오로라 호의 처녀 항해를 취재하기 위해 배에 오른다. 우연히 옆 10호 객실에 있는 한 여자로부터 마스카라를 빌리지만 그 여자는 저녁 식사 시간에 보이지 않는다. 한 밤 중에 옆 객실에서 누군가가 여자 시체를 바다에 버리는 것을 목격한 로라는 즉시 유람선의 보안 담당자에게 알리지만 옆 객실에는 아무 것도 없고 더구나 그 객실은 출항 때부터 비어 있었다는 사실을 알게 된다. 아무도 자신의 말을 믿지 않고 그 여자에게 빌린 마스카라마저 사라져 버리자 로라는 극심한 혼란에 빠진다.
+
+
+###  Chapter 1
+뭔가 이상하다는 것을 알아차린 것은 고양이의 작은 발이 내 얼굴을 건드리면서 `cat pawing at my face` 한밤 중에 깨어났을 때였다. 지난 밤에 주방 문을 닫는 것을 잊어버렸나 보다. 술에 취해 집에 들어온 것에 대한 벌이다.
+
+"저리 가" 나는 짜증을 내며 말했다. 데릴라가 야옹 거리며 머리를 내게 들이밀었다. 나는 얼굴을 베개 속으로 파묻었지만 데릴라는 내 귀를 계속 문질러댔고 난 몸을 돌리면서 매정하게 그 녀석 her을 침대 밖으로 밀어냈다.
+
+아래는 코드 블록에 대한 예제입니다.
+
+{% highlight javascript %}
+let a = 10;
+for (let i=0; i<10; i++) {
+    console.log(i);
+}
+{% endhighlight %}
+
+<b>라즈베리파이</b>는 다양한 OS를 사용할 수 있는 단일보드컴퓨터(Single Board Computer)이다.
+마이크로SD카드를 통해 여러 OS를 설치할 수 있는데 라즈베리파이 홈페이지에 기본OS인 라즈비안(Raspbian)을 비롯하여 다양한 써드파티 OS 이미지를 제공하고 있다.
+
+![raspberrypi]({{site.baseurl}}/assets/img/pi.png)
+
+아래는 표에 대한 예제입니다.
+
+|컬럼명|컬럼명|컬럼명|
+|---|---|---|
+|내용|내용|내용|
+|내용|내용|내용|
+
+Check out the [Jekyll docs][jekyll-docs] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll’s GitHub repo][jekyll-gh]. If you have questions, you can ask them on [Jekyll Talk][jekyll-talk].
+
+아래는 아이템 예제입니다.
+
+* Hexagon shoreditch beard
+* Intelligentsia narwhal austin
+* Literally meditation four
+* Microdosing hoodie woke
+
+[jekyll-theme]: http://jekyllthemes.org
+[jekyll-site]:  https://jekyllrb.com
+[jekyll-docs]:  https://jekyllrb.com/docs/home
+[jekyll-gh]:    https://github.com/jekyll/jekyll
+[jekyll-talk]:  https://talk.jekyllrb.com/
