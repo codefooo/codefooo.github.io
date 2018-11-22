@@ -2,7 +2,6 @@
 layout: post
 title: "Murder On The Orient Express(1974)"
 date: 2011-05-07
-img: leaves.jpg
 description: # Add post description (optional)
 tag: [Movie, Poirot]
 ---
