@@ -1,0 +1,321 @@
+---
+layout: post
+title: "Unbox drizzle(2)"
+date: 2018-12-04
+description: # Add post description (optional)
+img: truffle.jpg
+tag: [Ethereum, Solidity, Truffle, drizzle, Dapp]
+---
+
+원래 react-redux에서는 `connect`를 사용하지만 드리즐에서는 `drizzkeConnect`를 통해서 화면 컴포넌트인 Home을 상태에 연결합니다. 그런데 상태를 가지고 있는 store를 참조하기 위해서는
+상위 컴포넌트에서 store의 정보를 제공해 주어야 합니다. 그것은 다음과 같이 `DrizzleProvider`를 사용합니다. 예, 원래 react-redux에서는 `Provider`를 사용하는 것과 유사합니다.
+
+속성으로 store를 전달하고 있고 App 컴포넌트는 HomeContainer를 포함하고 있습니다. LoadingContainer는 드리즐이 제공해주는 기본 내장 컴포넌트로 web3를 통한 메타마스크와의 연결을 담당하고 있습니다.
+
+{% highlight html %}
+ReactDOM.render((
+    <DrizzleProvider options={drizzleOptions} store={store}>
+      <LoadingContainer>
+        <Router history={history} store={store}>
+          <Route exact path="/" component={App} />
+        </Router>
+      </LoadingContainer>
+    </DrizzleProvider>
+  ),
+  document.getElementById('root')
+);
+{% endhighlight %}
+
+redux는 상태를 store에서 중앙 집중식으로😅 관리합니다. 드리즐은 store.js에서 store를 생성합니다. createStore라는 함수에 여러 파라미터들을 전달했습니다.
+store를 생성할 때는 새로운 상태를 만들어주는 reducer, 또 각 상태의 초기상태인 initialState, 그리고 store enhancer를 함께 넘겨줄 수 있는데 여기서는
+부가적인 기능을 제공하는 미들웨어를 사용하고 있습니다. enhancer가 하나 이상이므로 `composeEnhancers`를 사용했습니다.
+
+{% highlight javascript %}
+const sagaMiddleware = createSagaMiddleware()
+
+const initialState = {
+  contracts: generateContractsInitialState(drizzleOptions)
+}
+
+const store = createStore(
+  reducer,
+  initialState,
+  composeEnhancers(
+      applyMiddleware(
+        thunkMiddleware,
+        routingMiddleware,
+        sagaMiddleware
+      )
+  )
+)
+{% endhighlight %}
+
+Dapp에서는 컨트랙트의 상태가 중요하므로 `drizzleOptions`라는 객체에 스마트 컨트랙트를 import하여 initialState로 전달합니다. drizzleOptions.js를 보면 다음과 같습니다.
+컴파일되어 json으로 만들어진 스마트 컨트랙트의 artifact를 참조하고 있습니다. 여기서 web3에 설정한 fallback url은 메타마스크를 사용하는 경우에는 의미가 없겠습니다.
+
+{% highlight javascript %}
+import ComplexStorage from './../build/contracts/ComplexStorage.json'
+import SimpleStorage from './../build/contracts/SimpleStorage.json'
+import TutorialToken from './../build/contracts/TutorialToken.json'
+
+const drizzleOptions = {
+  web3: {
+    block: false,
+    fallback: {
+      type: 'ws',
+      url: 'ws://127.0.0.1:8545'
+    }
+  },
+  contracts: [
+    ComplexStorage,
+    SimpleStorage,
+    TutorialToken
+  ],
+  events: {
+    SimpleStorage: ['StorageSet']
+  },
+  polls: {
+    accounts: 5000
+  }
+}
+
+export default drizzleOptions
+{% endhighlight %}
+
+
+세부적인 사항들은 차차 살펴보기로 하고 전체적인 흐름을 정리하면 다음과 같이 나타낼 수 있습니다. 컴포넌트가 store에 접근하거나 액션을 dispatch하려면 redux의 Provider와 connect를
+통해 연결합니다.
+
+
+![fig08]({{site.baseurl}}/assets/img/drizzle/Fig08.PNG)
+
+
+### 3. redux-saga
+
+드리즐에서 중요한 역할을 하는 것은 redux-saga 라이브러리를 사용한 <b>미들웨어(middleware)</b>의 활용입니다. createStore를 다시 보겠습니다. applyMiddleware는 redux가 외부 미들웨어 라이브러리
+사용을 위해 제공하는 함수입니다.
+
+{% highlight javascript %}
+const store = createStore(
+  reducer,
+  initialState,
+  composeEnhancers(
+      applyMiddleware(
+        //thunkMiddleware,
+        routingMiddleware,
+        sagaMiddleware
+      )
+  )
+)
+
+sagaMiddleware.run(rootSaga)
+{% endhighlight %}
+
+여기서 thunkMiddleware와 sagaMiddleware는 유사한 역할을 하는 미들웨어입니다. 드리즐에서는 sagaMiddleware를 사용하므로 thunkMiddleware는 없어도 되겠습니다.
+미들웨어는 액션이 dispatch되어 reducer에 전달될 때 중간에서 다른 작업을 수행하는 역할을 합니다.
+
+기본적으로 블록체인은 블록이 생성되고 합의 알고리즘에 의해 확정될 때까지 시간이 걸리기 때문에 <b>비동기적</b>으로 동작합니다. 일반적으로 액션이 dispatch되고 나면
+reducer가 실행되므로 즉시 리턴이 오지 않는 상황에서는 다음 로직을 처리하는 것이 어렵게 됩니다. 그래서 중간에서 응답이 올 때까지 기다려주는 누군가가 필요한데
+바로 그 역할을 하는 것이 redux-saga가 되겠습니다.
+
+store를 생성한 후 `sagaMiddleware.run(rootSaga)`로 미들웨어를 실행하고 있습니다. rootSaga.js를 보겠습니다.
+
+{% highlight javascript %}
+export default function * root() {
+  yield all(
+      drizzleSagas.map(saga => fork(saga))
+  )
+}
+{% endhighlight %}
+
+`function *`은 ES6에서 Generator 함수를 나타냅니다. Generator 함수는 실행 중에 내부에서 yield 라는 키워드를 만나면 실행을 멈추고 그 흐름을 양보(yield)하는
+함수입니다. 양보한 함수가 실행을 마치고 나면 멈추었던 곳으로 되돌아가서 하던 일을 계속 수행합니다(영화를 보다가 일시정지하고 화장실에 다녀온 후 다시 플레이를 누르는 것과 유사합니다🤪).
+
+all(drizzleSagas.map(saga => fork(saga)))에서 짐작할 수 있는 것처럼 드리즐 모듈은 몇 개의 saga를 구현하여 제공하고 있으며, 이것을 `all([...effects])`를 통해
+ `fork`하고 있습니다. all은 병렬로 실행하면서 모두 완료될 때까지 기다리는 함수입니다. all이나 fork 같은 함수들을 effect creator라고 하는데 여기서 <b>effect</b>라고 하는 것은
+yield에 의해 넘겨 받은 실행 흐름을 미들웨어에게 전달하는 작업명령(instruction) 같은 것이라고 보면 되겠습니다.
+
+>In redux-saga, Sagas are implemented using Generator functions. To express the Saga logic, we yield plain JavaScript Objects from the Generator. We call those Objects Effects. An Effect is simply an object that contains some information to be interpreted by the middleware. You can view Effects like instructions to the middleware to perform some operation (e.g., invoke some asynchronous function, dispatch an action to the store, etc.).
+
+
+그렇다면 드리즐 모듈에서 제공하는 saga 함수들은 어떤 것들이 있을까요? 다음과 같은 것들이 있습니다([drizzle Github][drizzle-gh]).
+
+{% highlight javascript %}
+var drizzleSagas = [
+    accountsSaga,
+    accountBalancesSaga,
+    blocksSaga,
+    contractsSaga,
+    drizzleStatusSaga,
+    web3Saga
+]
+{% endhighlight %}
+
+얼핏 보아도 블록체인에서 중요한 값들입니다. 계정(account), 계정잔액(accountBalance), 블록(block), 컨트랙트(contract), web3 등이 redux-saga로 구현되어 있습니다.
+예를 들어 accountsSaga.js를 살펴보겠습니다.
+
+{% highlight javascript %}
+function * accountsSaga () {
+    yield takeLatest('ACCOUNTS_FETCHING', getAccounts)
+    yield takeLatest('ACCOUNTS_POLLING', callCreateAccountsPollChannel)
+}
+
+export default accountsSaga
+{% endhighlight %}
+
+`takeLatest(pattern, saga, ...args)`는 pattern에 해당하는 액션이 dispatch될 때마다 가장 최근 액션에 대해 saga 함수를 실행하는 redux-saga helper입니다.
+그러니까 yield takeLatest('ACCOUNTS_FETCHING', getAccounts)은 'ACCOUNTS_FETCHING'이 dispatch되면 이제까지 dispatch된 요청들 중 가장 마지막에 대해서만
+다른 saga 함수인 getAccounts를 실행합니다. getAccounts는 다음과 같이 구현되어 있습니다.
+
+{% highlight javascript %}
+export function * getAccounts (action) {
+  const web3 = action.web3
+
+  try {
+      const accounts = yield call(web3.eth.getAccounts)
+
+      if (!accounts) {
+        throw 'No accounts found!'
+      }
+
+      yield put({ type: 'ACCOUNTS_FETCHED', accounts })
+  } catch (error) {
+      yield put({ type: 'ACCOUNTS_FAILED', error })
+      console.error('Error fetching accounts:')
+      console.error(error)
+  }
+}
+{% endhighlight %}
+
+`call`과 `put`은 위에서 언급한 effect creator들입니다. call은 함수 실행을, put은 액션을 dispatch하라는 effect를 미들웨어인 redux-saga에게 전달합니다. 다시 말해서
+getAccounts는 web3.eth.getAccounts 함수를 호출하고(call) 리턴 받은 계정들을 액션에 담고 다시 'ACCOUNTS_FETCHED'라는 액션을 dispatch합니다(put).
+
+
+### 4. reducer
+
+드리즐은 여러 개의 리듀서를 사용하기 때문에 combineReducers를 사용합니다.
+
+{% highlight javascript %}
+import { combineReducers } from 'redux'
+import { routerReducer } from 'react-router-redux'
+import { drizzleReducers } from 'drizzle'
+
+const reducer = combineReducers({
+  routing: routerReducer,
+  ...drizzleReducers
+})
+
+export default reducer
+{% endhighlight %}
+
+드리즐에서 제공되는 reducer들은 다음과 같습니다.
+
+{% highlight html %}
+{
+    accounts: accountsReducer,
+    accountBalances: accountBalancesReducer,
+    contracts: contractsReducer,
+    drizzleStatus: drizzleStatusReducer,
+    transactions: transactionsReducer,
+    transactionStack: transactionStackReducer,
+    web3: web3Reducer
+}
+{% endhighlight %}
+
+예를 들어 accountReducer.js는 다음과 같이 구현되어 있습니다. redux-saga 미들웨어에서 yield put({ type: 'ACCOUNTS_FETCHED', accounts }) 로 액션을 다시 dispatch한 것을
+기억할 겁니다. 이 액션이 accountsReducer에 전달되면 새로운 상태, 즉 fetch한 계정을 상태에 저장하게 되고 컴포넌트에서 이에 접근할 수 있게 될 것입니다.
+
+{% highlight javascript %}
+const initialState = {}
+
+const accountsReducer = (state = initialState, action) => {
+  if (action.type === 'ACCOUNTS_FETCHING') {
+    return state
+  }
+
+  if (action.type === 'ACCOUNTS_FETCHED') {
+    return Object.assign({}, state, action.accounts)
+  }
+
+  return state
+}
+
+export default accountsReducer
+{% endhighlight %}
+
+다시 HomeContainer로 돌아가 보겠습니다. 아래와 같이 mapStateToProps를 통해 드리즐이 제공하는 store의 상태를 참조할 수 있습니다.
+다시 말해서 계정은 state.accounts가 accounts라는 key로 전달되므로 this.props.accounts로 참조할 수 있는 것입니다.
+
+this.props.accounts[0]는 메타마스크에서 Dapp에 연결된 계정을 나타내며,
+잔액은 this.props.accountBalances[this.props.accounts[0]] 이런 식이 될 겁니다.
+
+{% highlight javascript %}
+import Home from './Home'
+import { drizzleConnect } from 'drizzle-react'
+
+// May still need this even with data function to refresh component on updates for this contract.
+const mapStateToProps = state => {
+  return {
+    accounts: state.accounts,
+    SimpleStorage: state.contracts.SimpleStorage,
+    TutorialToken: state.contracts.TutorialToken,
+    drizzleStatus: state.drizzleStatus
+  }
+}
+
+const HomeContainer = drizzleConnect(Home, mapStateToProps);
+
+export default HomeContainer
+{% endhighlight %}
+
+컨트랙트의 메소드는 어떻게 호출할 수 있을까요? 드리즐은 [drizzle-react-component][drizzle-rc]를 제공하고 있어서 쉽게 컨트랙트의 메소드를 호출하거나 상태 변수 값을
+가져올 수 있습니다. 예를 들어 `<ContractData/>` 라는 컴포넌트를 다음과 같이 사용할 수 있습니다.
+
+{% highlight html %}
+<ContractData contract="SimpleStorage" method="storedData" />
+{% endhighlight %}
+
+버튼을 클릭해서 메소드를 실행시키고 싶다면 아예 버튼까지 만들어주는 `<ContractForm/>` 컴포넌트를 사용할 수도 있습니다.
+
+{% highlight html %}
+<ContractForm contract="SimpleStorage" method="set" />
+{% endhighlight %}
+
+물론 drizzle-react-component를 사용하지 않고 내가 원하는 컴포넌트를 만들 수도 있습니다. 또 내가 원하는 redux-saga 함수를 추가할 수도 있습니다. reducer도 추가할 수 있습니다.
+드리즐은 개발자가 원하는 것을 할 수 있도록 확장 가능합니다.
+
+
+### 5. drizzle, Truffle drizzle box
+
+마지막으로 drizzle, drizzle-react 등과 같은 모듈을 직접 설치하는 것과 Truffle drizzle box를 통해 모듈을 설치하는 것은 차이가 있다는 것을 기억할 필요가 있습니다. 왜냐하면 두 패키지의 버전이 차이가 나기 때문입니다.
+Truffle drizzle box에 있는 모듈 버전이 구버전일 가능성이 많습니다. 이를테면 다음과 같은 차이가 있습니다. react 버전이 16.3 이상일 때는 좀 더 업데이트된 사항들을 반영한
+drizzle 모듈이 제공됩니다(아직 하위 호환성이 유지되고 있지만 주의할 필요가 있다는 말입니다).
+
+{% highlight javascript %}
+// 1. Import drizzle, drizzle-react, and your contract artifacts.
+import { Drizzle, generateStore } from "drizzle";
+import { DrizzleContext } from "drizzle-react";
+import SimpleStorage from "./contracts/SimpleStorage.json";
+
+// 2. Setup the drizzle instance.
+const options = { contracts: [SimpleStorage] };
+const drizzleStore = generateStore(options);
+const drizzle = new Drizzle(options, drizzleStore);
+
+// ...
+
+// 3. Pass the drizzle instance into the provider and wrap it
+//    around your app.
+<DrizzleContext.Provider drizzle={drizzle}>
+  <App />
+</DrizzleContext.Provider>
+{% endhighlight %}
+
+보다 자세한 사항은 [여기][drizzle-r]를 참조하시기 바랍니다. 🚀
+
+[truffle-box]: https://truffleframework.com/boxes
+[drizzle-doc]: https://truffleframework.com/docs/drizzle/overview
+[drizzle-gh]: https://github.com/trufflesuite/drizzle
+[drizzle-rc]: https://truffleframework.com/docs/drizzle/react/react-components
+[drizzle-r]: https://github.com/trufflesuite/drizzle-react
+

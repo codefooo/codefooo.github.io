@@ -1,0 +1,221 @@
+---
+layout: post
+title: "Unbox drizzle(1)"
+date: 2018-12-03
+description: # Add post description (optional)
+img: truffle.jpg
+tag: [Ethereum, Solidity, Truffle, drizzle, Dapp]
+---
+
+이더리움 기반의 Dapp은 여러 가지 다양한 기술들로 구현이 가능합니다. 특히 그 중에서 프론트-엔드 Dapp은 사실상 웹 화면 구현 기술의 표준으로 자리잡은
+자바스크립트를 사용하여 (생각보다 쉽게 😛) 개발할 수 있습니다. 블록체인-이더리움이라는 새로운 기술도 애플리케이션이라는 범주로 들어오면 예외 없이
+자바스크립트와 만날 수 밖에 없는 것입니다. Dapp의 구성은 다음과 같이 그릴 수 있을 것 같습니다.
+
+
+![fig01]({{site.baseurl}}/assets/img/drizzle/Fig01.PNG)
+
+이 글에서는 현재 가장 인기있는 자바스크립트 라이브러리 중 하나인 <b>react</b>와, 또 react와 관련된 기술 <b>redux</b>, <b>redux-saga</b>와 같은 자바스크립트 기술이
+어떻게 Dapp을 구현하는데 사용될 수 있는지 살펴보도록 하겠습니다.
+
+
+### 0. Truffle, Truffle box
+트러플(Truffle)은 이더리움 Dapp 개발에 일반적으로 사용되는 개발도구, 프레임워크, 또는 자동화 도구입니다. "Truffle" 이라고 하면 화려하게 장식된 초콜릿을
+말하는데요, 이더리움 Dapp 개발에서는 이렇게 초콜릿과 관련된 이름이 붙여진 개발 도구들이 등장합니다. 앞으로 나올 가나슈(Ganache)와 드리즐(drizzle)이
+바로 그런 것들입니다.
+
+
+![fig02]({{site.baseurl}}/assets/img/drizzle/Fig02.PNG)
+
+트러플은 자바스크립트 기반의 개발 환경을 제공합니다. 트러플은 npm으로 설치되므로 Node.js가 미리 설치되어 있어야 합니다. 현재 트러플의 안정 버전은 4.1.14입니다.
+트러플은 다음과 같이 설치 합니다.
+
+{% highlight shell %}
+npm install -g truffle
+{% endhighlight %}
+
+트러플은 이더리움 Dapp 개발을 위한 자동화 도구입니다. 컴파일, 테스트, 배포, 디버깅 등을 명령행 기반(CLI)으로 할 수 있도록 도와 줍니다(소스파일 작성도구는 아닙니다).
+트러플로 Dapp 개발을 시작하는 과정은 마치 Node 기반의 애플리케이션을 만들 때와 비슷합니다. 예를 들어 프로젝트 디렉토리(Hello-truffle)를 하나 만든 다음에 해당 디렉토리로 이동하여 다음과 같은 명령어를 입력합니다.
+
+{% highlight shell %}
+mkdir Hello-truffle
+cd Hello-truffle
+truffle init
+{% endhighlight %}
+
+그리고 나서 디렉토리를 다시 조회해보면 트러플이 스캐폴딩한 디렉토리들과 파일들을 볼 수 있습니다.
+
+
+{% highlight shell %}
+Hello-truffle
+|-- contracts
+|   `-- Migrations.sol
+|-- migrations
+|   `-- 1_initial_migration.js
+|-- test
+|-- truffle-config.js
+`-- truffle.js
+{% endhighlight %}
+
+
+트러플이 자동으로 생성한 디렉토리는 Dapp이 필요로 하는 스마트 컨트랙트를 작성하기 위한 환경입니다. 스마트 컨트랙트는 블록체인에서
+"서버 로직"에 해당합니다. 애플리케이션은 이더리움에 배포된 스마트 컨트랙트와 상호작용을 하는 것이고 그렇게 하기 위해서는 이더리움 자바스크립트 라이브러리인
+<b>web3.js</b>가 필요합니다. web3.js와 함께 프론트-엔드 Dapp 개발에 필요한 모든 자바스크립트 모듈은 npm으로 설치할 수 있습니다.
+
+예를 들어 프로젝트 디렉토리를 아래 그림처럼 구성할 수 있습니다. 스마트 컨트랙트 작성을 위한 디렉토리는 `truffle init`으로 생성하고
+화면 구현을 위한 디렉토리는 `npm init`으로 생성하여 각각 소스파일을 작성하고 컴파일 하고 테스트할 수 있다는 말입니다.
+
+
+![fig03]({{site.baseurl}}/assets/img/drizzle/Fig03.PNG)
+
+그런데 필요한 모듈을 모두 설치하려면 번거로운 일입니다. react 애플리케이션에도 create-react-app이 있듯이 이더리움 Dapp 개발에도 유사한 일을 대신 해주는
+것이 있는데 그것이 바로 <b>트러플 상자(Truffle box)</b>입니다. 이것은 Dapp 개발에 필요한 자바스크립트 모듈들을 미리 "상자"에 담아서 개발자들이 편리하게
+가져다 쓸 수 있도록 패키징한 것입니다. 예를 들어 이더리움 Dapp을 react로 만들고 싶다면 react box를 가져다가 쓰면 됩니다(사실 위에 있는 디렉토리 구조가 바로 트러플 react 박스의 구조이기도 합니다).
+
+
+{% highlight shell %}
+mkdir Hello-truffle
+cd Hello-truffle
+truffle unbox react
+{% endhighlight %}
+
+트러플 사이트에서 달콤한 [초콜릿 상자][truffle-box]들을 만나보세요!
+
+
+### 1. drizzle
+
+[드리즐(drizzle)][drizzle-doc] 역시 그런 박스들 중에 하나입니다. 드리즐은 특히 react와 redux, redux-saga 등을 사용한 구현예제들을 포함하고 있어서 Dapp을 개발할 때 유용한 상자가 되겠습니다.
+
+![fig04]({{site.baseurl}}/assets/img/drizzle/Fig04.PNG)
+
+드리즐 상자는 다음과 같이 열 수 있습니다. 그런데 <b>Windows 10</b>을 기준으로, 정상적으로 설치가 되려면 몇 가지 선행 작업이 필요합니다(다른 운영체제는 더 간단할 수 있습니다😅).
+
+* Git for Windows
+* npm 6.4.1
+* npm install -g --production windows-build-tools@3.1.0 (Powershell 관리자에서 실행)
+* npm install -g node-gyp@3.8.0 (Powershell 관리자에서 실행)
+
+{% highlight shell %}
+mkdir drizzle-dapp
+cd drizzle-dapp
+truffle unbox drizzle
+{% endhighlight %}
+
+드리즐을 열어보면 다음과 같습니다.
+
+{% highlight shell %}
+drizzle-dapp
+|-- LICENSE
+|-- box-img-lg.png
+|-- box-img-sm.png
+|-- config
+|-- contracts
+|-- migrations
+|-- node_modules
+|-- package-lock.json
+|-- package.json
+|-- public
+|-- scripts
+|-- src
+|-- test
+|-- truffle-config.js
+`-- truffle.js
+{% endhighlight %}
+
+화면 구현 소스 파일 디렉토리와 스마트 컨트랙트 작성을 위한 디렉토리가 뒤섞여 있어서 다소 복잡해 보이긴 하지만 대부분 눈에 익은 디렉토리들입니다.
+드리즐의 자바스크립트 소스 파일들은 `src` 디렉토리 아래에 모여 있습니다.
+
+{% highlight shell %}
+src
+|-- App.css
+|-- App.js
+|-- App.test.js
+|-- css
+|-- drizzleOptions.js
+|-- fonts
+|-- index.css
+|-- index.js
+|-- layouts
+|-- logo.png
+|-- reducer.js
+|-- rootSaga.js
+|-- store.js
+|-- user
+`-- util
+{% endhighlight %}
+
+여느 react 애플리케이션 디렉토리와 크게 다르지 않을 듯 합니다. 드리즐은 기본적으로 모듈 안에 wbe3 provider를 통해 이더리움과 통신하는 코드가 구현되어 있습니다. 따라서 간단한 Dapp은 그야말로 화면만
+만들어도 될 정도입니다. 드리즐의 소스를 보고 싶으면 [여기][drizzle-gh]를 참고하면 되겠습니다.
+
+예를 들어 예제로 제공되는 화면을 보겠습니다. 우선 "서버"에 해당하는 로컬 가상 이더리움에 해당하는 가나슈를 실행합니다.
+가나슈는 CLI버전과 GUI버전이 있는데 GUI버전을 사용하는 것이 편리합니다.
+
+
+"서버 로직"에 해당하는 스마트 컨트랙트를 컴파일하고 배포해보겠습니다.
+예제 컨트랙트는 3개가 제공되고 contracts 디렉토리에 있습니다(Migration.sol은 트러플이 배포 관리를 위해 내부적으로 사용하는 컨트랙트이므로 무시🙄).
+
+{% highlight shell %}
+contracts
+|-- ComplexStorage.sol
+|-- Migrations.sol
+|-- SimpleStorage.sol
+`-- TutorialToken.sol
+{% endhighlight %}
+
+우선 컴파일을 합니다. 컴파일은 다음과 같이 간단하게 수행할 수 있습니다(Windows의 경우 Powershell에서 수행하세요).
+
+{% highlight shell %}
+truffle compile
+{% endhighlight %}
+
+컴파일 후 가나슈에 배포하려면 설정을 먼저 해야 합니다. truffle.js 파일을 열어서 다음과 같이 작성합니다.
+
+{% highlight javascript %}
+module.exports = {
+  migrations_directory: "./migrations",
+  networks: {
+    development: {
+      host: "localhost",
+      port: 7545, // Ganache default port
+      network_id: "5777" // Ganache default network id
+    }
+  },
+  solc: {
+    optimizer: {
+      enabled: true,
+      runs: 500
+    }
+  }
+};
+{% endhighlight %}
+
+자, 이제 가나슈를 실행한 후 다음과 같이 배포를 실행합니다.
+
+{% highlight shell %}
+truffle migrate
+{% endhighlight %}
+
+스마트 컨트랙트가 정상적으로 배포되고 나면 드디어 Dapp을 실행할 차례입니다. 크롬에 메타마스크가 설치되어 있고 메타마스크가 로컬의 가나슈에 연결될 수 있도록
+미리 설정을 해야 합니다(이 과정은 생략합니다😛). 테스트 웹서버를 실행하면 다음과 같은 Dapp 화면을 볼 수 있습니다.
+
+{% highlight shell %}
+npm run start
+{% endhighlight %}
+
+
+![fig07]({{site.baseurl}}/assets/img/drizzle/Fig07.PNG)
+
+
+### 2. redux
+
+드리즐은 react 컴포넌트의 상태를 redux 라이브러리를 사용하여 관리합니다. redux 에서는 화면 컴포넌트(presentational component)와 상태(store)를 연결시켜주는
+컨테이너 컴포넌트(container component)를 구분하여 사용합니다.
+예제를 살펴 보겠습니다. 예제의 react 컴포넌트는 `src/layouts/home` 위치에 있습니다. HomeContainer.js를 보면 다음과 같은 부분이 있습니다.
+
+{% highlight javascript %}
+const HomeContainer = drizzleConnect(Home, mapStateToProps);
+export default HomeContainer
+{% endhighlight %}
+
+[truffle-box]: https://truffleframework.com/boxes
+[drizzle-doc]: https://truffleframework.com/docs/drizzle/overview
+[drizzle-gh]: https://github.com/trufflesuite/drizzle
