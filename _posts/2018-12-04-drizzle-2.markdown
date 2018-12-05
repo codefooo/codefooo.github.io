@@ -7,7 +7,7 @@ img: truffle.jpg
 tag: [Ethereum, Solidity, Truffle, drizzle, Dapp]
 ---
 
-원래 react-redux에서는 `connect`를 사용하지만 드리즐에서는 `drizzkeConnect`를 통해서 화면 컴포넌트인 Home을 상태에 연결합니다. 그런데 상태를 가지고 있는 store를 참조하기 위해서는
+원래 react-redux에서는 `connect`를 사용하지만 드리즐에서는 `drizzleConnect`를 통해서 화면 컴포넌트인 Home을 상태에 연결합니다. 그런데 상태를 가지고 있는 store를 참조하기 위해서는
 상위 컴포넌트에서 store의 정보를 제공해 주어야 합니다. 그것은 다음과 같이 `DrizzleProvider`를 사용합니다. 예, 원래 react-redux에서는 `Provider`를 사용하는 것과 유사합니다.
 
 속성으로 store를 전달하고 있고 App 컴포넌트는 HomeContainer를 포함하고 있습니다. LoadingContainer는 드리즐이 제공해주는 기본 내장 컴포넌트로 web3를 통한 메타마스크와의 연결을 담당하고 있습니다.
