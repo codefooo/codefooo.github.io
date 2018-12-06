@@ -193,7 +193,7 @@ getAccounts는 web3.eth.getAccounts 함수를 호출하고(call) 리턴 받은 �
 
 ### 4. reducer
 
-드리즐은 여러 개의 리듀서를 사용하기 때문에 combineReducers를 사용합니다.
+드리즐은 여러 개의 reducer를 사용하기 때문에 combineReducers를 사용합니다.
 
 {% highlight javascript %}
 import { combineReducers } from 'redux'
