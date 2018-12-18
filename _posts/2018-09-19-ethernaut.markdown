@@ -319,12 +319,10 @@ contract CoinFlip {
 이를 위해서는 크롬의 콘솔에서는 할 수 없고 이미 배포된 CoinFlip 컨트랙트의 주소를 참조하여 [Remix][remix]에서 hackCoinFlip 컨트랙트를 Ropsten에 배포한 후
 hackCoinFlip의 guess 메소드를 10번 실행하면 되겠습니다(Remix에서 메소드 실행).
 
-📄Ropsten에 배포된 hackCoinFlip 컨트랙트 주소: 0x7944e8547aa437ed11a1e5cadba4019de440d40c
-
 
 ### 4. Telephone (difficulty 1/10)
 
-이번 단계는 전화 교환원이 힌트입니다. 전화를 거는 사람과 중간에서 그 전화를 받아서 다른 사람에게 연결해 주는 교환원이 있는 상황 말입니다.
+이번 단계는 전화 교환원이 힌트입니다. 전화를 거는 사람과 중간에서 그 전화를 받아서 다른 사람에게 연결해 주는 교환원이 있는 상황과 유사하다고 할 수 있겠습니다.
 이 문제를 통해 `tx.origin` 과 `msg.sender`의 차이점을 이해할 수 있어야 합니다.
 
 
