@@ -1,0 +1,45 @@
+---
+layout: post
+title: "ERC-721, A Standard Interface for NFT(1/2)"
+date: 2018-10-10
+description: # Add post description (optional)
+img: coins.jpg # Add image post (optional)
+tag: [Ethereum, Solidity, ERC-721]
+---
+
+[ERC-721][erc-721]은 ERC-20과 함께 이더리움 스마트 컨트랙트에서 토큰 발행과 관련된 표준 규격입니다.
+발행량과 보유 수량을 기본으로 하는 ERC-20이 정량적인 개념의 토큰이라면 ERC-721은 토큰들이 고유한(유일한) 아이디를 부여하고 따라서
+각각의 토큰들은 서로 상이한 가치를 지닐 수 있는 "non-fungible token(NFT)"에 관한 규격입니다.
+
+### Simple Summary
+
+A standard interface for non-fungible tokens, also known as deeds.
+
+"deeds"는 "부동산등기권리증" 같은 "증서"의 개념으로 이해하면 될 것 같습니다. 즉 어떤 유무형 자산(가상의 자산과 현실의 자산을 모두 포괄)에 대한 소유권을
+나타내는 증서라고 보면 되겠습니다.
+
+ERC-721은 개인 간의 거래와 함께 제 3자(브로커, 지갑, 경매)를 통한 거래를 가능하도록 하는 기능들을 정의하고 있습니다. 표준에는 다음과 같은 유즈케이스를
+제시합니다.
+
+
+>* Physical property — houses, unique artwork
+* Virtual collectables — unique pictures of kittens, collectable cards
+* "Negative value" assets — loans, burdens and other responsibilities
+
+
+### Every ERC-721 compliant contract must implement the ERC721 and ERC165 interfaces
+
+ERC-721은 솔리디티 컴파일러 버전 ^0.4.20로 정의되어 있습니다. 하지만 컴파일러 레벨에서 정의되는 것들은 ERC-721 표준을 명확하게
+표현하지 못하는 부분들이 있어서 주의하거나 지켜야 할 사항들(caveats)을 표준 규약에 명기하고 있습니다.
+
+그러나 최근 컴파일러는 이것을 강제하도록 바뀔 수 있으므로 표준 규약의 내용이 수정되거나 없어질 수 있습니다.
+
+>If a newer version of Solidity allows the caveats to be expressed in code, then this EIP MAY be updated and the caveats removed, such will be equivalent to the original specification.
+
+ERC-721 표준에서 정의하고 있는 인터페이스는 모두 4개 입니다. 기본 인터페이스인 ERC-721과 제 3자가 개입되는 경우에 구현해야 할 인터페이스인 ERC721TokenReceiver,
+토큰이 나타내고 있는 어떤 것(토큰은 uint256 숫자일 뿐이므로)을 정의하는 ERC721Metadata, 그리고 토큰에 순번을 매길 수 있는 ERC721Enumerable 이렇게 4개의
+인터페이스를 정의하고 있습니다.
+
+아울러 ERC-165는
+
+[erc-721]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md

