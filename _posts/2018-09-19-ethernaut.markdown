@@ -412,18 +412,18 @@ a.toNumber()
 
 ### 6. Delegation (difficulty 4/10)
 
-다른 문제처럼 컨트랙트의 소유권을 가져오는 문제입니다만 약간 생각할 것들이 있습니다.
+이번에도 컨트랙트의 소유권을 가져오는 문제입니다만 약간 생각할 것들이 있습니다.
 
 > * Look into Solidity's documentation on the delegatecall low level function, how it works, how it can be used to delegate operations to on-chain libraries, and what implications it has on execution scope.
 * Fallback methods
 * Method ids
 
-우선 `delegatecall`이라는 함수를 알아야 하고 Fallback, 메소드 ID(메소드 셀렉터, 메소드 시그너처와 유사)를 이용해야 합니다.
-<b>delegatecall</b>은 실행되는 코드가 자신이 속한 컨트랙트의 저장영역(상태변수)을 바꾸는 것이 아니라 해당 메소드를 호출하는
+우선 `delegatecall`이라는 함수에 대해 알아야 하고 Fallback, 메소드 ID(메소드 셀렉터, 메소드 시그너처와 유사)를 이용해야 합니다.
+<b>delegatecall</b>은 실행되는 메소드가 자신이 속한 컨트랙트의 저장영역(상태변수)을 바꾸는 것이 아니라 그 메소드를 호출하는
 컨트랙트의 저장영역을 바꿀 수 있도록 하는 호출 방식입니다.
 
-메소드를 실행하면 그 메소드는 자신의 컨트랙트의 상태변수 값을 읽거나 쓰는 것이 일반적이겠지만
-delegatecall은 다른 컨트랙트의 코드를 실행시켜 현재 컨트랙트의 storage에 접근하는 것을 허용합니다(라이브러리 컨트랙트가 그런 일을 합니다).
+보통 그 메소드는 자신의 컨트랙트의 상태변수 값을 읽거나 쓰는 것이 일반적이겠지만
+delegatecall은 현재 컨트랙트에서 다른 컨트랙트의 메소드를 통해(위임) 현재 컨트랙트의 storage에 접근하는 것을 허용합니다(라이브러리 컨트랙트가 그런 일을 합니다).
 
 문제에 주어진 두 개의 컨트랙트가 있습니다.
 
