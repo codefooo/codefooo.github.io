@@ -412,13 +412,13 @@ a.toNumber()
 
 ### 6. Delegation (difficulty 4/10)
 
-이번에도 컨트랙트의 소유권을 가져오는 문제입니다만 약간 생각할 것들이 있습니다.
+이번에도 컨트랙트(Delegation 컨트랙트)의 소유권을 가져오는 문제인데, 약간 생각할 것들이 있습니다.
 
 > * Look into Solidity's documentation on the delegatecall low level function, how it works, how it can be used to delegate operations to on-chain libraries, and what implications it has on execution scope.
 * Fallback methods
 * Method ids
 
-우선 `delegatecall`이라는 함수에 대해 알아야 하고 Fallback, 메소드 ID(메소드 셀렉터, 메소드 시그너처와 유사)를 이용해야 합니다.
+우선 `delegatecall`이라는 함수에 대해 알아야 하고 폴백함수, 메소드 ID(메소드 셀렉터, 메소드 시그너처와 유사)를 이용해야 합니다.
 <b>delegatecall</b>은 실행되는 메소드가 자신이 속한 컨트랙트의 저장영역(상태변수)을 바꾸는 것이 아니라 그 메소드를 호출하는
 컨트랙트의 저장영역을 바꿀 수 있도록 하는 호출 방식입니다.
 
@@ -426,6 +426,139 @@ a.toNumber()
 delegatecall은 현재 컨트랙트에서 다른 컨트랙트의 메소드를 통해(위임) 현재 컨트랙트의 storage에 접근하는 것을 허용합니다(라이브러리 컨트랙트가 그런 일을 합니다).
 
 문제에 주어진 두 개의 컨트랙트가 있습니다.
+
+{% highlight javascript %}
+pragma solidity ^0.4.18;
+
+contract Delegate {
+
+    address public owner;
+
+    function Delegate(address _owner) public {
+        owner = _owner;
+    }
+
+    function pwn() public {
+        owner = msg.sender;
+    }
+}
+
+contract Delegation {
+
+    address public owner;
+    Delegate delegate;
+
+    function Delegation(address _delegateAddress) public {
+        delegate = Delegate(_delegateAddress);
+        owner = msg.sender;
+    }
+
+    function() public {
+        if(delegate.delegatecall(msg.data)) {
+            this;
+        }
+    }
+}
+{% endhighlight %}
+
+컨트랙트 Delegation(calling contract, 호출자)는 다른 컨트랙트인 Delegate(called contract, 피호출자)에게 자신의 storage를 바꿀 수 있는(위임)
+delegatecall을 폴백함수에서 사용하고 있습니다. delegatecall은 파라미터로 메소드 시그너처와 그 메소드에 전달되는 파라미터들을 받을 수 있습니다.
+
+문제에 주어진 `delegate.delegatecall(msg.data)`은 메소드 시그너처만을 전달받도록 되어 있군요. 그렇다면 Delegate 컨트랙트의 어떤 메소드가
+소유권을 바꿀 수 있을까요?
+
+`pwn()`이라는 메소드를 보면 owner 계정을 msg.sender로 바꾸고 있군요!😈 메소드 시그너처는 메소드 셀렉터(selector)라고도 하는데 몇 가지 방법으로 구할 수 있습니다. 예를 들어 `pwn()` 메소드의 경우는
+
+{% highlight javascript %}
+bytes4(keccak256("pwn()")) using Solidity
+
+this.pwn.selector in contract
+
+web3.eth.abi.encodeFunctionSignature("pwn()") using web3.js
+
+{% endhighlight %}
+
+위의 결과는 모두 `0xdd365b8b`의 값이 되는데 이것이 메소드 셀렉터입니다. 따라서 Delegation의 폴백 함수를 다음과 같이 실행하면 Delegate의 pwn 메소드가
+실행되면서 Delegation의 상태변수 owner를 msg.sender(여기서는 player)로 바꾸게 되므로 Delegation의 소유권을 가져올 수 있게 됩니다.
+
+{% highlight html %}
+await contract.sendTransaction({from:player, data:"0xdd365b8b"})
+{% endhighlight %}
+
+여기서 중요한 것은 두 컨트랙트의 storage layout이 거의 "일치"해야 한다는 것입니다. 즉 Delegate와 Delegation의 상태변수 선언부에 `address public owner`는
+모두 첫 번째 위치에 선언되어 있습니다. delegatecall은 이렇게 "같은 위치"에 있는 상태변수의 값을 변경하는 것이 가능하므로 Delegate에 있는 코드가 Delegation의
+상태변수를 쓸 수 있게 되는 것입니다.
+
+
+### 7. Force (difficulty 5/10)
+
+> Some contracts will simply not take your money ¯\\_(ツ)_/¯
+
+"어떤 컨트랙트는 당신의 돈에 전혀 손을 대지 못할 것이다." 아리송한 문장이긴 하지만 이 말은 컨트랙트에 전송한 이더를 찾을 수 없는 경우를 조심하라는
+의미로 받아들이면 될 것 같습니다.
+
+문제에 주어진 컨트랙트는 아무것도 하지 않는 빈 컨트랙트입니다. 이 컨트랙의 잔액은 0입니다. 이 값을 0보다 크게 만드는 것이 이번 단계의 목표입니다.
+아무것도 없는 컨트랙트에, payable 폴백 함수도 없는 컨트랙트에 어떻게 이더를 전송할 수 있을까요?
+
+솔리디티에는 `selfdestruct`라는 함수가 있습니다. 이 함수는 이더리움에 배포된 컨트랙트를 비활성화시키는 함수입니다. 한번 비활성화된 컨트랙트는 다시 활성화시킬 수 없습니다.
+메소드 실행이 되지 않고 상태변수 값이 모두 초기화됩니다(컨트랙트가 삭제되는 것은 아니지만 이더스캔에 Self Destruct로 표시됩니다). 또 지정된 계정으로 보유한 이더를 전부 전송합니다(가스비는 0).
+
+따라서 Force 컨트랙트 주소를 selfdestruct에 지정하면 payable 함수가 없어도 Force는 이더를 받을 수 있게 됩니다. 그러나 전송된 이더는 그 누구도 인출하거나 손을 댈 수 없는
+허공에 사라져 버리겠죠?😱
+
+
+{% highlight javascript %}
+pragma solidity ^0.4.25;
+
+contract SelfDestructSend {
+
+    uint public bal = 0;
+    address public owner;
+
+    constructor () public {
+        owner = msg.sender;
+    }
+
+    modifier onlyOwner {
+        require (msg.sender == owner, "Only owner can call this function.");
+        _;
+    }
+
+    function () external payable {
+        bal = msg.value;
+    }
+
+    function kill() public onlyOwner {
+        address addr = 0xb64422CFDEd5DaB9D193cb6cE03f4ef2D8605fd0;
+        selfdestruct(addr);
+    }
+
+}
+{% endhighlight %}
+
+최근 컴파일러 버전이 0.5.0이 되면서 이러한 위험을 줄이기(?) 위함인지는 모르겠으나 이더를 받을 수 있는 주소 타입은 address payable로 지정하도록
+변경되었습니다.
+
+{% highlight javascript %}
+pragma solidity ^0.5.0;
+
+    function kill() public onlyOwner {
+        address payable addr  = 0xB0a4E462094dD81a4E1CF7c724ebB4E5583248Df;
+        selfdestruct(addr);
+    }
+
+{% endhighlight %}
+
+참고로 이더리움 계정을 나타내는 주소의 길이는 20바이트(160비트, 16진수 40자리)인데 길이 뿐만 아니라 checksum이 맞아야 주소로 인식합니다. 다음과 같이 checksum을 할 수 있습니다.
+
+{% highlight html %}
+web3.utils.toChecksumAddress("0xb0a4e462094dd81a4e1cf7c724ebb4e5583248df")
+{% endhighlight %}
+
+
+### 8. Vault (difficulty 3/10)
+
+이 문제는 금고의 비밀번호를 알아내는 것입니다.
 
 [ethernaut]: https://ethernaut.zeppelin.solutions/
 [ethernaut-gh]: https://github.com/OpenZeppelin/ethernaut
