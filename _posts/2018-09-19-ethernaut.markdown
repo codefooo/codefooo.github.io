@@ -7,7 +7,7 @@ img: leaves.jpg
 tag: [Ethereum, Solidity, Ethernaut]
 ---
 
-[Ethernaut][ethernaut]은 overthewire.org에 모방하여 만들어진 Web3/Solidity 워게임(wargame)입니다. 일종의 문제풀이식 게임으로 Solidity로 작성된 스마트 컨트랙트의 보안이슈와 관련된
+[Ethernaut][ethernaut]은 overthewire.org을 모방하여 만들어진 Web3/Solidity 워게임(wargame)입니다. 일종의 문제풀이식 게임으로 Solidity로 작성된 스마트 컨트랙트의 보안이슈와 관련된
 모의해킹이라고 생각하면 되겠습니다. 각 레벨의 난이도는 최대 10이고 우측 상단에 표시되어 있습니다. 문제를 풀 수 있을 뿐만 아니라 새로운 문제를 만들어서 제출할 수도 있습니다.
 PR은 언제나 열려있습니다! [Ethernaut Github][ethernaut-gh]
 
@@ -645,13 +645,12 @@ false
 
 ### 9. King (difficulty 6/10)
 
-난이도가 6입니다. 어려운 문제인 것 같습니다.
 
 > The contract below represents a very simple game: whoever sends it an amount of ether that is larger than the current prize becomes the new king. On such an event, the overthrown king gets paid the new prize, making a bit of ether in the process! As ponzi as it gets xD
 
 
-문제의 컨트랙트는 현재 prize 값보다 더 많은 이더를 보내면 king을 그것을 전송한 계정으로 변경하는 컨트랙트입니다.
-대신에 전임 king 계정에게 이더를 바로 보내주는 군요(피라미드 판매 방식?).
+문제의 컨트랙트는 현재 prize 값보다 더 많은 이더를 보내면 그것을 전송한 계정을 king으로 변경하는 컨트랙트입니다.
+대신에 전임 king 계정에게는 받은 이더를 즉시 송금합니다. 새로운 사람이 들어오면 내가 투자한 금액보다는 많은 돈을 회수하고 나가는 셈이죠(피라미드 판매 방식?).
 
 
 {% highlight javascript %}
@@ -663,12 +662,12 @@ function() external payable {
 }
 {% endhighlight %}
 
-현재 prize 값보다 큰 이더를 보내서 king이 된다해도 owner 계정은 여전히 king을 되찾을 수 있고 또 이전 prize보다 높은 이더를 전송하는 계정은 언제든지
-king이 될 수 있습니다. 이 문제를 패스하려면 이러한 "계약"이 정상적으로 동작하지 않도록 해야 합니다.
+그런데 현재 prize 값보다 큰 이더를 보내서 king이 된다해도 owner 계정은 여전히 king을 되찾을 수 있도록 되어 있고 또 이전 prize보다 높은 이더를 전송하는 계정은
+언제든지 새로운 king이 될 수 있습니다. 이 문제의 목표는 다음과 같습니다.
 
 > Such a fun game. Your goal is to break it.
 
-현재 컨트랙트의 prize 값을 조회해보겠습니다.
+즉 이러한 "계약"이 정상적으로 동작하지 않도록 해야 합니다. 현재 컨트랙트의 prize 값을 조회해보겠습니다.
 
 {% highlight html %}
 a = await contract.prize()
@@ -684,20 +683,21 @@ await contract.king()
 "0x32d25a51c4690960f1d18fadfa98111f71de5fa7"
 
 await getBalance("0x32d25a51c4690960f1d18fadfa98111f71de5fa7")
-"786.9242373303112"
+"785.9242373303112"
 
 {% endhighlight %}
 
 
 ⚠️문제 오류?
 
-그냥 현재 prize 값 1 이더보다 크거나 같은 값을 전송하여 king이 바뀌면 패스됩니다. 😅
+그냥 현재 prize 값 1 이더보다 크거나 같은 값을 전송하여 king이 바뀌면서 패스됩니다. 😅
 
-그러나 원래 이 문제가 의도했던 것은 이렇습니다: 다른 컨트랙트를 만든 후 King 컨트랙트의 폴백 함수를 호출합니다. 이 때 1 이더 이상을 전송하면
-king이 바뀌게 됩니다. 그런데 이 컨트랙트에 폴백 함수를 구현하지 않으면 `king.transfer(msg.value)`에서 오류가 발생하면서 롤백이 될 것입니다.
-나중에 owner 계정이나 prize 값보다 더 많은 이더를 전송하더라도 king은 바뀌지 않게 됩니다. 현재 king은 영원히 king으로 남는 것입니다.
+그러나 원래 이 문제가 의도했던 것은 이 컨트랙트가 제대로 동작하지 않도록 하는 것입니다. 이렇게 하려면 다른 컨트랙트를 만든 후 King 컨트랙트의 폴백 함수를 호출합니다.
+이 때 1 이더 이상을 전송하면 king이 바뀌게 됩니다. 그런데 이 컨트랙트에 의도적으로 폴백 함수를 구현하지 않습니다.
+그렇게 하면 다음에 owner 계정이나 prize 값보다 더 많은 이더를 전송하더라도 `king.transfer(msg.value)`에서 오류가 발생하면서 롤백이 될 것입니다.
+결국 king이 바뀌지 않게 되고 현재 king은 "forever" king으로 남는 것입니다.
 
-주의할 점은 컨트랙트가 이더를 소유해야 하기 때문에 초기 이더를 받을 수 있도록 생성자를 payable로 만들어야 한다는 점입니다.
+주의할 점은 컨트랙트가 이더를 소유해야 하기 때문에 초기 이더를 받을 수 있도록 생성자를 payable로 만들어야 한다는 점입니다. payable 폴백 함수를 만들면 안됩니다.
 
 {% highlight javascript %}
 pragma solidity ^0.4.25;
