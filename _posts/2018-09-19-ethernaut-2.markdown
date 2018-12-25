@@ -11,7 +11,7 @@ tag: [Ethereum, Solidity, Ethernaut]
 
 > This elevator won't let you reach the top of your building. Right?
 
-"이 엘리베이터는 빌딩 꼭대기까지 가지 않습니다. 정말 그럴까요?" 문제가 요구하는 것을 이해하는 것 자체가 어렵게 느껴지네요.
+"이 엘리베이터는 빌딩 꼭대기까지 가지 않습니다. 정말 그럴까요?" 문제가 더 어렵게 느껴집니다.😅
 
 솔리디티는 간혹 예상치 못한 방향으로 작동할 때가 있습니다. 문제의 컨트랙트를 살펴보겠습니다. 우선 Building이라는 인터페이스가 있고 Elevator라는 컨트랙트가 있습니다.
 Building 인터페이스를 구현하면서 Elevator 컨트랙트에서 그것을 사용할 것입니다.
@@ -90,7 +90,7 @@ await contract.top()
 true
 {% endhighlight %}
 
-그런데 잠깐만! isLastFloor 메소드는 상태변수를 읽을 수만 있는 view 메소드인데 bool toggleFlag 상태변수를 어떻게 바꿀 수 있죠? 😕
+그런데 잠깐만! isLastFloor 메소드는 상태변수를 읽을 수만 있는 view 메소드인데 toggleFlag 상태변수를 어떻게 바꿀 수 있죠? 😕
 그것은 솔리디티 컴파일러 버전에 따라 다릅니다. 여기서 사용한 0.4.25 이하에서는 view 로 지정했다고 하여 컴파일 오류가 발생하지는 않습니다. 그냥 경고만 할 뿐이죠.
 0.5.0 이상에서는 보다 엄격하게 view로 지정된 메소드에서 상태변수를 바꾸는 코드는 컴파일 오류가 발생합니다.
 
