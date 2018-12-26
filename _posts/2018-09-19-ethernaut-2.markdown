@@ -142,7 +142,7 @@ function unlock(bytes16 _key) public {
 
 > The compiler does not reserve a storage slot for these variables, and every occurrence is replaced by the respective constant expression (which might be computed to a single value by the optimizer).
 
-자, 그렇다면 상태변수 선언부를 보면서 레이아웃을 짐작해보겠습니다. 우선 다음과 같이 트러플 콘솔을 통해 Ropsten에 연결한 후 `web3.eth.getStorageAt`으로 조회해보겠습니다.
+자, 그렇다면 상태변수 선언부를 보면서 레이아웃을 짐작해보겠습니다. 우선 다음과 같이 트러플 콘솔을 통해 Ropsten에 연결한 후 `web3.eth.getStorageAt`으로 조회합니다.
 첫 번째 슬롯입니다.
 
 {% highlight html %}
