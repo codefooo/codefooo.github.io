@@ -739,7 +739,7 @@ contract King {
 
 > The goal of this level is for you to steal all the funds from the contract.
 
-이 컨트랙트는 balances라는 mapping 타입의 "장부"를 가지고 있고 donate payable 메소드가 호출되면 받은 이더를 balances에 기록합니다(컨트랙트 계정에 이더를 소유합니다).
+이 컨트랙트는 balances라는 mapping 타입의 "장부"를 가지고 있고 donate payable 메소드가 호출되면 받은 이더를 balances에 기록합니다(컨트랙트 계정이 이더를 소유합니다).
 장부에 기록된 계정은 withdraw 메소드로 인출할 수 있습니다. 물론 자신이 "기부받은" 금액 이내에서 말이죠.
 
 이 컨트랙트의 문제는 인출하는 메소드 withdraw에 있습니다. 이더를 전송하는 것과, 전송 후 장부 balances에 그 내역을 반영하는 것이 하나의 메소드에 구현되어 있습니다.
