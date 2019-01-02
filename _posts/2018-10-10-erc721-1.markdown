@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "ERC-721, A Standard Interface for NFT(1/2)"
+title: "ERC-721, A Standard Interface for NFT"
 date: 2018-10-10
 description: # Add post description (optional)
 img: coins.jpg # Add image post (optional)
@@ -18,7 +18,7 @@ A standard interface for non-fungible tokens, also known as deeds.
 "deeds"는 "부동산등기권리증" 같은 "증서"의 개념으로 이해하면 될 것 같습니다. 즉 어떤 유무형 자산(가상의 자산과 현실의 자산을 모두 포괄)에 대한 소유권을
 나타내는 증서라고 보면 되겠습니다.
 
-ERC-721은 개인 간의 거래와 함께 제 3자(브로커, 지갑, 경매)를 통한 거래를 가능하도록 하는 기능들을 정의하고 있습니다. 표준에는 다음과 같은 유즈케이스를
+ERC-721은 개인 간의 거래와 함께 제 3자 중개인(브로커, 지갑, 경매인, operator)을 통한 거래를 가능하도록 하는 기능들을 정의하고 있습니다. 표준에는 다음과 같은 유즈케이스를
 제시합니다.
 
 
@@ -29,17 +29,229 @@ ERC-721은 개인 간의 거래와 함께 제 3자(브로커, 지갑, 경매)를
 
 ### Every ERC-721 compliant contract must implement the ERC721 and ERC165 interfaces
 
-ERC-721은 솔리디티 컴파일러 버전 ^0.4.20로 정의되어 있습니다. 하지만 컴파일러 레벨에서 정의되는 것들은 ERC-721 표준을 명확하게
-표현하지 못하는 부분들이 있어서 주의하거나 지켜야 할 사항들(caveats)을 표준 규약에 명기하고 있습니다.
+ERC-721 표준은 솔리디티 컴파일러 버전 ^0.4.20로 정의되어 있습니다. 하지만 컴파일러 레벨에서 정의되는 것들 중에서 ERC-721 표준을 명확하게
+정의하지 못하는 부분들이 있기 때문에 주의하거나 지켜야 할 사항들(caveats)이 추가되어 있습니다.
 
 그러나 최근 컴파일러는 이것을 강제하도록 바뀔 수 있으므로 표준 규약의 내용이 수정되거나 없어질 수 있습니다.
 
 >If a newer version of Solidity allows the caveats to be expressed in code, then this EIP MAY be updated and the caveats removed, such will be equivalent to the original specification.
 
 ERC-721 표준에서 정의하고 있는 인터페이스는 모두 4개 입니다. 기본 인터페이스인 ERC-721과 제 3자가 개입되는 경우에 구현해야 할 인터페이스인 ERC721TokenReceiver,
-토큰이 나타내고 있는 어떤 것(토큰은 uint256 숫자일 뿐이므로)을 정의하는 ERC721Metadata, 그리고 토큰에 순번을 매길 수 있는 ERC721Enumerable 이렇게 4개의
+토큰이 나타내고 있는 어떤 것(토큰 ID는 uint256 숫자일 뿐이므로)을 정의하는 ERC721Metadata, 그리고 토큰에 순번을 매길 수 있는 ERC721Enumerable 이렇게 4개의
 인터페이스를 정의하고 있습니다.
 
-아울러 ERC-165는
+ERC-165는 어떤 컨트랙트가 정해진(표준) 인터페이스를 구현한 것인지 확인하기 위한 "Standard Interface Detection" 규약입니다. 예를 들어 ERC-721에서 정의하고 있는
+기본 인터페이스를 구현하는 컨트랙트는 ERC-165 인터페이스도 구현해야 한다고 되어 있는데, 이것은 특정 인터페이스를 구현했는지 여부를 확인할 수 있도록 다음과 같은 함수를
+제공하라는 의미가 되겠습니다.
+
+{% highlight javascript %}
+interface ERC165 {
+    function supportsInterface(bytes4 interfaceID) external view returns (bool);
+}
+{% endhighlight %}
+
+예를 들어 ERC-721의 기본 인터페이스(메소드 9개)를 구현하는 컨트랙트의 경우에 ERC-165를 만족시키려면 아래와 유사한 형태가 될 것입니다.
+
+{% highlight javascript %}
+
+contract ERC721Impl is ERC721, ERC165 {
+
+    mapping (bytes4 => bool) supportedInterfaces;
+
+    constructor() public {
+        supportedInterfaces[0x80ac58cd] = true;
+    }
+
+    function supportsInterface(bytes4 interfaceID) external view returns (bool){
+        return supportedInterfaces[interfaceID];
+    }
+
+{% endhighlight %}
+
+ERC-165는 규약에 따라 ERC-721의 기본 인터페이스에 있는 9개의 메소드들의 식별자(identifier)는 `0x80ac58cd` 입니다. 이것은 다음과 같은 각 메소드 셀렉터의 XOR연산에 의해 얻어집니다
+(셀렉터는 mutability나 리턴 타입 또는 payable등에 영향을 받지 않습니다).
+
+{% highlight html %}
+    this.balanceOf.selector ^
+    this.ownerOf.selector ^
+    bytes4(keccak256("safeTransferFrom(address,address,uint256)"))^
+    bytes4(keccak256("safeTransferFrom(address,address,uint256,bytes)"))^
+    this.transferFrom.selector ^
+    this.approve.selector ^
+    this.setApprovalForAll.selector ^
+    this.getApproved.selector ^
+    this.isApprovedForAll.selector
+{% endhighlight %}
+
+다시 말해서 supportsInterface(0x80ac58cd)을 조회하여 그 값이 true이면 이 컨트랙트는 ERC-721 인터페이스를 구현하고 있다라고 알 수 있는 것입니다.
+
+### 기본 인터페이스
+
+ERC-721의 기본 인터페이스에는 3개의 이벤트와 9개의 메소드가 정의되어 있습니다. 우선 3개의 이벤트는 다음과 같습니다.
+
+{% highlight javascript %}
+/// @dev This emits when ownership of any NFT changes by any mechanism.
+///  This event emits when NFTs are created (`from` == 0) and destroyed
+///  (`to` == 0). Exception: during contract creation, any number of NFTs
+///  may be created and assigned without emitting Transfer. At the time of
+///  any transfer, the approved address for that NFT (if any) is reset to none.
+event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
+{% endhighlight %}
+
+`Transfer` 이벤트는 말 그대로 토큰이 전송될 때 발생합니다. 토큰의 전송이라는 것은 결국 소유권의 변경을 의미하는데 새로 생성되거나 없어질 때도
+이벤트가 발생하도록 정의합니다(컨트랙트가 처음 생성하면서 토큰이 발행되는 경우는 예외적으로 이벤트를 발생하지 않아도 됩니다).
+
+
+{% highlight javascript %}
+/// @dev This emits when the approved address for an NFT is changed or
+///  reaffirmed. The zero address indicates there is no approved address.
+///  When a Transfer event emits, this also indicates that the approved
+///  address for that NFT (if any) is reset to none.
+event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);
+{% endhighlight %}
+
+`Approval` 이벤트는 토큰에 대한 승인 계정(approved address)이 변경되거나 재지정될 때마다 발생하는 이벤트입니다. 여기서 승인 계정이란
+토큰 소유 계정이 다른 계정을 지정하여 토큰 전송을 대신 할 수 있도록 승인한 계정입니다. 보통 approve 메소드를 실행할 때 발생될 것입니다.
+
+
+{% highlight javascript %}
+/// @dev This emits when an operator is enabled or disabled for an owner.
+///  The operator can manage all NFTs of the owner.
+event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);
+{% endhighlight %}
+
+`ApprovalForAll`은 어떤 계정이 소유한 모든 토큰을 중개할 수 있는 "중개자(operator)"가 지정될 때 발생하는 이벤트입니다. 보통 setApproveForAll 메소드를 실행할 때
+발생되겠습니다. "중개"는 제 3자가 토큰 전송을 할 수 있다는 의미가 되겠습니다. 하나의 계정은 여러 개의 중개 계정을 가질 수 있습니다.
+
+
+그 다음에는 9개의 메소드입니다.
+
+{% highlight javascript %}
+/// @notice Count all NFTs assigned to an owner
+/// @dev NFTs assigned to the zero address are considered invalid, and this
+///  function throws for queries about the zero address.
+/// @param _owner An address for whom to query the balance
+/// @return The number of NFTs owned by `_owner`, possibly zero
+function balanceOf(address _owner) external view returns (uint256);
+{% endhighlight %}
+
+`balanceOf` 메소드 이름에서 알 수 있듯이 계정이 소유한 토큰의 수를 리턴합니다. ERC-20처럼 토큰의 수량으로 가치가 정해지는 것은 아니지만 가지고 있는 토큰의 수를
+알 수 있는 함수를 제공합니다.
+
+{% highlight javascript %}
+/// @notice Find the owner of an NFT
+/// @dev NFTs assigned to zero address are considered invalid, and queries
+///  about them do throw.
+/// @param _tokenId The identifier for an NFT
+/// @return The address of the owner of the NFT
+function ownerOf(uint256 _tokenId) external view returns (address);
+{% endhighlight %}
+
+`ownerOf`는 특정한 토큰 아이디를 소유한 계정을 리턴합니다. ERC-721에서는 토큰의 소유권이 매우 중요한 부분입니다. 토큰을 가진 계정이 address(0)이라면
+해당 토큰은 "invalid"한 토큰으로 예외가 발생되어야 합니다. 즉 ERC-721에서 토큰은 항상 소유 계정이 존재해야 하고 그렇지 않은 경우에는 사용할 수 없는 토큰이 됩니다.
+
+그 다음 3개는 토큰의 전송, 즉 소유권 이전에 관한 메소드들입니다.
+<font size="2">
+{% highlight javascript %}
+/// @notice Transfers the ownership of an NFT from one address to another address
+/// @dev Throws unless `msg.sender` is the current owner, an authorized
+///  operator, or the approved address for this NFT. Throws if `_from` is
+///  not the current owner. Throws if `_to` is the zero address. Throws if
+///  `_tokenId` is not a valid NFT. When transfer is complete, this function
+///  checks if `_to` is a smart contract (code size > 0). If so, it calls
+///  `onERC721Received` on `_to` and throws if the return value is not
+///  `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`.
+/// @param _from The current owner of the NFT
+/// @param _to The new owner
+/// @param _tokenId The NFT to transfer
+/// @param data Additional data with no specified format, sent in call to `_to`
+function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes data) external payable;
+{% endhighlight %}
+</font>
+`safeTransferFrom`은 같은 이름으로 마지막 파라미터 bytes data만 차이가 있는 2개의 메소드가 정의되어 있습니다. 그래서
+아래 메소드는 내부적으로 이 메소드를 호출하면서 대신 마지막 인자로 `""`을 전달하는 식으로 구현합니다.
+
+토큰 전송에는 <b>'누구로부터 누구에게 어떤 토큰을'</b> 전송하는 정보가 필요합니다. 그래서 _from, _to, _tokenId가
+메소드의 파라미터로 전달되어야 합니다. 여기서 _from은 토큰을 소유한 계정이지만 이 메소드를 실행하는 계정 msg.sender과 항상
+일치하는 것은 아닙니다. 스펙에 정의된 것처럼 승인 계정(approved address), 중개 계정(operator)이 될 수 있습니다.
+
+"safe"가 의미하는 것은 잘못된 전송이 이루어졌을 때 revert될 수 있는 장치가 있는 메소드로 이해하면 될 것 같습니다.
+뒤에 나오는 `transferFrom`과 가장 큰 차이점은 _to로 지정되는 계정이 컨트랙트일때 onERC721Received 메소드를 호출하여 리턴 값이
+onERC721Received의 셀렉터 `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`인지 확인한다는 것입니다.
+
+
+{% highlight javascript %}
+/// @notice Transfers the ownership of an NFT from one address to another address
+/// @dev This works identically to the other function with an extra data parameter,
+///  except this function just sets data to "".
+/// @param _from The current owner of the NFT
+/// @param _to The new owner
+/// @param _tokenId The NFT to transfer
+function safeTransferFrom(address _from, address _to, uint256 _tokenId) external payable;
+{% endhighlight %}
+
+마지막 bytes 타입의 인자가 없다는 점을 제외하면 앞에 있는 safeTransferFrom 메소드와 동일합니다.
+
+{% highlight javascript %}
+/// @notice Transfer ownership of an NFT -- THE CALLER IS RESPONSIBLE
+///  TO CONFIRM THAT `_to` IS CAPABLE OF RECEIVING NFTS OR ELSE
+///  THEY MAY BE PERMANENTLY LOST
+/// @dev Throws unless `msg.sender` is the current owner, an authorized
+///  operator, or the approved address for this NFT. Throws if `_from` is
+///  not the current owner. Throws if `_to` is the zero address. Throws if
+///  `_tokenId` is not a valid NFT.
+/// @param _from The current owner of the NFT
+/// @param _to The new owner
+/// @param _tokenId The NFT to transfer
+function transferFrom(address _from, address _to, uint256 _tokenId) external payable;
+{% endhighlight %}
+
+`transferFrom`은 기본적인 토큰 소유권 이전 메소드라고 할 수 있습니다. safeTransferFrom은 _to 계정이 컨트랙트일 때
+사용할 수 있는 메소드인데 비하여 이 메소드는 호출자에게 무한 책임이 있다고 할 수 있습니다. 트랜잭션이 완료되면
+수신 계정이 잘못되었다고 해도 되돌릴 수 없기 때문입니다.
+
+{% highlight javascript %}
+/// @notice Change or reaffirm the approved address for an NFT
+/// @dev The zero address indicates there is no approved address.
+///  Throws unless `msg.sender` is the current NFT owner, or an authorized
+///  operator of the current owner.
+/// @param _approved The new approved NFT controller
+/// @param _tokenId The NFT to approve
+function approve(address _approved, uint256 _tokenId) external payable;
+{% endhighlight %}
+특정 토큰에 대한 처분 권한을 승인하는 메소드입니다. _approved 계정은 해당 토큰을 전송할 수 있습니다(토큰의 소유 계정은 바뀌지 않습니다).
+
+
+{% highlight javascript %}
+/// @notice Enable or disable approval for a third party ("operator") to manage
+///  all of `msg.sender`'s assets
+/// @dev Emits the ApprovalForAll event. The contract MUST allow
+///  multiple operators per owner.
+/// @param _operator Address to add to the set of authorized operators
+/// @param _approved True if the operator is approved, false to revoke approval
+function setApprovalForAll(address _operator, bool _approved) external;
+{% endhighlight %}
+계정이 소유한 모든 토큰을 중개할 수 있는 계정 _operator를 지정합니다. 지정여부는 bool 타입으로 언제든지 바꿀 수 있습니다.
+중개 계정은 하나 이상 지정하는 것이 가능해야 합니다.
+
+{% highlight javascript %}
+/// @notice Get the approved address for a single NFT
+/// @dev Throws if `_tokenId` is not a valid NFT.
+/// @param _tokenId The NFT to find the approved address for
+/// @return The approved address for this NFT, or the zero address if there is none
+function getApproved(uint256 _tokenId) external view returns (address);
+{% endhighlight %}
+`getApproved`는 approve 메소드로 지정된 승인 계정을 조회하는 메소드입니다.
+
+
+{% highlight javascript %}
+/// @notice Query if an address is an authorized operator for another address
+/// @param _owner The address that owns the NFTs
+/// @param _operator The address that acts on behalf of the owner
+/// @return True if `_operator` is an approved operator for `_owner`, false otherwise
+function isApprovedForAll(address _owner, address _operator) external view returns (bool);
+{% endhighlight %}
+`isApprovedForAll`는 setApprovalForAll 메소드로 지정된 계정에 대한 승인여부를 조회합니다.
+
 
 [erc-721]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
