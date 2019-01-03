@@ -453,8 +453,7 @@ await contract.entrant()
 "0xafc4f9f3ba806dd2f8e47a524ffda2418bbfc08a"
 {% endhighlight %}
 
-참고적으로 &연산을 통한 비트 마스킹을 통해서도 구할 수도 있습니다. 물론 여기서 상위 32비트 마스크는 어느 한 비트라도 1이 존재하면 되겠습니다
-(0xF0000000000FFFF, 0x0F000000000FFFF 등등 모두 가능)
+참고적으로 &연산을 통한 비트 마스킹을 통해서도 구할 수도 있습니다. 물론 여기서 상위 32비트 마스크는 어느 한 비트라도 1이 존재하면 되겠습니다(0xF0000000000FFFF, 0x0F000000000FFFF 등등 모두 가능).
 
 {% highlight javascript %}
 bytes8 gateKey = bytes8(tx.origin) & 0xFFFFFFFF0000FFFF;
