@@ -29,7 +29,7 @@ Hello Ethernaut에 접속하여 다음과 같이 나오면 성공입니다. `F12
 
 ![fig03]({{site.baseurl}}/assets/img/ethernaut/ethernaut_hello_2.PNG)
 
-게임의 시작은 `Get new instance`를 누르면 시작할 수 있습니다. 게임에서 요구하는 결과를 만족시킨 후 `Submit instance`를 누르면 결과를 전송하고 블록체인에 영구히 기록되고 해당 단계를 통과할 수 있습니다. 통과한 게임은 좌측 각 레벨 앞에 체크 표시가 됩니다.
+게임의 시작은 `Get new instance`를 누르면 시작할 수 있습니다. 게임에서 요구하는 결과를 만족시킨 후 `Submit instance`를 누르면 결과를 전송하고 블록체인에 영구히 기록되고 해당 단계를 통과할 수 있습니다. 패스하면 각 레벨 앞에 체크 표시가 됩니다.
 
 기본적인 사용법을 알았으니 이제 0. Hello Ethernaut 에서 하라는 대로 진행을 해보겠습니다. 9번을 보면 이 단계를 통과하려면 `contract.info()`를 입력하라고 되어 있습니다.
 
