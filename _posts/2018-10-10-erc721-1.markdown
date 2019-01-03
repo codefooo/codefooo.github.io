@@ -169,13 +169,13 @@ function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes da
 {% endhighlight %}
 </font>
 `safeTransferFrom`은 같은 이름으로 마지막 파라미터 bytes data만 차이가 있는 2개의 메소드가 정의되어 있습니다. 그래서
-아래 메소드는 내부적으로 이 메소드를 호출하면서 대신 마지막 인자로 `""`을 전달하는 식으로 구현합니다.
+다른 메소드는 내부적으로 이 메소드를 호출하면서 대신 마지막 인자로 `""`을 전달하는 식으로 구현합니다.
 
-토큰 전송에는 <b>'누구로부터 누구에게 어떤 토큰을'</b> 전송하는 정보가 필요합니다. 그래서 _from, _to, _tokenId가
+토큰 전송에는 <b>'누구로부터 누구에게 어떤 토큰을'</b> 전송하는 정보가 필요합니다. 그래서 <b>_from, _to, _tokenId</b>가
 메소드의 파라미터로 전달되어야 합니다. 여기서 _from은 토큰을 소유한 계정이지만 이 메소드를 실행하는 계정 msg.sender과 항상
 일치하는 것은 아닙니다. 스펙에 정의된 것처럼 승인 계정(approved address), 중개 계정(operator)이 될 수 있습니다.
 
-"safe"가 의미하는 것은 잘못된 전송이 이루어졌을 때 revert될 수 있는 장치가 있는 메소드로 이해하면 될 것 같습니다.
+"safe"가 의미하는 것은 잘못된 전송이 이루어졌을 때 revert될 수 있는 장치가 있다는 것으로 이해하면 될 것 같습니다.
 뒤에 나오는 `transferFrom`과 가장 큰 차이점은 _to로 지정되는 계정이 컨트랙트일때 onERC721Received 메소드를 호출하여 리턴 값이
 onERC721Received의 셀렉터 `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`인지 확인한다는 것입니다.
 

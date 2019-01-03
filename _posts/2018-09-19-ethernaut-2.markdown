@@ -171,7 +171,7 @@ web3.eth.getStorageAt("0x3e066a43f82688f611916e5fa56e6d4ce5e324ee", 4, ...)
 {% endhighlight %}
 
 다섯 번째(슬롯 인덱스 4)부터는 데이터가 없군요. 따라서 저장 슬롯은 모두 4개를 사용하고 있음을 알 수 있습니다.
-한 슬롯의 크기가 32바이트(256비트) 이므로 그 안에 들어갈 수 있는 것들은 다음 4개의 상태변수들입니다. 슬롯 내에서는 뒤에서부터 순서대로 채워집니다.
+한 슬롯의 크기가 32바이트(256비트) 이므로 안에 들어갈 수 있는 것들은 4개의 상태변수들입니다. 슬롯 내에서는 뒤에서부터 순서대로 채워집니다.
 
 {% highlight javascript %}
   bool public locked = true;
@@ -180,7 +180,7 @@ web3.eth.getStorageAt("0x3e066a43f82688f611916e5fa56e6d4ce5e324ee", 4, ...)
   uint16 private awkwardness = uint16(now);
 {% endhighlight %}
 
-아래와 같이 됩니다.
+아래와 같이 그릴 수 있겠습니다.
 
 <table>
 <tr>
@@ -342,7 +342,7 @@ remaining gas가 줄어드는 것을 관찰합니다.
 ![fig01]({{site.baseurl}}/assets/img/ethernaut/remix_debug.PNG)
 
 어느 순간에 드디어 modifier가 실행되기 시작하는데 이 때부터는 `Step into`를 클릭합니다. 중요한 것은 gateTwo에서 다음과 같은 나머지
-연산 부분에서 remaining gas가 얼마인지 확인해야 한다는 것입니다.
+연산 부분에서 remaining gas가 얼마인지 확인해야 한다는 것입니다. Remix에서는  실행되는 코드 부분이 반전되어 표시되므로 어느 위치인지 알 수 있습니다.
 
 ![fig02]({{site.baseurl}}/assets/img/ethernaut/remix_debug2.PNG)
 
@@ -395,7 +395,7 @@ require(uint32(_gateKey) == uint16(tx.origin));
 
 {% endhighlight %}
 
-동일한 값을 uint32와 uint16으로 타입 캐스팅을 한 것이 같다면 작은 타입 uint16(16비트) 이내의 값이 동일하다는 것을 알 수 있습니다. 예를 들어 다음 식은 true입니다.
+동일한 값을 uint32와 uint16으로 타입 캐스팅을 한 것이 같다면 작은 타입 uint16(16비트) 범위의 값이라는 것을 알 수 있습니다. 예를 들어 다음 식은 true입니다.
 즉 타입 캐스팅이 되더라도 어차피 16비트 범위 내의 값이므로 같은 값이 되는 것입니다.
 
 {% highlight html %}
@@ -433,7 +433,7 @@ require(uint32(_gateKey) != uint64(_gateKey));
 bytes8(49290) = 0x **** **** 0000 c08a
 {% endhighlight %}
 
-여기서 X는 모두 0이 아니면 어떤 값이라도 상관없겠습니다. 중요한 것은 하위 16비트가 되겠네요. 최종적인 메소드는 다음과 같습니다.
+여기서 *는 모두 0이 아니면 어떤 값이라도 상관없겠습니다. 중요한 것은 하위 16비트가 되겠네요.
 
 {% highlight javascript %}
 
@@ -446,7 +446,7 @@ function run() public {
 }
 {% endhighlight %}
 
-결과를 확인합니다.
+Ropsten에 배포한 후 run()을 실행하고 결과를 확인합니다.
 
 {% highlight html %}
 await contract.entrant()
