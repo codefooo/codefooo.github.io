@@ -105,7 +105,7 @@ TypeError: Function declared as view, but this expression (potentially) modifies
 
 > Unlock this contract to beat the level.
 
-주어진 컨트랙트의 bool locked = false로 만들면 되는 문제입니다. unlock 메소드는 _key를 받아서 세 번째 아이템과 같은지
+주어진 컨트랙트의 bool locked = false로 만들면 되는 문제입니다. unlock 메소드는 _key를 받아서 배열 data의 세 번째 아이템과 같은지
 비교해서 같으면 locked = false로 만듭니다.
 
 {% highlight javascript %}
@@ -171,7 +171,7 @@ web3.eth.getStorageAt("0x3e066a43f82688f611916e5fa56e6d4ce5e324ee", 4, ...)
 {% endhighlight %}
 
 다섯 번째(슬롯 인덱스 4)부터는 데이터가 없군요. 따라서 저장 슬롯은 모두 4개를 사용하고 있음을 알 수 있습니다.
-한 슬롯의 크기가 32바이트(256비트) 이므로 그 안에 들어갈 수 있는 것들은 다음 4개의 상태변수들입니다. 순서대로 슬롯의 뒤에서부터 저장됩니다.
+한 슬롯의 크기가 32바이트(256비트) 이므로 그 안에 들어갈 수 있는 것들은 다음 4개의 상태변수들입니다. 슬롯 내에서는 뒤에서부터 순서대로 채워집니다.
 
 {% highlight javascript %}
   bool public locked = true;
@@ -425,15 +425,15 @@ require(uint32(_gateKey) != uint64(_gateKey));
 {% endhighlight %}
 
 이 조건은 `require(uint32(_gateKey) == uint16(_gateKey))`와 반대라고 생각하면 되겠습니다. 즉 동일한 값을 서로 다른 타입으로 캐스팅하면
-다르다는 것인데 이것은 상위 32비트 내에 0이 아닌 것이 반드시 한 비트라도 있다는 말이 되겠습니다.
+다르다는 것인데 이것은 상위 32비트 내에는 0이 아닌 것이 반드시 한 비트라도 있다는 말이 되겠습니다.
 
 49290을 bytes8로 바꾸면 다음과 같습니다.
 
 {% highlight html %}
-bytes8(49290) = 0x XXXX XXXX 0000 c08a
+bytes8(49290) = 0x **** **** 0000 c08a
 {% endhighlight %}
 
-여기서 X는 모두 0이 아니면 어떤 값이라도 상관없겠습니다. 중요한 것은 마지막 하위 16비트가 중요합니다. 따라서 최종적인 메소드는 다음과 같습니다.
+여기서 X는 모두 0이 아니면 어떤 값이라도 상관없겠습니다. 중요한 것은 하위 16비트가 되겠네요. 최종적인 메소드는 다음과 같습니다.
 
 {% highlight javascript %}
 
