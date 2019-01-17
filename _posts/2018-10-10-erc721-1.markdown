@@ -253,5 +253,91 @@ function isApprovedForAll(address _owner, address _operator) external view retur
 {% endhighlight %}
 `isApprovedForAll`는 setApprovalForAll 메소드로 지정된 계정에 대한 승인여부를 조회합니다.
 
+### 확장 인터페이스
+
+ERC-721 표준에는 기본 인터페이스 외에도 3개의 확장 인터페이스가 추가적으로 정의되어 있습니다.
+
+>*ERC721TokenReceiver
+*ERC721Metadata
+*ERC721Enumerable
+
+ERC721TokenReceiver 인터페이스의 `onERC721Received` 함수는 기본 인터페이스와 함께 구현해야 하는 것은 아니고 
+safeTransferFrom에서 토큰 수취계정이 컨트랙트일 때 그 컨트랙트가 반드시 구현해야 하는 함수입니다. 이 함수를 구현하지 
+않으면 호출하는 쪽(caller)에서 예외를 발생시키므로 필수 구현 함수가 되겠습니다.
+
+표준에는 다음과 같이 설명되어 있습니다.
+
+> A wallet/broker/auction application MUST implement the wallet interface if it will accept safe transfers.
+
+{% highlight javascript %}
+/// @dev Note: the ERC-165 identifier for this interface is 0x150b7a02.
+interface ERC721TokenReceiver {
+    /// @notice Handle the receipt of an NFT
+    /// @dev The ERC721 smart contract calls this function on the recipient
+    ///  after a `transfer`. This function MAY throw to revert and reject the
+    ///  transfer. Return of other than the magic value MUST result in the
+    ///  transaction being reverted.
+    ///  Note: the contract address is always the message sender.
+    /// @param _operator The address which called `safeTransferFrom` function
+    /// @param _from The address which previously owned the token
+    /// @param _tokenId The NFT identifier which is being transferred
+    /// @param _data Additional data with no specified format
+    /// @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
+    ///  unless throwing
+    function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes _data) external returns(bytes4);
+}
+{% endhighlight %}
+
+onERC721Received의 리턴 값은 정해져 있습니다. 바로 자신의 함수 selector 값인 0x150b7a02 를 리턴해주면 됩니다. 
+
+
+ERC721Metadata는 ERC-20과 유사한 함수를 제공합니다. ERC-721에서는 토큰의 이름(name)이나 심볼(symbol)과 같은 토큰 자체의 속성이 그렇게 중요한 
+의미를 갖지 않으므로 확장 인터페이스로 정의되어 있습니다.
+
+{% highlight javascript %}
+
+/// @title ERC-721 Non-Fungible Token Standard, optional metadata extension
+/// @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
+///  Note: the ERC-165 identifier for this interface is 0x5b5e139f.
+interface ERC721Metadata /* is ERC721 */ {
+    /// @notice A descriptive name for a collection of NFTs in this contract
+    function name() external view returns (string _name);
+
+    /// @notice An abbreviated name for NFTs in this contract
+    function symbol() external view returns (string _symbol);
+
+    /// @notice A distinct Uniform Resource Identifier (URI) for a given asset.
+    /// @dev Throws if `_tokenId` is not a valid NFT. URIs are defined in RFC
+    ///  3986. The URI may point to a JSON file that conforms to the "ERC721
+    ///  Metadata JSON Schema".
+    function tokenURI(uint256 _tokenId) external view returns (string);
+}
+{% endhighlight %}
+
+ERC721Metadata에서 가장 중요한 것은 `tokenURI`라는 함수입니다. 이 함수는 스마트 컨트랙트에 기록된 NFT가 실제 어떤 것(자산)을 
+나타내고 있는지 알려주는 정보를 string 타입으로 리턴합니다. 특히 JSON 형태의 메타 데이터를 사용하는 경우 그 스키마 표준도 정해놓고 있습니다.
+
+{% highlight javascript %}
+{
+    "title": "Asset Metadata",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Identifies the asset to which this NFT represents"
+        },
+        "description": {
+            "type": "string",
+            "description": "Describes the asset to which this NFT represents"
+        },
+        "image": {
+            "type": "string",
+            "description": "A URI pointing to a resource with mime type image/* representing the asset to which this NFT represents. Consider making any images at a width between 320 and 1080 pixels and aspect ratio between 1.91:1 and 4:5 inclusive."
+        }
+    }
+}
+{% endhighlight %}
+
+
 
 [erc-721]: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
