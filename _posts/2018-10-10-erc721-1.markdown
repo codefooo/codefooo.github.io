@@ -315,7 +315,7 @@ interface ERC721Metadata /* is ERC721 */ {
 {% endhighlight %}
 
 ERC721Metadata에서 가장 중요한 것은 `tokenURI`라는 함수입니다. 이 함수는 스마트 컨트랙트에 기록된 NFT가 실제 어떤 것(자산)을 
-나타내고 있는지 알려주는 정보를 string 타입으로 리턴합니다. 특히 JSON 형태의 메타 데이터를 사용하는 경우 그 스키마 표준도 정해놓고 있습니다.
+나타내고 있는지 알려주는 정보를 string 타입으로 리턴합니다. 특히 JSON 형태의 메타 데이터를 가리키는 경우 그 스키마 표준도 정해놓고 있습니다.
 
 {% highlight javascript %}
 {
