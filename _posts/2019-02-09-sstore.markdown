@@ -72,8 +72,8 @@ EIP-1283은 이들 정보를 활용하여 다음 동작에 대해 합리적인 �
 <li>변경 값(new value)이란 SSTORE가 실행된 후의 값을 말합니다.</li>
 </ul>
 
-다시 말해서 트랜잭션에 의해 저장 슬롯의 값을 여러 번 변경될 수 있는데, 그렇게 변경되는 값의 성격을 구분하여 가스 소모를 차등 적용하겠다는 의미가 되겠습니다. 
-이제 현재 값과 새로운 값의 일치 여부를 구분하여 다음과 같이 분기합니다.
+다시 말해서 트랜잭션에 의해 저장 슬롯의 값을 여러 번 변경할 수 있는데, 그렇게 변경되는 값의 성격을 구분하여 가스 소모를 차등 적용하겠다는 의미가 되겠습니다. 
+현재 값과 새로운 값의 일치 여부를 구분하여 다음과 같이 분기합니다.
 
 <b>(1) If current value equals new value (this is a no-op), 200 gas is deducted.</b> 
 
@@ -89,7 +89,7 @@ EIP-1283은 이들 정보를 활용하여 다음 동작에 대해 합리적인 �
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (2.1.1) If original value is 0, 20000 gas is deducted.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 초기 값이 0이었다면 20000 gas를 공제합니다. 이 경우는 최초로 슬롯에 0이 아닌 값을 저장하는 경우가 되겠습니다.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 초기 값이 0이었다면 20000 gas를 공제합니다(이 경우는 최초로 슬롯에 0이 아닌 값을 저장하는 경우가 되겠습니다).
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (2.1.2) Otherwise, 5000 gas is deducted. If new value is 0, add 15000 gas to refund counter.
 
@@ -140,7 +140,7 @@ No-op는 현재 값을 동일한 값으로 변경하는 것이므로 사실상 E
 
 ### What’s wrong with this code?
 
-이제 ChainSecurity가 발견한 EIP-1283이 가진 [보안 취약성 문제][eip-1283-reentrancy]를 살펴보겠습니다. EIP-1283이 적용되었을 경우에 발생하는 "reentrancy"가 발생하는 컨트랙트를 예로 들고 있습니다.
+이제 ChainSecurity가 발견한 EIP-1283이 가진 [보안 취약성 문제][eip-1283-reentrancy]를 살펴보겠습니다. EIP-1283이 적용되었을 경우에 "reentrancy"가 발생하는 컨트랙트를 예로 들고 있습니다.
 
 {% highlight javascript %}
 
@@ -185,7 +185,7 @@ contract PaymentSharer {
 }
 {% endhighlight %}
 
-이 컨트랙트는 `init()` 함수에서 _first와 _second 계정을 파라미터로 전달받아서 특정 아이디를 키로 하여 mapping 타입의 상태 변수 first와 second와 각각 저장합니다.
+이 컨트랙트는 `init()` 함수에서 _first와 _second 계정을 파라미터로 전달받아서 특정 아이디를 키로 하여 mapping 타입의 상태 변수 first와 second에 각각 저장합니다.
 `deposit()` 함수를 통해서 컨트랙트에 이더를 적립합니다. 적립된 이더는 deposits라는 mapping 타입의 장부에 저장됩니다.
 
 `updateSplit()`는 이렇게 적립된 이더를 _first와 _second 계정에게 배분하는 비율을 정하는 함수입니다. _first 계정이 가져갈 비율을 %단위로 지정하면 나머지는 
@@ -233,17 +233,17 @@ contract Attacker {
 
 이제 `attack()`함수를 실행합니다. 이 함수는 연속적으로, 하나의 트랜잭션으로 실행됩니다. Attacker 컨트랙트가 _first 계정이 될 것입니다.
 
-1. 공격자는 `updateSplit()`을 실행하여 0번 아이디 배분 장부에 _first계정이 100%의 이더를 가져가도록 합니다.
+1. 공격자는 `updateSplit()`을 실행하여 배분 장부 splits에 _first계정이 100%의 이더를 가져가도록 설정 합니다.
 
 2. 공격자는 `splitFunds()`를 호출하여 송금을 진행합니다.
 
 3. 송금되는 이더는 공격자의 컨트랙트 Attacker, 즉 _first 계정이 받게 되는데 이 때 fallback payable 함수가 호출됩니다. 여기서 다시 `updateSplit()`으로 
-이번에는 _first 계정에 0% 배분을 지정하여 _second 계정이 이더를 모두 받도록 합니다(여기서는 솔리디티 어셈블리를 사용하여 함수 시그너처 0xc3b18fb6 = bytes4(keccak256("updateSplit(uint256,uint256)")) 호출하였습니다). 
+이번에는 _first 계정에 0% 배분을 지정하여 _second 계정이 이더를 모두 받도록 합니다(여기서는 솔리디티 어셈블리를 사용하여 함수 시그너처 0xc3b18fb6 = bytes4(keccak256("updateSplit(uint256,uint256)"))로 호출하였습니다). 
  
 4. `splitFunds()`는 아직 실행중이고 상태 변수 splits이 변경되면서 _second 계정으로도 100% 배분이 다시 송금됩니다.
 
 요약하면, 이미 _first 계정에 100%의 이더가 모두 전송되었음에도 공격자의 fallback 함수에서 `updateSplit()`을 다시 호출하면서(reentrancy) 두 번째 계정에게도 100%의 
-이더를 전송하도록 하는 결과가 되는 것입니다. <b>다시 말해서 이더를 한 번 더 인출할 수 있게 되는 것입니다(이중 송금인 셈입니다).</b> 
+이더를 전송하도록 하는 결과가 되는 것입니다. <b>이더를 한 번 더 인출할 수 있게 되는 것입니다(이중 송금인 셈입니다).</b> 
 물론 _second 계정에게 전송되는 이더는 공격자가 정상적으로 적립한 이더가 아닙니다!😈
 
 
@@ -263,9 +263,9 @@ forward되지 않고 "stipend" 2300 gas로 고정됩니다(메타마스크에서
 
 >(2.2.2.A) If original value is 0, add 19800 gas to refund counter.
 
-EIP-1283으로 인하여 이렇게 공격자 컨트랙트에게는 2300 gas를 보안 취약성을 가진 컨트랙트의 상태를 변경시키는데 사용할 수 있는 여분의 가스를 주는 셈이 된 것입니다.
+EIP-1283으로 인하여 절약된 가스가 공격자 컨트랙트에게 보안 취약성을 가진 컨트랙트의 상태를 변경시키는데 사용할 수 있는 여분의 가스를 주는 셈이 된 것입니다.
 
-그러나 EIP-1283가 적용되기 전에는 상태 값을 업데이트하는 경우 5000 gas가 사용됩니다. 당연히 가스가 모자르기 때문에 롤백이 되면서 실행은 중단될 것이고 _first에게 송금되었던 이더의 
+그러나 EIP-1283이 적용되기 전에는 상태 값을 업데이트하는 경우 5000 gas가 사용됩니다. 당연히 가스가 모자르기 때문에 롤백이 되면서 실행은 중단될 것이고 _first에게 송금되었던 이더의 
 트랜잭션도 실패할 것입니다.
 
 이러한 공격이 가능한 조건은 다음과 같이 정리할 수 있습니다. ChainSecurity가 분석한 내용을 그대로 인용합니다.
