@@ -250,8 +250,8 @@ contract Attacker {
 ### Why is this attackable now?
 
 과거 reentrancy와 다른 점이 무엇일까요? reentrancy 공격은 `msg.sender.call.value(_amount)()`으로 이더를 전송하면서 
-여분의 가스가 forward 되는 부작용을 이용했다면 이번에는 transfer를 사용했습니다. transfer를 사용하는 송금의 특징은 컨트랙트 계정이 fallback 함수를 호출하면 fallback 함수에 남은 가스가 
-forward되지 않고 "stipend" 2300 gas로 고정됩니다(메타마스크에서 컨트랙트에 이더를 전송하는 경우와는 다릅니다).  
+여분의 가스가 forward 되는 부작용을 이용했기 때문에 transfer 사용을 권장했습니다. transfer를 사용하는 송금의 특징은 컨트랙트 계정이 fallback 함수를 호출하면 fallback 함수에 남은 가스가 
+forward되지 않고 "stipend" 2300 gas로 고정됩니다(메타마스크에서 컨트랙트에 이더를 전송하는 경우와 다릅니다).  
 
 만약에 EIP-1283이 적용되는 경우에는 어떻게 될까요? EIP-1283의 로직을 다시 보겠습니다.
 
@@ -263,7 +263,7 @@ forward되지 않고 "stipend" 2300 gas로 고정됩니다(메타마스크에서
 
 >(2.2.2.A) If original value is 0, add 19800 gas to refund counter.
 
-EIP-1283으로 인하여 절약된 가스가 공격자 컨트랙트에게 보안 취약성을 가진 컨트랙트의 상태를 변경시키는데 사용할 수 있는 여분의 가스를 주는 셈이 된 것입니다.
+EIP-1283으로 인하여 절약된 가스가 공격자에게 보안 취약성을 가진 컨트랙트의 상태를 변경시키는데 사용할 수 있는 여분의 가스를 확보해 주는 결과를 초래한 것입니다.
 
 그러나 EIP-1283이 적용되기 전에는 상태 값을 업데이트하는 경우 5000 gas가 사용됩니다. 당연히 가스가 모자르기 때문에 롤백이 되면서 실행은 중단될 것이고 _first에게 송금되었던 이더의 
 트랜잭션도 실패할 것입니다.
