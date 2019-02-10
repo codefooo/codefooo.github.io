@@ -48,14 +48,14 @@ EIP-1283의 내용은, 간단히 말하면, 이더리움의 EVM이 데이터를 
 >This acts as an alternative for EIP-1087, where it tries to be friendlier to implementations that use different optimization strategies for storage change caches.
 
 짐작컨데, 이러한 비용 산정 구현 로직은 이더리움 구현체-노드 마다 차이가 있었던 것 같습니다. 기존 구현체의 변경사항을 최소화하는 것을 고려하여 아래와 같은 정보를 
-사용하여 가스를 책정할 것입니다.
+활용하기로 합니다.
 
 * Storage slot’s original value.
 * Storage slot’s current value.
 * Refund counter.
 
-EIP-1283은 이들 정보를 활용하여 다음 동작에 대해 합리적인 가스 비용을 "청구"할 수 있을 것이라고 제안했습니다. 앞서 언급한 잦은 업데이트로 인한 과도한 가스 소모를 
-개선하려는 목적을 포함해서 말입니다.
+EIP-1283은 이들 정보를 이용하여 다음 동작에 대해 합리적인 가스 비용을 청구할 수 있을 것이라고 제안했습니다. 앞에서 언급한 잦은 업데이트로 인한 과도한 가스 소모를 
+줄이려는 목적을 포함해서 말입니다.
 
 * Subsequent storage write operations within the same call frame. This includes reentry locks, same-contract multi-send, etc.
 * Exchange storage information between sub call frame and parent call frame, where this information does not need to be persistent outside of a transaction. This includes sub-frame error codes and message passing, etc.
