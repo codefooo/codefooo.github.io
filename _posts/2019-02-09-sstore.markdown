@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Security Alert: Ethereum Constantinople Postponement"
+title: "Ethereum Constantinople Postponement"
 date: 2019-02-09
 img: coex.jpg # Add image post (optional)
 description: # Add post description (optional)
