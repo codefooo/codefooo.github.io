@@ -25,21 +25,21 @@ EIP-1283의 내용은, 간단히 말하면, 이더리움의 EVM이 데이터를 
 <br/>
 15000 Refund given (added into refund counter) when the storage value is set to zero from non-zero.
 
-의역하면 최초 인서트할 때 20,000 gas를 내야하고 그 값을 업데이트할 때는 5,000 gas, 그리고 NULL로 만들면 15,000 gas를 되돌려 준다는 말이 되겠습니다.  
+요약하면 최초 인서트할 때 20,000 gas를 내야하고 그 값을 업데이트할 때는 5,000 gas, 그리고 NULL로 만들면 15,000 gas를 되돌려 준다는 말이 되겠습니다.  
 
-이더리움은 32바이트 크기의 "슬롯"이라는 저장 단위를 가지고 있습니다. 슬롯에 데이터를 저장하는 비용은 20,000 gas인데, 32바이트 크기를 고려할 때 꽤 비싸다고 할 수 있습니다(그래서 이더리움을 데이터베이스로 생각하고 발생하는 모든 트랜잭션 데이터를 저장하려는 것은 그리 좋은 생각이 아닙니다).  
+이더리움은 32바이트 크기의 "슬롯"이라는 저장 단위를 가지고 있습니다. 슬롯에 데이터를 저장하는 비용은 20,000 gas인데, 32바이트 크기를 고려할 때 꽤 비싸다고 할 수 있습니다(그래서 이더리움에 발생하는 모든 트랜잭션 데이터를 저장하려는 것은 그리 좋은 생각이 아닙니다).  
 
 이렇게 "저장"이라는 기능에 고비용을 책정한 이유는 블록체인이 너무 많은 데이터를 들고 있는 것은 블록체인의 자원을 낭비하는 일이기 때문입니다.
 그러나 한 편에서는 다음과 같은 경우를 생각해볼 수 있습니다.
 
 > A contract with empty storage that increments slot 0 5 times will be charged 20000 + 5 * 5000 = 45000 gas, despite this sequence of operations requiring no more disk activity than a single write, charged at 20000 gas.  
 
-위의 예는 실제로 사용하는 슬롯은 하나인데 빈번한 업데이트로 인한 과도한 비용의 발생(excessive gas cost)은 비합리적이라는 말이 되겠습니다.
+위의 예는 실제로 사용하는 슬롯은 하나인데 빈번한 업데이트로 인한 과도한 비용의 발생(excessive gas cost)은 비합리적이라는 문제를 제기하고 있습니다.
 
 
 ## EIP 1283: Net gas metering for SSTORE without dirty maps 
 
-자, 그래서 EIP-1283의 제목과 같은 개선 요구가 제안되었습니다. "dirty"라는 의미는 (오라클의 dirty block 😉) 디스크에 기록된 것을 여러번 읽고 쓴다는 
+그래서 EIP-1283의 제목과 같은 개선 요구가 제출되었습니다. "dirty"라는 의미는 (오라클의 dirty block 😉) 디스크에 기록된 것을 여러 번 쓴다는 
 의미가 되겠습니다. 즉 "<i>without dirty maps</i>"이란 여러 번 써도 마치 한 번만 쓴 것처럼 "가스 계산(gas metering)"을 하도록 개선하려는 시도라고 할 수 있습니다.
 
 
