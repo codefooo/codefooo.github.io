@@ -4,7 +4,7 @@ title: "Cypherpunk spirit"
 date: 2019-04-18
 img: bicycle.jpg # Add image post (optional)
 description: # Add post description (optional)
-tag: [Ethereum, Cyberpunk]
+tag: [Ethereum, Cypherpunk]
 ---
 
 이더리움 리더 비탈릭 부테린이 오래 전에 작성한 [A Proof of Stake Design Philosophy][POS-philosophy]에 있는 일부를 옮겨 봅니다. 
@@ -39,7 +39,7 @@ first in the information technology-dense 21st century is about as hard as convi
 never happened. These social considerations are what ultimately protect any blockchain in the long term, regardless of 
 whether or not the blockchain’s community admits it.
 
-중장기적으로 보면 사람은 합의에 능숙한 존재입니다. 어떤 상대가 강력한 해쉬파워를 가지고 51% 공격으로 블록체인의 지난 모든 데이터 이력을 되돌렸다고 해도 
+중장기적으로 보면 사람은 합의에 능숙한 존재입니다. 어떤 상대가 강력한 해쉬파워를 가지고 51% 공격으로 블록체인의 지난 한달 간의 데이터 이력을 되돌렸다고 해도 
 커뮤니티로부터 그 블록체인을 합법적으로 인정받는 것은 메인 체인의 해쉬파워를 넘어서는 것보다 훨씬 더 어려울 것입니다. 
 
 그들은 블록 탐색기를 되돌려야 하고 커뮤니티 내의 신뢰받는 모든 회원들과 뉴욕 타임즈, archive.org, 그리고 인터넷의 다른 소스들을 모두 
