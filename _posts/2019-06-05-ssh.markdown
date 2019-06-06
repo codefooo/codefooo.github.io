@@ -1,0 +1,199 @@
+---
+layout: post
+title: "SSH with docker container"
+date: 2019-06-05
+img: workflow.jpg # Add image post (optional)
+description: # Add post description (optional)
+tag: [SSH, docker]
+---
+
+도커 컨테이너 사이에서 ssh(Secure Shell)를 설정하는 방법을 설명합니다. 예를 들어 컨테이너 A에서 컨테이너 B로 ssh를 사용하여 로그인할 수 있도록 
+설정하는 것입니다. 
+
+우선 리눅스 컨테이너 두 개를 준비합니다. 도커 리눅스 이미지는 아주 기본적인 패키지만 설치되어 있으므로 `apt-get` 으로 미리 필요한 
+패키지를 설치해야 합니다.
+
+{% highlight shell %}
+apt-get update
+apt-get install git vim
+{% endhighlight %}
+
+`git` 을 설치하면 네트워크와 관련된 패키지들이 같이 설치되고 파일을 수정하거나 생성해야 하므로 `vim` 이 필요합니다. 그런데 편집시 글자 색이 표시되면 
+오히려 가독성이 떨어지기 때문에 `.vimrc` 에 다음을 추가합니다.
+
+{% highlight shell %}
+syntax off
+set nohlsearch
+{% endhighlight %}
+
+ssh는 기본적으로 설치되어 있지만 ssh 데몬은 별도로 설치해야 합니다. 컨테이너 A가 컨테이너 B에 연결하는 것이므로 컨테이너 B에 ssd 데몬을 설치하기로 합니다.
+
+{% highlight shell %}
+apt-get install openssh-server -y
+{% endhighlight %}
+
+ssh 데몬의 시작과 종료는 다음과 같이 수행합니다.
+
+{% highlight shell %}
+service ssh start 
+service ssh stop
+{% endhighlight %}
+
+ssh 데몬의 설정파일은 기본적으로 다음 디렉토리에 존재합니다.
+
+{% highlight shell %}
+/etc/ssh/sshd_config
+{% endhighlight %}
+
+설정파일을 열어보고 몇 가지 설정을 확인합니다. ssh 의 디폴트 포트는 22번입니다. 원격에서 root 계정의 로그인을 허용하는 것은 디폴트로 주석처리(비활성화) 되어 있습니다.
+`prohibit-password` 는 원격에서 root 계정의 암호로 로그인하는 것을 금지하고 키페어를 사용한 로그인만 허용하겠다는 것을 의미합니다.
+
+{% highlight shell %}
+#PermitRootLogin prohibit-password
+{% endhighlight %}
+
+
+이제 컨테이너 B에 임의의 사용자를 생성합니다. 컨테이너 A에서 ssh 를 통해 이 사용자 계정으로 로그인할 것입니다. 사용자 디렉토리는 `/home/kate` 으로 생성됩니다.
+그리고 해당 계정의 로그인 암호를 설정합니다.
+
+{% highlight shell %} 
+useradd -m kate
+passwd kate
+{% endhighlight %}
+
+계정을 삭제하려면 `deluser --remove-home kate` 을 이력합니다. 
+컨테이너 B의 ssh 데몬 설정 파일은 기본적으로 암호 입력을 통해 원격 로그인하는 것이 비활성화 되어 있습니다. 다음 주석을 해제하여 암호로 로그인할 수 있도록 합니다.
+설정 파일을 변경한 후에는 `service ssh restart` 로 데몬을 재시작해야 합니다. 
+
+{% highlight shell %}
+# Change to no to disable tunnelled clear text passwords
+PasswordAuthentication yes
+{% endhighlight %}
+
+이제 컨테이너 A에서 ssh 를 사용하여 컨테이너 B로 로그인합니다. 각 컨테이너의 내부 IP는 `ip address` 로 확인할 수 있습니다.
+
+{% highlight html %} 
+root@aa80b0b267b1:~# ssh kate@172.17.0.2
+The authenticity of host '172.17.0.2 (172.17.0.2)' can't be established.
+ECDSA key fingerprint is SHA256:hW69brGAhaJv6SlXpAP11wI7B+A868hJshVzBb/M5JU.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '172.17.0.2' (ECDSA) to the list of known hosts.
+kate@172.17.0.2's password:
+Welcome to Ubuntu 16.04.5 LTS (GNU/Linux 4.9.125-linuxkit x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+Last login: Thu Jun  6 03:59:42 2019 from 172.17.0.3
+$
+{% endhighlight %}
+
+### RSA 키페어를 사용한 로그인
+
+클라이언트에서 암호를 매번 입력하여 원격 서버에 로그인하는 것은 번거롭기도 하고 암호가 노출될 위험도 있습니다. 
+그래서 RSA 암호화된 개인키-공개키를 사용하여 암호 입력없이, 또 안전하게 로그인하는 것이 권장되고 있습니다. 
+물론 개인키를 잃어버리거나 도난 당하지 않도록 주의가 필요합니다.
+
+우선 컨테이너 B의 데몬 설정 파일에서 다음을 확인합니다.
+
+{% highlight shell %} 
+RSAAuthentication yes
+PubkeyAuthentication yes
+#AuthorizedKeysFile     %h/.ssh/authorized_keys
+{% endhighlight %}
+ 
+
+컨테이너 A에서 `ssh-keygen` 을 입력하여 RSA 키페어를 생성합니다. 여기서 입력하는 passphrase 는 로그인 암호가 아니라 
+개인키를 사용하기 위한 암호입니다(입력하지 않으면 즉시 로그인되지만 개인키를 도난 당하는 경우에는 그 개인키 파일을 가진 누구라도 서버에 접속할 수 있으므로 
+위험할 수 있습니다).  
+
+{% highlight html %} 
+root@aa80b0b267b1:~# ssh-keygen
+Generating public/private rsa key pair.
+Enter file in which to save the key (/root/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /root/.ssh/id_rsa.
+Your public key has been saved in /root/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:8gnaFtTfm2iozFGOEQdJB97OUR9rH/4hMPB5FzPW5xw root@fb7e4f887c80
+The key's randomart image is:
++---[RSA 2048]----+
+|     .+o... .  =.|
+|     ..= .o..o.E*|
+|      + =  =+..+o|
+|     . = o o+o..o|
+|      = S . ..o. |
+|     o X o . o...|
+|    . = = o o   .|
+|     + o .       |
+|      +          |
++----[SHA256]-----+
+
+{% endhighlight %}
+ 
+
+생성된 키페어는 각각 다음과 같습니다. 공개키는 .pub가 붙어 있습니다. 개인키에 해당하는 `id_rsa` 의 접근 권한은 소유자로 한정하는 것이 바람직합니다.
+
+{% highlight shell %} 
+root@aa80b0b267b1:~/.ssh# ls -al
+total 16
+drwx------ 2 root root 4096 Jun  6 03:13 .
+drwx------ 1 root root 4096 Jun  6 03:14 ..
+-rw------- 1 root root 1766 May 14 08:59 id_rsa
+-rw-r--r-- 1 root root  399 May 14 08:59 id_rsa.pub
+
+{% endhighlight %}
+
+공개키 파일인 `id_rsa.pub` 을 원격 서버에 해당하는 컨테이너 B에 복사합니다. 컨테이너 A는 개인키를 사용하여 자신이 올바른 사용자임을 인증하게 됩니다.
+복사하는 가장 간단한 방법은 파일을 컨테이너 B로 직접 옮기는 것입니다. `docker cp`를 사용하여 컨테이너 A(eth-edu)에서 호스트 컴퓨터로 파일을 복사하고 다시 컨테이너 B(mylinux)로 복사할 수 있습니다.
+
+{% highlight shell %} 
+docker cp eth-edu:/root/.ssh/id_rsa.pub .
+docker cp ./id_rsa.pub mylinux:/home/kate/
+{% endhighlight %}
+ 
+ 
+복사한 파일을 그대로 쓰는 것은 아니고 이 파일의 내용, 공개키 문자열을 사용하는데 이 때 계정 홈에서 .ssh 디렉토리를 생성한 후 
+문자열을 `authorized_keys` 라는 파일에 추가하도록 합니다.
+
+{% highlight shell %} 
+cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
+{% endhighlight %}
+
+파일명 `authorized_keys` 은 데몬의 설정파일 sshd_config 의 `AuthorizedKeysFile` 부분을 변경할 수 있으나 디폴트 파일명을 
+그대로 사용하기로 합니다. 공개키는 아래와 같은 형태입니다.
+
+{% highlight shell %} 
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCpbmCGDzLUKyTd1d55wjX/5l4e78J01JiqAJrZJsffeAC/xEfXVVQoaywK9YHhnX8IxGD+xOReLWaIHSyeh6xkqxYy4rJOuqINDQ3QvXNmgQQ52rejIJ4sVwu01Jm1bIYoOcvCCzwWJZaqBT2k0RDrbllN/pWxZThDGVqxDt3Qye+hdRYx1ff+wJyM1sSitluGbig1LYkCX6HsxLuo2Dnj5p1C4BjpBNvEJ5VYdAyWUjc8C98zH14JmEaZFITYZz0xuyrKziWuFBzIwVBkMEC/NblT7bKjYKLwm+iyjjCnAmxEGm6bqnWVF8ZvB01C0eRSN+QgLFoppc+JqlfpUEVr root@fb7e4f887c80
+{% endhighlight %}
+
+또는 다음과 같은 명령어로 공개키를 복사할 수 있습니다.
+
+{% highlight shell %}
+cat ~/.ssh/id_rsa.pub | ssh kate@172.17.0.2 "mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys && chmod -R go= ~/.ssh && cat >> ~/.ssh/authorized_keys"
+{% endhighlight %}
+
+여기서 중요한 것은 .ssh 디렉토리와 authorized_keys 파일의 접근 권한입니다. 이 파일은 로그인하는 사용자만이 사용할 수 있도록 
+group과 others 에게 어떤 권한도 주지 않습니다. `chmod -R go=` 이 바로 그런 의미입니다.
+
+또는 다음과 같이 일반적인 권한 설정을 할 수도 있습니다.
+
+{% highlight shell %}
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+{% endhighlight %}
+
+이제 컨테이너 A에서 컨테이너 B로 접속합니다.
+
+{% highlight html %} 
+root@fb7e4f887c80:~# ssh kate@172.17.0.2
+Enter passphrase for key '/root/.ssh/id_rsa':
+Welcome to Ubuntu 16.04.5 LTS (GNU/Linux 4.9.125-linuxkit x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+Last login: Thu Jun  6 05:30:47 2019 from 172.17.0.3
+$                        
+{% endhighlight %}
