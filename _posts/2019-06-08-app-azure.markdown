@@ -16,11 +16,11 @@ Azure는 처음 사용자를 위해 1년 동안 무료로 사용할 수 있는(�
 
 ### 프론트엔드와 백엔드
 
-개발 단계에서는 하나의 프로젝트 디렉토리에 프론트엔드와 백엔드를 구분하여 소스 파일 관리를 합니다. 각각 node_modules에 패키지를 관리하게 됩니다.
-react 애플리케이션은 CRA(create-react-app)로 만들면 별도의 개발 서버를 구동할 수 있기 때문에 개발 단계에서는 기본 명령어 `npm run start` 로 정적 SPA용 서버(localhost:3000)를 
+개발 단계에서는 하나의 프로젝트 디렉토리에 프론트엔드와 백엔드를 구분하여 소스 파일 관리를 합니다. 
+react 애플리케이션을 CRA(create-react-app)로 만들면 별도의 개발 서버를 구동할 수 있기 때문에 개발 단계에서는 기본 명령어 `npm run start` 로 정적 SPA용 서버(localhost:3000)를 
 실행하고 백엔드 서버(localhost:4000)는 [nodemon][nodemon]을 사용하게 됩니다.
 
-예를 들어 react-board 라는 프로젝트는 루트에 백엔드 소스를, 그 하위에 front-end 디렉토리에 react 프로젝트가 있게 됩니다.
+예를 들어 react-board 라는 프로젝트는 루트에 백엔드 소스를, 그 하위에 front-end 디렉토리에 react 프로젝트가 있는 형태가 되는 것입니다.
 
 {% highlight html %}
 react-board
@@ -78,7 +78,7 @@ URL에 해당하므로 고유한 이름을 정해야 합니다. Runtime stack은
 
 ![fig02]({{site.baseurl}}/assets/img/azure/azure02.PNG)
 
-Review and create로 애플리케이션을 생성합니다. 이것은 실제 애플리케이션이 아니라 애플리캐이션이 배포될 환경이라고 생각하면 되겠습니다.
+Review and create로 애플리케이션을 생성합니다. 이것은 실제 애플리케이션이 아니라 애플리케이션이 배포될 환경이라고 생각하면 되겠습니다.
 
 ![fig03]({{site.baseurl}}/assets/img/azure/azure03.PNG)
 
