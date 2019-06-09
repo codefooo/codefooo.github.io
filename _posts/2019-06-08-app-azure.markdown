@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Deploying a Front/Back-end App in Azure"
+title: "Deploying Front/Back-end App in Azure"
 date: 2019-06-08
 img: exits.jpg # Add image post (optional)
 description: # Add post description (optional)
