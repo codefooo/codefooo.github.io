@@ -1,0 +1,229 @@
+---
+layout: post
+title: "Deploying a Front/Back-end App in Azure"
+date: 2019-06-08
+img: exits.jpg # Add image post (optional)
+description: # Add post description (optional)
+tag: [azure, app, react.js, node.js]
+---
+
+MS의 클라우드 서비스 [Azure][azure]에 간단한 웹 애플리케이션을 배포하는 방법을 설명합니다. 프론트엔드는 react, 백엔드는 Koa 프레임워크를 사용하며 [koa-static][koa-static]으로 
+정적 SPA를 함께 서비스 하도록 애플리케이션을 구성합니다.
+
+Azure는 처음 사용자를 위해 1년 동안 무료로 사용할 수 있는(그러나 한도는 정해진) "체험계정"을 제공합니다. 그리고 한달동안 사용가능한 200 달러 정도의 쿠폰(credit)을 제공합니다.
+체험계정을 종량제 계정 "Pay as you go"로 업그레이드하지 않으면 과금되지 않습니다. 체험계정은 전화번호 인증 후 신용카드 정보확인을 거쳐 시작할 수 있습니다. 신용카드 정보를 입력하더라도 
+계정을 종량제로 업그레이드하지 않으면 비용이 청구되지 않습니다. 
+
+### 프론트엔드와 백엔드
+
+개발 단계에서는 하나의 프로젝트 디렉토리에 프론트엔드와 백엔드를 구분하여 소스 파일 관리를 합니다. 각각 node_modules에 패키지를 관리하게 됩니다.
+react 애플리케이션은 CRA(create-react-app)로 만들면 별도의 개발 서버를 구동할 수 있기 때문에 개발 단계에서는 기본 명령어 `npm run start` 로 정적 SPA용 서버(localhost:3000)를 
+실행하고 백엔드 서버(localhost:4000)는 [nodemon][nodemon]을 사용하게 됩니다.
+
+예를 들어 react-board 라는 프로젝트는 루트에 백엔드 소스를, 그 하위에 front-end 디렉토리에 react 프로젝트가 있게 됩니다.
+
+{% highlight html %}
+react-board
+|-- front-end
+|-- package-lock.json
+|-- package.json
+|-- src
+`-- .gitignore
+{% endhighlight %}
+
+
+이 때 front-end의 package.json에 [proxy][proxy] 설정을 하게 되면 지정되지 않은 요청들을 모두 proxy 서버에 전달해주기 때문에 REST API 호출들을 백엔드 서버에 보낼 수 있습니다. 
+
+{% highlight html %}
+  "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "proxy": "http://localhost:4000"
+{% endhighlight %}
+
+그러나 Azure에 애플리케이션을 배포할 때는 백엔드 서버를 하나만 실행하게 하고 
+정적 리소스에 해당하는 react 애플리케이션을 백엔드 서버가 함께 서비스하는 방식으로 배포할 수 있습니다. 즉 react 애플리케이션을 `npm run build`한 후에 
+생성된 build 디렉토리를 정적 리소스로 지정(koa-static 사용)하면 되는 것입니다. 
+
+{% highlight javascript %}
+
+const serve = require('koa-static');
+const path = require('path');
+
+if (env === 'production'){
+   const frontBuildPath = path.join(__dirname, '../frontend/build');
+   app.use(serve(frontBuildPath));
+}
+
+{% endhighlight %}
+
+### App services
+
+Azure는 웹 애플리케이션을 서비스하기 위해 App services 라는 기능을 제공합니다. 그리고 마켓플레이스에서 데이터베이스 MySQL 5.7(또는 5.6)을 선택할 수 있으므로 
+이 두 가지 리소스를 사용하여 웹 애플리케이션을 배포하도록 하겠습니다.
+
+우선 Azure 포털의 Home 화면에서 App Services를 클릭하고 Web App 설정화면으로 들어갑니다.
+
+![fig00]({{site.baseurl}}/assets/img/azure/azure00.PNG)
+
+Web App 설정화면에서는 배포할 애플리케이션의 정보를 입력하게 됩니다. *는 필수입력이므로 해당 내용을 잘 읽어보고 설정합니다. 인스턴스의 이름은 배포 후에 웹에 접속할 때 사용되는 
+URL에 해당하므로 고유한 이름을 정해야 합니다. Runtime stack은 `Node LTS`을 선택합니다.
+
+![fig01]({{site.baseurl}}/assets/img/azure/azure01.PNG)
+
+`Sku and size`는 애플리케이션에 할당할 CPU와 디스크 등의 컴퓨팅 리소스를 지정할 수 있습니다. 크기를 변경하려면 아래와 같은 옵션을 선택할 수 있습니다.여기서는 Dev/Test에서 B1을 선택했습니다.
+
+![fig02]({{site.baseurl}}/assets/img/azure/azure02.PNG)
+
+Review and create로 애플리케이션을 생성합니다. 이것은 실제 애플리케이션이 아니라 애플리캐이션이 배포될 환경이라고 생각하면 되겠습니다.
+
+![fig03]({{site.baseurl}}/assets/img/azure/azure03.PNG)
+
+### 데이터베이스
+
+배포할 애플리케이션은 MySQL 5.7을 사용하게 되는데 상단의 검색을 통해 마켓플레이스에서 MySQL을 찾아봅니다. 검색어로 MySQL을 입력하고 
+Marketplace에서 `Azure Database for MySQL`을 선택합니다.
+
+![fig04]({{site.baseurl}}/assets/img/azure/azure04.PNG)
+
+데이터베이스 설정 화면이 나타납니다. 가장 아래에 있는 Pricing tier를 클릭하고 Basic에서 코어와 디스크 용량을 조정합니다. 테스트용이므로 그렇게 많은 용량이 필요없을 것입니다.
+
+![fig05]({{site.baseurl}}/assets/img/azure/azure05.PNG)
+
+MySQL의 서버 인스턴스 정보와 관리자 암호 설정을 하고 나면 MySQL Workbench 같은 프로그램으로 데이터베이스에 접속할 수 있습니다. 그런데 기본적으로 데이터베이스는 방화벽 안에 있으므로 
+외부의 접속을 허용하려면 IP를 지정해주어야 합니다.
+
+![fig06]({{site.baseurl}}/assets/img/azure/azure06.PNG)
+
+MySQL 서버 리소스의 좌측 메뉴에서 Connection security에서 Add client IP를 클릭하여 클라이언트의 IP를 설정합니다. 그리고 애플리케이션에서도 데이터베이스에 접속할 수 있도록 
+`Allow access to Azure services`를 ON으로 변경합니다. 
+
+![fig08]({{site.baseurl}}/assets/img/azure/azure08.PNG)
+
+`Enforce SSL connection`은 disable 해야 나중에 애플리케이션이 데이터베이스에 접속할 때 문제가 발생하지 않습니다.
+
+### 애플리케이션 배포
+
+웹 애플리케이션을 배포하는 방법은 해당 [도움말][deploy]을 참고하면 되겠습니다. 여기서는 Local Git 방식으로 배포하도록 하겠습니다. 앞서 생성한 애플리케이션의 좌측 메뉴에서 
+Deployment Center 메뉴로 들어갑니다. 지원되는 배포 방식들 중 Local Git을 선택합니다.
+
+![fig09]({{site.baseurl}}/assets/img/azure/azure09.PNG)
+
+다음 화면에서는 Kudu라는 빌드 서비스를 선택합니다.
+
+![fig10]({{site.baseurl}}/assets/img/azure/azure10.PNG)
+
+배포와 빌드 서비스가 완료되면 git 레포지토리 URL이 생깁니다. 이제 배포할 애플리케이션의 소스 파일들을 여기 레포지토리에 push하면 자동으로 빌드가 되고 배포될 것입니다.
+
+![fig11]({{site.baseurl}}/assets/img/azure/azure11.PNG)
+
+그래서 이 레포지토리에 push할 사용자를 등록해주어야 합니다. 우측 상단의 메뉴에 Cloud Shell을 실행합니다.
+
+![fig12]({{site.baseurl}}/assets/img/azure/azure12.PNG)
+
+쉘 화면에서 다음 명령어를 입력합니다. - -user-name 과 - -password 에 사용할 아이디와 암호을 정합니다.
+
+{% highlight shell %}
+
+foo@Azure:~$ az webapp deployment user set --user-name foo-dev --password qwert$$!
+{
+  "id": null,
+  "kind": null,
+  "name": "web",
+  "publishingPassword": null,
+  "publishingPasswordHash": null,
+  "publishingPasswordHashSalt": null,
+  "publishingUserName": "foo-dev",
+  "scmUri": null,
+  "type": "Microsoft.Web/publishingUsers/web"
+}
+{% endhighlight %}
+
+
+### 코드 변경
+
+개발 단계에서는 localhost로 접속하지만 배포 후에는 Azure에서 설정한 이름이 결합된 다음과 같은 형식의 URL로 웹 애플리케이션 접속하게 됩니다.
+
+{% highlight shell %}
+https://<app name>.azurewebsites.net/
+{% endhighlight %}
+
+그래서 코드 상에 다음과 같이 하드코딩된 부분이 있다면 제대로 동작하지 않을 것입니다. 
+
+{% highlight javascript %}
+export const EDITOR_URL = 'http://localhost:3000/ckeditor/ckeditor.js';
+{% endhighlight %}
+
+개발환경과 운영환경에 맞도록 설정을 적용하기 위해 CRA에서는 env.production과 env.developement를 사용합니다. 
+프론트엔드의 루트에서 env.production 이름의 파일을 다음과 같이 작성합니다.
+
+{% highlight javascript %}
+REACT_APP_URL=https://react-board.azurewebsites.net
+{% endhighlight %}
+
+`npm run build`를 수행하면 env.production의 설정이 적용됩니다.
+
+{% highlight javascript %}
+export const EDITOR_URL = `${process.env.REACT_APP_URL}/ckeditor/ckeditor.js`;
+{% endhighlight %}
+
+개발시에는 env.developement 이름의 파일이 적용됩니다.
+
+{% highlight javascript %}
+REACT_APP_URL=http://localhost:3000
+{% endhighlight %}
+
+보다 자세한 사항은 [여기][env]를 참조하면 되겠습니다.
+
+백엔드에서는 다음과 같이 포트 번호를 외부 환경변수로부터 받을 수 있도록 작성해야 합니다.
+
+{% highlight javascript %}
+const port = process.env.PORT || 4000;
+
+app.listen(port, ()=>{
+    console.log(`listening to port ${port}`);
+});
+{% endhighlight %}
+
+이렇게 하면 Azure의 App services가 애플리케이션을 시작할 때 지정한 포트번호가 적용될 것입니다.
+
+그리고 package.json에는 스크립트에 start 를 작성해야 합니다. production일때 프론트 애플리케이션의 정적 리소스를 서비스해야 하므로
+`NODE_ENV=production`을 추가해야 합니다.
+
+{% highlight shell %}
+ "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "NODE_ENV=production node src/app.js",
+    "start:dev": "nodemon --watch src/ src/app.js"
+  },
+{% endhighlight %}
+
+이제 배포를 위해 준비한 Local Git에 push를 해보겠습니다.
+
+### 빌드와 배포
+
+먼저 react 프론트엔드를 빌드 합니다. 디폴트로 build 디렉토리가 생성되고 그 아래에 빌드된 결과물들이 만들어집니다. 이것은 정적 리소스들입니다.
+그리고 프로젝트 루트(백엔드)로 이동하여 push에 필요한 파일들을 모두 커밋합니다(react의 build된 정적 파일도 포함). push할 원격 레포지토리는 Azure의 Local Git이 됩니다. 
+다음과 같이 azure라는 이름으로 추가하고 push를 합니다.
+
+{% highlight shell %}
+git remote add azure https://react-board.scm.azurewebsites.net:443/react-board.git
+git push azure master
+{% endhighlight %}
+
+배포 결과의 로그는 Deployment Center에서 확인할 수 있습니다.
+
+![fig13]({{site.baseurl}}/assets/img/azure/azure13.PNG)
+
+배포시 오류나 문제가 발생하는 경우에는 좌측 메뉴 Diagnose and solve problems을 활용하면 됩니다.
+
+
+[azure]: https://azure.microsoft.com/
+[koa-static]: https://www.npmjs.com/package/koa-static
+[nodemon]: https://www.npmjs.com/package/nodemon 
+[proxy]: https://facebook.github.io/create-react-app/docs/proxying-api-requests-in-development
+[env]: https://facebook.github.io/create-react-app/docs/adding-custom-environment-variables
+[deploy]: https://docs.microsoft.com/en-us/learn/modules/host-a-web-app-with-azure-app-service/5-deploying-code-to-app-service
