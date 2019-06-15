@@ -7,7 +7,7 @@ description: # Add post description (optional)
 tag: [azure, app, react.js, node.js]
 ---
 
-MS의 클라우드 서비스 [Azure][azure]에 간단한 웹 애플리케이션을 배포하는 방법을 설명합니다. 프론트엔드는 react, 백엔드는 Koa 프레임워크를 사용하며 [koa-static][koa-static]으로 
+MS의 클라우드 서비스 [Azure][azure]에 간단한 웹 애플리케이션을 배포하는 방법을 설명합니다. 프론트엔드는 react, 백엔드는 koa 프레임워크를 사용하며 [koa-static][koa-static]으로 
 정적 SPA를 함께 서비스 하도록 애플리케이션을 구성합니다.
 
 Azure는 처음 사용자를 위해 1년 동안 무료로 사용할 수 있는(그러나 한도는 정해진) "체험계정"을 제공합니다. 그리고 한달동안 사용가능한 200 달러 정도의 쿠폰(credit)을 제공합니다.
