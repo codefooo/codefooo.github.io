@@ -1,0 +1,123 @@
+---
+layout: post
+title: "How Libra's Founders Will Profit from Crypto"
+date: 2019-06-25
+img: libra.jpg # Add image post (optional)
+description: # Add post description (optional)
+tag: [facebook, libra, LIT, pooltogether]
+---
+
+최근 코인데스크에 리브라의 초기 투자자(기업)들이 과연 어떻게 수익을 낼 수 있을 것인가 하는 문제를 다룬 [글][coindesk]이 실렸습니다. 영문의 의미를 
+보존하기 위해 중간 중간 원문을 넣었습니다.
+
+## This Ethereum Lottery Perfectly Explains How Facebook's Big Corporate Backers Will Profit from Crypto
+
+<b>Brady Dale</b>
+
+페이스북의 새로운 블록체인 리브라에 합류한 초기 투자자(기업)들이 장기적으로(over time) 어떻게 수익을 낼 수 있을까 하는 문제를 이해하기 위해서, 지난 월요일 이더리움 메인넷에 
+오픈된 복권(lottery)을 분석해보는 것이 도움이 될 것 같다. PoolTogether라고 하는 이 복권은 손해없는(lossless) 복권으로 현재 판매되고 있다. 리브라와 하나 하나 일치하는 
+것은 아니지만 기본 개념은 동일하다: 내 돈을 투자해서 수익을 얻는 것도 좋지만 다른 사람의 돈으로 수익을 얻는 것이 더 좋다라는 것이다.
+리브라에 대해 설명하기 전에 먼저 이 새로운 이더리움 게임에 대해 살펴보도록 하겠다.
+
+PoolTogether에서 복권 한 장은 20 DAI(MakerDAO에서 발행하는 스테이블 코인으로 1 달러의 가치를 유지)에 판매된다. 각 풀은 가능하면 많은 복권을 판매하고 
+판매금을 이더리움 기반의 단기 금융 시장인 [Compuond][compound]에 예치한다. 거기에서 수익을 발생시키고 풀이 종료되는 시점에 판매된 복권들 중 하나를 추첨하여 수익을 
+지급한다. 나머지 구매자들은 복권을 구매했을 때 낸 돈을 돌려받는다. 따라서(ergo) 아무도 손해보지 않는다.   
+
+### 게임화된 절약(Gamified savings)
+
+"이것은 실제로 많은 사람들에게 건강한 경제를 위한 주사가 될 수 있다는 점입니다." 라고 PoolTogether를 만든 레이튼 쿠삭(Leighton Cusack)은 말한다.
+사람들은 복권을 재미있어 하지만 저축하는 것에는 관심을 보이지 않는다. 이것은 사람들을 올바른 방향으로 유도할 수 있는 하나의 방법이 될 수 있다.
+
+>“What excites me is that I think it can actually move the needle on economic health for a lot of people,” PoolTogether’s creator, Leighton Cusack, told CoinDesk.
+People get excited about lotteries. They don’t excited about savings accounts. This is a way of nudging them in the right direction.
+
+이더리움에서 이것을 구현해보자는 생각은 지난 3월 MakerDAO의 서브레딧에서 처음으로 토론이 시작되었고, 프로젝트는 MakerDAO로부터 25,000달러의 보조금을 받으면서 
+실행될 수 있었다. 
+
+"우리는 이것이 생태계에 좋은 영향을 줄 수 있다고 생각합니다." MakerDAO의 탈중앙화 재단의 커뮤니티 개발을 운영하는 리차드 브라운은 이 프로젝트에 대해 이렇게 말한다.
+"제가 관심을 가지는 것은 궁극적으로 가난한 사람들로부터 걷는 세금이 될 수 있고 그것을 사회 복지의 수단으로 사용할 수 있다는 것입니다." 
+
+다시 말해서, 이익을 볼 가능성이 거의 없음에도 불구하고 저임금의 많은 사람들이 도박을 한다는 것이다. 개인 재무관리 사이트인 Bankrate에 의하면 
+사람들은 소득이 증가할수록 복권을 덜 사는 것으로 나타났다. PoolTogether는 게임이 가지는 중독성과 기다리는 즐거움(delayed gratification)이라는 
+건전한 행동 방식을 결합하고 있는 것이다.
+
+>PoolTogether takes the attractiveness of gaming and combines it with the healthy behavior of delayed gratification.
+
+이런 방식이 전례가 없는 것은 아니다. 월마트는 자사의 현금 카드에 절약한 금액을 적립하도록 하기 위해 게임 메카니즘을 적용했다. 2017년 이후 사람들이 적립한 금액은 
+20억 달러가 넘는다. 손해볼 위험 없이, 사람들은 가진 돈을 모두 쓰는 대신 절약을 하기 시작한 것이다. 일반 계좌의 이자율은 현재 0.9%이고 새로운 가입자가 
+이런 프로그램에 참여하는 것은 전혀 이상한 일이 아니다. 기회 비용이 매우 낮은 것이다.
+
+### PoolTogether의 접근방식
+
+처음에는 사이트에 하나의 풀이 존재한다. 3일동안 복권을 판매하고 15일 동안의 이익을 가져가는 당첨자를 7월 11일에 발표한다. 
+PoolTogether는 수익의 10%를 가져가고 나머지를 당첨자에게 지급한다. 이 모든 것은 [Quantstamp][quantstamp]가 검수한 스마트 컨트랙트에 정의되어 있다.  
+
+MakerDAO의 브라운은 이 모델이 좋은 목적을 위한 일회성 기금을 마련하는 무난한(frictionless) 방법이 될 것이라고 믿고 있다.
+예를 들어, 어떤 사람이 기금의 모든 수익을 당첨자가 선택한 비영리 단체의 지갑으로 보내게 하는(개인의 지갑이 아닌) 탈중앙화된 자율 조직(decentralized autonomous organization)을 
+만들 수 있을 것이다.
+
+그는 이것을 새로운 탈중앙화 경제의 기본 형태라고 말한다. 
+
+>"이런 형태는 거부감이 거의 없습니다. 위험도 없고 이것때문에 파산하는 사람도 없으니 스트레스도 없습니다."
+
+>“It’s pretty low-friction. It’s pretty low-risk. It’s low-stress, because no one is coming out of this thing broke.”
+
+PoolTogether의 쿠삭은 이 프로젝트가 충분히 커질 가능성이 있다고 예상한다. 그는 첫 번째 당첨자가 적어도 복권 가격 20 DAI의 2배는 받을 수 있기를 희망하고 있다.
+그렇게 되려면 100,0000 DAI가 모여야 하고, 이것은 큰 액수지만 이미 몇몇 참여자로부터 1,000 DAI씩 (풀에) 투입되고 있다고 쿠삭은 말하고 있다.       
+
+### So what about Libra?
+
+리브라 역시 다수로부터 걷은 돈을 가지고 운용된 수익을 소수에게 배분하는 형태로 설계되었다.   
+
+>Libra is also designed so that a select few capture the interest earned on money tucked away by the vast many.
+
+코인데스크가 보도한 것과 같이 리브라가 동작하기 위한 두 개의 토큰이 있다. 대부분의 관심은 아직 구체적인 내용이 없는 자금과 채권등에 맞물린 스테이블 코인, 
+리브라 코인이다. 그런데 이 바구니를 채우기 위해서는 페이스북은 "리브라 투자 토큰"(Libra investment token, LIT)라는 것을 들고 나왔다.
+PoolTogether처럼, LIT의 목적은 다른 사람들의 돈으로 얻어진 수익을 배분하는 것에 있다.   
+
+이것이 왜 중요한지 간단한 예를 들어서 생각해보자. 한 개의 LIT가 천만 달러에 팔린다고 생각해보자. 매우 안전한 자산에 투자한다면 
+케너코드 제뉴이티(Canaccord Genuity)는 약 0.25%의 수익을 예측한다.
+그래서 천만 달러로 연간 25,000달러의 수익을 얻는다. 하지만 이것은 기술 투자사에게는 형편없는 보상이다.
+
+그러나 10만명이 리브라 코인을 사용한다고 생각해보자. 그 사람들은 각자 100달러의 리브라 코인을 구매한다. 이제 한 개의 LIT 코인 보유자는 
+연간 50,000달러의 수익을 얻게 된다. 왜냐하면 기금(reserve)에 모인 돈이 2배가 되었고 LIT 보유자만이 수익을 배분받기 때문이다.
+
+리브라는 글로벌 프로젝트이기 때문에 리브라의 투자자들은 10만명 보다 더 많은 사람들을 사용자로 확보하기를 원할 것이 분명하다.
+10억 달러어치의 LIT가 팔렸다고 해도 투자자로 참여한 비자, 우버, 페이팔과 같은 기업들은 10억 달러보다 훨씬 더 큰 금액이 모이는 기금에 
+관심을 가질 것이 자명하다. 기금이 커질수록 LIT 보유자들에게 돌아가는 몫은 커지는 것이다.
+
+>Now, this is a global project, so obviously Libra’s backers want to get in a lot more than 100,000 people. 
+Even if a billion dollars in LIT tokens are sold, with companies like Visa, Uber and PayPal involved, 
+there’s no way they aren’t targeting many, many billions in the reserve. With each additional billion, 
+the returns multiply to LIT holders.
+
+케너코드 제뉴이티는 리브라 코인의 비트코인의 마켓 캡인 1620억 달러에 이르면 LIT 보유자들에게는 매년 리브라 협회(Libra Association)에 지불하는 비용을 제하고도 
+3억2천4백만 달러가 지급될 것이라고 예상하고 있다.
+
+LIT를 한 개 이상 보유할 수 없고 리브라 협회가 계획한대로 100개의 파트너사를 모았다고 가정해보자: 각 파트너사들은 천만 달러 투자로 매년 324만 달러의 수익을 
+배분받게 된다. 더구나 이것은 일회성 배분이 아니다. 투자사들은 리브라 코인이 사용되는 한 계속 수익을 얻게 될 것이다.    
+
+비트코인 마켓 캡에 이른 후 10년 동안을 생각하면 LIT 보유자들은 3240만 달러를 원금 손실 없이 벌어들일 것이고 수익률은 300% 이상이 될 것이다.
+더구나 이것은 10년 동안 기금이 전혀 늘지 않는다고 가정했을 경우이다.
+
+PoolTogether에서는 모든 사람이 베팅을 하고 누구나 판매된 복권 금액의 수익을 가져갈 수 있는 기회를 부여 받는다. 암호화폐를 처음 사용하는 
+사람도 20 DAI 복권을 한 장 구매해서 천 장 팔린 복권의 모든 수익을 가져갈 수 있는 것이다. 리브라에서도 동일하다. 항상 동일한 거대 기업(whales)이 
+항상 이긴다는 것을 제외하면 말이다. 
+
+리브라가 그렇게 될지, 아니 순조롭게 출발할 수 있을지도 지켜보아야 할 문제지만 PoolTogether는 벌써 한방에 고래를 잡을 수 있는 기회를 
+누구에게나 부여하면서 시작되었다. 
+
+>It remains to be seen if Libra will get to that point or if it will even get off the ground, 
+but PoolTogether is starting now for anyone who wants a shot at robbing a whale. 
+
+첫 번째 풀을 시작한 Compound의 로버트 레쉬너는 자신도 첫 번째 라운드에서 복권을 몇 장 살 것이라고 말한다.
+
+>"우리는 새로운 발명품을 실험해보는 것을 좋아합니다. 그리고 그런 새로운 아이디어가 Compound에서 실행되다는 사실에 너무 흥분됩니다."
+
+>"We love watching the world experiment with new products and new ideas built on top of Compound no matter what they do. I’m excited."
+
+
+
+[coindesk]: https://www.coindesk.com/this-ethereum-lottery-perfectly-explains-how-facebooks-corporate-backers-will-profit-from-libra
+[compound]: https://compound.finance/
+[quantstamp]: https://quantstamp.com/
