@@ -15,7 +15,7 @@ tag: [facebook, libra, LIT, pooltogether]
 <b>Brady Dale</b>
 
 페이스북의 새로운 블록체인 리브라에 합류한 초기 투자자(기업)들이 장기적으로(over time) 어떻게 수익을 낼 수 있을까 하는 문제를 이해하기 위해서, 지난 월요일 이더리움 메인넷에 
-오픈된 복권(lottery)을 분석해보는 것이 도움이 될 것 같다. PoolTogether라고 하는 이 복권은 손해없는(lossless) 복권으로 현재 판매되고 있다. 리브라와 하나 하나 일치하는 
+오픈된 복권(lottery)을 분석해보는 것이 도움이 될 것 같다. [PoolTogether][pooltogether]라고 하는 이 복권은 손해없는(lossless) 복권으로 현재 판매되고 있다. 리브라와 하나 하나 일치하는 
 것은 아니지만 기본 개념은 동일하다: 내 돈을 투자해서 수익을 얻는 것도 좋지만 다른 사람의 돈으로 수익을 얻는 것이 더 좋다라는 것이다.
 리브라에 대해 설명하기 전에 먼저 이 새로운 이더리움 게임에 대해 살펴보도록 하겠다.
 
@@ -117,7 +117,7 @@ but PoolTogether is starting now for anyone who wants a shot at robbing a whale.
 >"We love watching the world experiment with new products and new ideas built on top of Compound no matter what they do. I’m excited."
 
 
-
+[pooltogether]: https://www.pooltogether.us/
 [coindesk]: https://www.coindesk.com/this-ethereum-lottery-perfectly-explains-how-facebooks-corporate-backers-will-profit-from-libra
 [compound]: https://compound.finance/
 [quantstamp]: https://quantstamp.com/
