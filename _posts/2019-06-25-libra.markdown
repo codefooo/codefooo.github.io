@@ -71,7 +71,7 @@ PoolTogether의 쿠삭은 이 프로젝트가 충분히 커질 가능성이 있�
 
 >Libra is also designed so that a select few capture the interest earned on money tucked away by the vast many.
 
-코인데스크가 보도한 것과 같이 리브라가 동작하기 위한 두 개의 토큰이 있다. 대부분의 관심은 아직 구체적인 내용이 나오지 않은 자금과 채권등에 맞물린 스테이블 코인, 
+코인데스크가 보도한 것처럼 리브라가 동작하기 위한 두 개의 토큰이 있다. 대부분의 관심은 아직 구체적인 내용이 나오지 않은 자금과 채권등에 맞물린 스테이블 코인, 
 리브라 코인이다. 그런데 이 바구니를 채우기 위해서는 페이스북은 "리브라 투자 토큰"(Libra investment token, LIT)라는 것을 들고 나왔다.
 PoolTogether처럼, LIT의 목적은 다른 사람들의 돈으로 얻어진 수익을 배분하는 것에 있다.   
 
