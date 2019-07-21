@@ -153,7 +153,7 @@ componentDidMount = async () => {
         // Get the contract instance.
         const Contract = truffleContract(MyContract);
         Contract.setProvider(web3.currentProvider);
-        const instance = await MyContract.deployed();
+        const instance = await Contract.deployed();
 
         this.setState({web3, accounts, contract: instance});
 
