@@ -297,7 +297,7 @@ const privateKey = Buffer.from(key, "hex");
 ...
 {% endhighlight %}  
 
-서버 애플리케이션에서도 truffle-contract를 사용할 수 있습니다.  전자서명을 위해서 truffle-hdwallet-provider를 추가하는데 
+서버 애플리케이션에서도 truffle-contract를 사용할 수 있습니다.  전자서명을 위해서 truffle-hdwallet-provider를 설치하고  
 HTTP provider를 지정해야 합니다. 
 
 <font size="2">
