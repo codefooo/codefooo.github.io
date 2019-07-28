@@ -341,7 +341,7 @@ write = async (ctx) => {
 
 
 [truffle-boxes]: https://www.trufflesuite.com/boxes/react
-[web3]: https://web3js.readthedocs.io/en/1.0/index.html
+[web3]: https://web3js.readthedocs.io
 [ethereumjs-tx]: https://www.npmjs.com/package/ethereumjs-tx
 [truffle-contract]: https://www.npmjs.com/package/truffle-contract
 [truffle-hdwallet]: https://www.npmjs.com/package/truffle-hdwallet-provider
