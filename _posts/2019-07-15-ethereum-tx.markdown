@@ -336,6 +336,25 @@ write = async (ctx) => {
 {% endhighlight %}  
 </font>
 
+서버에서도 truffle-contract를 사용할 수 있습니다. 이 경우에는 truffle-hdwallet-provider를 추가하고 HTTP provider를 지정합니다.
+
+{% highlight javascript %}
+
+...
+const TruffleContract = require("truffle-contract");
+const HDWalletProvider = require("truffle-hdwallet-provider");
+
+...
+const Contract = TruffleContract(MyContract);
+const provider = new HDWalletProvider(privateKeys, "http://localhost:7545");
+Contract.setProvider(provider);
+const instance = await Contract.deployed();
+
+
+{% endhighlight %}
+
+
+
 [truffle-boxes]: https://www.trufflesuite.com/boxes/react
 [web3]: https://web3js.readthedocs.io/en/1.0/index.html
 [ethereumjs-tx]: https://www.npmjs.com/package/ethereumjs-tx
