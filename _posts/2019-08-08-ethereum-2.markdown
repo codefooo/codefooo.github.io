@@ -91,7 +91,7 @@ ETH와 "BETH"의 가치는 이더리움 2.0의 성공과 그에 따른 대중의
 그 샤드에 접속해야 할 것입니다.아직 Phase 0의 비콘 체인에 집중하고 있어서 확실한 것은 나와 있지 않은 듯 하고 현재까지 알려진 바로는 이러한 "cross-shard"의 통신은 
 여러 단계를 거쳐야 하므로 매우 느릴 것으로 예상하고 있습니다. 레딧에서 비탈릭의 답변은 다음과 같습니다.
 
-![fig02]({{site.baseurl}}/assets/img/shard.png)
+![fig02]({{site.baseurl}}/assets/img/shard.PNG)
 
 
 ### 보상과 벌칙
