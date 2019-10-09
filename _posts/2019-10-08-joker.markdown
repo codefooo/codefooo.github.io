@@ -2,6 +2,7 @@
 layout: post
 title: "J O K E R"
 date: 2019-10-08
+img: joker.jpg
 description: # Add post description (optional)
 tag: [joker]
 ---
