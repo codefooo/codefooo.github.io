@@ -120,7 +120,7 @@ Even so, bitcoin advocate and author Andreas Antonopoulos stressed that governan
 nothing to lose sleep over – especially since bitcoin’s transition to a purely transaction-fee rewards model will take 120 years.
 
 그렇다고 해도 비트코인 지지자이며 작가인 안드레아스 안토노풀로스는 비트코인 발행량을 둘러싼 거버넌스에 대해 걱정할 필요가 없을 것이라고 말합니다. – 특히 비트코인이 
-순수하게 트랜잭션 비용으로만 유지되려면 120년이 걸릴 것이라는 겁니다.
+순수하게 트랜잭션 비용만이 보상으로 지급되는 모델로 전환되려면 120년이 걸릴 것이라는 겁니다.
 
 Antonopoulos added that from the very launch of bitcoin in 2009, mining was always “a marginally profitable endeavor” never intended to stay constant.
 “[Mining rewards] dynamically adjust based on the network. … It’s a very complex economic environment. It’s not as simple as people think,” 
@@ -139,7 +139,7 @@ As such, Antonopoulos says the concerns surrounding a transition from a block su
 It’s already happening and every day [miners] make their decisions.”
 
 블록 보상에서 순수 트랜잭션 비용으로 전환되는 문제를 둘러싼 걱정은, 흔히 말해서 너무 과장되었다고 안토노풀로스는 말합니다.
-"블록 보상이 0이 되다고 해서 대단한 일이 일어나지는 않습니다." 그는 이야기 합니다. "그것은 예측가능하고 120년 동안 서서히 진행될 것입니다. 채굴자들이 지금도 매일 결정해야 하는 문제라는 말입니다." 
+"블록 보상이 0이 된다고 해서 대단한 일이 일어나지는 않습니다." 그는 이야기 합니다. "그것은 예측가능하고 120년 동안 서서히 진행될 것입니다. 채굴자들이 지금도 매일 결정해야 하는 문제라는 말입니다." 
 
 While the 18th million bitcoin may not be the best reminder of the ongoing reality of a limited supply cap, the next upcoming milestone on bitcoin’s 
 horizon assuredly will. Viewing the next bitcoin halving as a far more notable event in bitcoin’s history, venture capitalist William Mougayar said:
