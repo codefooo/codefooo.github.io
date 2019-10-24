@@ -10,9 +10,9 @@ tag: [bitcoin, mining]
 비트코인은 처음부터 그 발행량이 2100만개로 정해져 있습니다. 최근 [코인데스크 기사](https://www.coindesk.com/with-18-million-bitcoins-mined-how-hard-is-that-21-million-limit)에 따르면 
 현재 발행된 비트코인은 1800만개에 이르고 이제 약 3백만개가 남은 상황입니다. 남은 3백만개의 비트코인이 모두 채굴된 이후에는 어떻게 될까요? 코인데스크의 기사를 옮겨보겠습니다.  
 
-<b>Christine Kim</b>
-
 ## With 18 Million Bitcoins Mined, How Hard Is That 21 Million Limit?
+
+<b>Christine Kim</b>
 
 In a matter of hours, the 18 millionth bitcoin will have been mined and the world’s first cryptocurrency 
 will draw one step closer to its hard-coded cap of 21 million coins.
