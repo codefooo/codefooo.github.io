@@ -136,10 +136,21 @@ PoW에서는 해쉬파워가 네트워크를 유지했다면 PoS에서는 stakin
 
 ### 실행 환경(Execution Environment, EE) 
 
-Phase 2 에서나 진행될 애플리케이션의 실행환경은 아직 구체화된 것은 없는 것 같습니다. 현재 EVM이 eWasm으로 바뀔 것이고 그에 따라 여러 언어로 스마트 컨트랙트를 작성할 수 있게 될 것 같습니다. 
+Phase 2 에서 진행될 애플리케이션의 실행 환경은 아직 구체화된 것은 없는 것 같습니다. 현재 EVM이 eWasm으로 바뀔 것이고 그에 따라 여러 언어로 스마트 컨트랙트를 작성할 수 있게 될 것 같습니다. 
 최근 [기사](https://www.coindesk.com/5-takeaways-on-ethereum-2-0-from-vitaliks-beast-mode-blog-posts)에 의하면 가장 큰 변화는 앞으로 단일 트랜잭션이 
 실행환경 자체 내에서 지원되지 않을 것이라고 합니다. 이것은 현재 단일 이더리움 네트워크에서는 트랜잭션이 실패하는 경우 롤백이 되는 것이 당연한 것처럼 여겨지는데 샤딩이 적용된 
 이후에는 마치 다중 데이터베이스의 "Two-Phase Commit" 과 같은 상황이 발생하기 때문입니다. 물론 동일한 샤드 내에서는 여전히 트랜잭션의 원자성(atomicity)은 보장될 것이라고 합니다.  
+
+실행 환경에서 주목할 것은 "Stateless"라는 점입니다. "Stateless"가 어떤 의미로 사용되는지는 정확히 이해할 수 없지만 현재 이더리움은 하나의 "원장"에 모든 상태들(과거와 현재)이 저장된다는 점을 
+생각하면 이더리움 2.0은 완전히 다른 환경이 되지 않을까 싶습니다. 실행 환경이 어느 하나로 통일되는 것이 아니라 다양한 실행 환경이 샤드에서 운용될 수 있을 것이라고 합니다. 
+
+다음 [글](https://medium.com/@sina_mahmoodi/prototyping-eth2-stateless-contracts-with-scout-2fe01898d00a)에 있는 내용을 그대로 인용해보겠습니다.
+
+>As opposed to Eth1 which specifies how accounts/contracts look like, how the state is structured as a MPT, semantics of the EVM, etc. Eth2 abstracts these details and pushes them to layer 2. Instead Eth2 works with pure functions/reducers which have access only to 32 bytes of storage. These pure functions are expected to be Wasm blobs and are often referred to as execution environments (EEs). The 32-byte storage will most likely be used to store a commitment to the full state (e.g. merkle root) of that EE.
+
+이렇게 되면 현재 이더리움의 PoW 체인도 하나의 실행 환경으로 비콘 체인의 "관리" 하에 들어가는 형태가 될 수 있을 것입니다.
+
+>This gives Eth2 a great degree of freedom. Various execution engines with completely different models can run on this framework. A few examples would be: Eth1 as an EE on top of Eth2, various account-based or UTXO-based token EEs, zero-knowledge based EEs (e.g. STARK verifier EE or SNARK verifier EE), Plasma OVM-like EEs, Libra EE, etc.
 
 ![fig01]({{site.baseurl}}/assets/img/eth2_Wei_Wang.PNG)
        
