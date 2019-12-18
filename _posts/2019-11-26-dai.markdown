@@ -56,7 +56,7 @@ MKR 토큰 보유자들은 투표를 통해 시스템을 관리합니다. 이론
 
 MKR은 상환시 수수료를 지불하는 용도로도 사용되는데 사용된 MKR은 소각되어 없어지므로 DAI 대출과 상환이 활성화될수록 MKR의 희소성이 증가하고 그에 따라 MKR의 가격은 오르게 됩니다. MKR 토큰 보유자들은 Maker 시스템이 잘 되면 이익을 보는 선순환 관계에 있기 때문에 올바른 거버넌스를 유지하려고 노력할 것입니다.
 
-![maker01]({{site.baseurl}}/assets/img/MakerDao.PNG)
+![maker01]({{site.baseurl}}/assets/img/MakerDAO.PNG)
 
 ## Global Settlement
 
