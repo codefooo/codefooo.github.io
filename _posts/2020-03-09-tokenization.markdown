@@ -24,7 +24,7 @@ Everyone will issue their own tokens, backed by their own assets. And because th
 Currently, the principal use of asset-backed tokens is to make illiquid things liquid. Say you have a stash of something valuable but difficult to transport. Twelve-foot steel girders, for example. You put up an advert on Craigslist saying “steel girders for sale, buyer collects”. And you wait. For a long time.
 
 현재, 자산을 기초로 하는 토큰의 주요 용도는 비유동적인 것들을 유동화하는 것입니다. 가치가 있지만 옮기기 어려운 것을 가지고 있다고 해봅시다. 12 피트의 철제 거더를 예로 들어보겠습니다.
-크레이그리스트에 "철제 거더 판매, 구매자 직접 운송"이라는 광고를 냅니다. 그리고 기다립니다. 오랫동안.
+크레이그리스트에 "철제 거더 판매, 구매자 직접 운반"이라는 광고를 냅니다. 그리고 기다립니다. 오랫동안.
 
 ![girder]({{site.baseurl}}/assets/img/girder.PNG)
 
@@ -49,7 +49,7 @@ But trading representations of objects rather than the objects themselves create
 
 So when a local builder turns up at your door saying, “Hey man, I need some girders,” you do a deal, don’t you? You sell some of the girders to the builder for cash. GirderCoin still exists – in fact it’s doing rather well – but it is no longer backed one-for-one by real girders. It is now “fractionally-reserved.” Banks, of course, have been doing this for centuries.  
 
-그래서 근처에 있는 건설 사업자가 문 앞에 와서 "거더가 몇 개 필요한데"라고 말하면, 계약을 할 것입니다, 그렇지 않습니까? 당신은 거더 몇 개를 현금을 받고 팔게 됩니다. GirderCoin은 여전히 존재하지만 – 아주 잘 있지만 – 더 이상은 실제 거더와 1 대 1로 연결되지는 않을 것입니다. 이제 "부분 지급 준비"된 상태가 되는 것입니다. “fractionally-reserved” 물론, 은행은 수 세기에 걸쳐 이런 식으로 운영되어 왔습니다.
+그래서 근처에 있는 건설 사업자가 문 앞에 와서 "거더가 몇 개 필요한데"라고 말하면, 계약을 할 것입니다, 그렇지 않습니까? 당신은 거더 몇 개를 현금을 받고 팔게 됩니다. GirderCoin은 여전히 존재하지만 – 오히려 잘 된 일입니다 – 더 이상은 실제 거더와 1 대 1로 연결되지는 않을 것입니다. 이제 "부분 지급 준비"된 상태가 되는 것입니다. “fractionally-reserved” 물론, 은행은 수 세기에 걸쳐 이런 식으로 해왔습니다.
 
 But you now have a problem. If a GirderCoin holder actually tries to collect their girders, you haven’t got them. Fortunately, as previously mentioned, steel girders are fungible: token ownership confers the right to claim “a” girder, but not any specific girder. And you’ve sensibly put a clause in GirderCoin’s terms and conditions saying that anyone who wants to collect their girders must give three days’ notice. So if anyone does try to claim their girders, you have three days to obtain them. Unless you are lucky enough to find a handy advert on Craigslist, you will have to buy them at full price from a steel supplier. It might be more convenient, though less honest, simply to disappear.
 
@@ -79,12 +79,12 @@ If you are honest, your exit strategy from all this expense is to look for a buy
 The dream of tokenizing all assets, enabling people to issue their own coins and have them accepted as money, founders on the problem of trust. By definition, physical assets are not decentralized. Your girder stash is yours until you monetize it, but once you monetize it, you become custodian for other people’s girders. You need substantial infrastructure and a flawless reputation for them to trust you enough to accept your coin, even to hold as an investment. For tokens to be widely accepted as money requires even more trust. And if you don’t want to be responsible for looking after other people’s property, then we are back to “buyer collects.” Paradoxically, decentralizing physical assets destroys the whole point of asset-backed tokens.
 
 모든 자산을 토큰화한다는, 사람들이 자신만의 토큰을 발행하고 그것을 화폐로 사용하겠다는 꿈은, 신뢰의 문제때문에 좌초됩니다. 당연히, 물리적인 자산은 탈중앙화되지 않습니다.
-당신의 거더 창고는 그것을 화폐로 사용할 때까지는 당신 소유입니다, 그러나 한번 화폐화하고나면, 당신은 다른 사람들이 소유한 거더의 관리인이 됩니다. 당신의 코인을 투자로 보유하거나 사용하는 그들에게 충분한 신뢰를 주기 위해 좋은 평판과 상당한 기반시설이 필요합니다. 토큰이 화폐로 널리 사용되려면 상당한 신뢰가 필요합니다. 다른 사람의 재산을 지키는 책임을 지고 싶지 않다면 "구매자 직접 운송"으로 되돌아 가야 합니다. 역설적으로 물리적인 자산을 탈중앙화하는 것은 자산에 기초한 토큰의 모든 주장들을 폐기하는 일입니다.
+당신의 거더 창고는 그것을 화폐로 사용할 때까지는 당신 소유입니다, 그러나 한번 화폐화하고나면, 당신은 다른 사람들이 소유한 거더의 관리인이 됩니다. 당신의 코인을 투자로 보유하거나 사용하는 그들에게 충분한 신뢰를 주기 위해 좋은 평판과 상당한 기반시설이 필요합니다. 토큰이 화폐로 널리 사용되려면 상당한 신뢰가 필요합니다. 다른 사람의 재산을 지키는 책임을 지고 싶지 않다면 "구매자 직접 운반"으로 되돌아 가야 합니다. 역설적으로 물리적인 자산을 탈중앙화하는 것은 자산에 기초한 토큰의 모든 주장들을 폐기하는 일입니다.
 
 The cost of reliably linking tokens to real assets inevitably drives the market towards consolidation, oligopoly and even monopoly. Of course, people could back their tokens with decentralized digital assets. But investing in digital assets so that you can issue a digital asset of your own is a long way from simply monetizing whatever is lying around in your garage. Why would anyone bother to do this?
 
-실제 자산과 토큰을 신뢰성있게 연결하는 비용은 불가피하게 시장을 경직되게 하고, 소수의 독점화, 그리고 독점하게 하는 방향으로 이끌어 갑니다. 물론 탈중앙화된 디지털 자산으로 되돌아갈 수 있습니다. 그러나 디지털 자산에 투자하는 일, 그래서 자신만의 디지털 자산을 발행하는 일은 당신의 차고에 있는 무엇인가를 단순히 화폐화하는 일과는 전혀 다른 일입니다. 그런 것을 하기 위해 사람들이 신경을 쓰려고 할까요?
+실제 자산과 토큰을 신뢰성있게 연결하는 비용은 불가피하게 시장을 경직되게 하고, 소수의 매점, 그리고 독점하게 하는 방향으로 이끌어 갑니다. 물론 탈중앙화된 디지털 자산으로 되돌아갈 수 있습니다. 그러나 디지털 자산에 투자하는 일, 그래서 자신만의 디지털 자산을 발행하는 일은 당신의 차고에 있는 무엇인가를 단순히 화폐화하는 일과는 전혀 다른 일입니다. 사람들이 힘들게 그런 것을 하려고 할까요?
 
 If everyone owned decentralized digital assets as a matter of course, the utopia of everyone issuing their own asset-backed tokens and transacting freely without government involvement could perhaps become reality. But until that happens, tokenization of assets seems likely to remain the province of professionals, and “be your own bank” merely a lovely dream.
 
-모두가 탈중앙화된 디지털 자산을 흔하게 가지고 있고, 만인의 유토피아에서 자산에 기초한 자신만의 토큰을 발행하고 정부의 개입없이 자유롭게 거래할 수 있는 날이 올 수도 있을 것입니다. 그러나 그런 일이 일어나기 전까지는, 자산의 토큰화는 아직 전문가들의 영역으로 남아있고, "스스로 은행이 되자"는 것은 그냥 멋진 꿈일 뿐입니다.
+모두가 탈중앙화된 디지털 자산을 흔하게 가지고 있고, 유토피아의 사람들이 자산에 기초한 자신만의 토큰을 발행하고 정부의 개입없이 자유롭게 거래할 수 있는 날이 올 수도 있을 것입니다. 그러나 그런 일이 일어나기 전까지는, 자산의 토큰화는 아직 전문가들의 영역으로 남아있는 것처럼 보이고, "스스로 은행이 되자"는 것은 그냥 멋진 꿈일 뿐입니다.
