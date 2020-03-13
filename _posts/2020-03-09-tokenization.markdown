@@ -83,7 +83,7 @@ The dream of tokenizing all assets, enabling people to issue their own coins and
 
 The cost of reliably linking tokens to real assets inevitably drives the market towards consolidation, oligopoly and even monopoly. Of course, people could back their tokens with decentralized digital assets. But investing in digital assets so that you can issue a digital asset of your own is a long way from simply monetizing whatever is lying around in your garage. Why would anyone bother to do this?
 
-실제 자산과 토큰을 신뢰성있게 연결하는 비용은 불가피하게 시장을 경직되게 하고, 소수의 매점, 그리고 독점하게 하는 방향으로 이끌어 갑니다. 물론 탈중앙화된 디지털 자산으로 되돌아갈 수 있습니다. 그러나 디지털 자산에 투자하는 일, 그래서 자신만의 디지털 자산을 발행하는 일은 당신의 차고에 있는 무엇인가를 단순히 화폐화하는 일과는 전혀 다른 일입니다. 사람들이 힘들게 그런 것을 하려고 할까요?
+실제 자산과 토큰을 신뢰성있게 연결하는 비용은 불가피하게 시장을 경직되게 하고, 소수의 매점, 그리고 독점하게 하는 방향으로 이끌어 갑니다. 물론 탈중앙화된 디지털 자산으로 되돌아갈 수 있습니다. 그러나 디지털 자산에 투자하는 일, 그래서 자신만의 디지털 자산을 발행하는 일은 당신의 차고에 있는 물건을 단순히 화폐화하는 일과는 전혀 다른 일입니다. 사람들이 힘들게 그런 것을 하려고 할까요?
 
 If everyone owned decentralized digital assets as a matter of course, the utopia of everyone issuing their own asset-backed tokens and transacting freely without government involvement could perhaps become reality. But until that happens, tokenization of assets seems likely to remain the province of professionals, and “be your own bank” merely a lovely dream.
 
