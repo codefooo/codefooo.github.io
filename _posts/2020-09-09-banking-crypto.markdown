@@ -7,7 +7,7 @@ description: # Add post description (optional)
 tag: [blockchain, defi]
 ---
 
-최근 DeFi 광풍이 불면서 흡사 과거 묻지마 ICO 투자를 떠올리는 사람들이 많습니다. 사토시의 비트코인은 분명히 기존 금융 시스템에 대한 대안적인 모습이었지만 현재의 암호화폐 시장의 양상은 많이 달라져 있습니다. 과연 이것이 발전인 것인지, 아니면 과거의 실패를 답습하는 것인지, 코인데스크에 실린 [기사](https://www.coindesk.com/banks-crypto-lost-soul)를 옮겨봅니다.
+최근 DeFi 광풍이 불면서 과거 묻지마 ICO 투자를 떠올리는 사람들이 많습니다. 사토시의 비트코인은 분명히 기존 금융 시스템에 대한 대안적인 모습이었지만 현재의 암호화폐 시장의 양상은 많이 달라져 있습니다. 과연 이것이 발전인 것인지, 아니면 과거의 실패를 답습하는 것인지, 코인데스크에 실린 [기사](https://www.coindesk.com/banks-crypto-lost-soul)를 옮겨봅니다.
 
 ## Banks Are Toast But Crypto Has Lost Its Soul
 은행은 망하기 쉽고 암호화폐는 영혼이 없다.
@@ -24,11 +24,10 @@ The immediate response to the 2008 crisis was to tie down the banks that had so 
 
 But preventing banks from crashing the financial system and wrecking sovereign finances didn’t necessarily mean making them safer for their customers. In 2014, the government of Cyprus, egged on by the International Monetary Fund and the European Central Bank, imposed losses of more than 50% on uninsured bank deposits in the island’s two largest banks. The shockwave from this reverberates around the world to this day. 
 
-그러나 sovereign finances와 금융 시스템의 붕괴로부터 은행들을 살리는 일이 꼭 고객들을 보호하는 일을 의미하지는 않았습니다. 2014년, 국제 통화 기금과 유럽의 중앙은행으로부터 압박을 받은 사이프러스(또는 키프로스) 정부는 두 개의 대형 은행에 예치된 보험에 들지 않은 예금에 대해 50%의 손실을 강제했습니다. 그 충격파는 지금까지도 전세계적으로 파문을 일으키고 있습니다. 
+그러나 국가 재정(sovereign finances)과 금융 시스템의 붕괴로부터 은행들을 살리는 일이 꼭 고객들을 보호하는 일을 의미하지는 않았습니다. 2014년, 국제 통화 기금과 유럽의 중앙은행으로부터 압박을 받은 사이프러스(또는 키프로스) 정부는 두 개의 대형 은행에 예치된 보험에 들지 않은 예금 계좌에 50% 이상의 손실을 강제했습니다. 그 충격파는 지금까지도 전세계적으로 파문을 일으키고 있습니다. 
 
->사이프러스의 금융위기
-<br/>
->sovereign finances(소버린 금융)
+>작은 섬나라인 사이프러스는 외부 자본이 많이 유입되는 구조를 가지고 있습니다. 그런데 그리스의 재정위기로 인해 은행들이 큰 손실을 보면서 신용도가 추락하고 IMF로부터 구제금융을 받게 됩니다.
+문제는 구제금융 제공의 조건이 은행 고객들의 예금에 대해 높은 세율을 적용하므로써 사실상 지급 보증 금액을 낮추게 됩니다. 이로 인해 예금자들의 뱅크런이 일어나고 사이프러스의 경제는 추락합니다.  
 
 The financial crisis had been destructive, yes, but depositors had been protected: The U.S. government had temporarily removed the limit on FDIC deposit insurance, and governments in other countries had guaranteed all deposits in failing banks. But after the Cyprus haircuts, bank deposits were no longer safe. And it wasn’t just large deposits that were suddenly at risk. The Cypriot government originally intended to impose losses on smaller deposits – deposits that were supposedly 100% guaranteed. Fortunately, the Cypriot Parliament had the sense to refuse to pass the legislation. But what is to stop the government of another country, one with a more compliant legislature, from reneging on deposit insurance?
 
