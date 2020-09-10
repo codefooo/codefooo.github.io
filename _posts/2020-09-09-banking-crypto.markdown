@@ -2,7 +2,7 @@
 layout: post
 title: "Banks Are Toast But Crypto Has Lost Its Soul"
 date: 2020-09-09
-img: road.jpg
+img: bicycle.jpg
 description: # Add post description (optional)
 tag: [blockchain, defi]
 ---
