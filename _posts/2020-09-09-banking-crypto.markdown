@@ -14,10 +14,10 @@ tag: [blockchain, defi]
 <b>Frances Coppola</b>
 
 The 2008 financial crisis created an extraordinary financial melting pot. Into the soup went the legacy system, now shown to be unfit for this purpose: new ways of transacting in old currencies and new types of money. This witches’ brew has now been stewing for over a decade, but the type of potion it will eventually produce is still unknown. Will it be a financial system fit for the digital age? Or will it simply be a souped-up version of the old system, with all its flaws and toxicity?
-
+<br/>
 
 2008년 금융위기는 보기드문 금융의 용광로가 되었습니다. 그 안에서 레거시 시스템은 녹아버렸고, 지금의 목표: 기존 통화와 새로운 형태의 돈을 거래하는 새로운 방식이라는 목적에도 잘 맞지 않는 것처럼 보입니다.  이 마녀들의 혼합물은 지금 10년 넘게 끓고 있는데, 최종적인 결과물이 어떤 형태가 될지는 아직도 모르겠습니다. 디지털 시대에 걸맞는 금융 시스템이 될 수 있을지? 아니면 그냥 온갖 결점과 독성을 가진 옛날 시스템들의 짜깁기가 되어 버릴지? 
-
+<br/>
 
 The immediate response to the 2008 crisis was to tie down the banks that had so nearly blown up the world. New rules were created to restrict their activities. New regulators were created to police their activities and prevent them doing anything that looked too risky. New capital and liquidity requirements were imposed on them so they were less likely to run out of money in a crisis and, if they did, less likely to need bailing out by taxpayers.
 
