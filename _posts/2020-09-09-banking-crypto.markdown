@@ -23,7 +23,7 @@ The 2008 financial crisis created an extraordinary financial melting pot. Into t
 The immediate response to the 2008 crisis was to tie down the banks that had so nearly blown up the world. New rules were created to restrict their activities. New regulators were created to police their activities and prevent them doing anything that looked too risky. New capital and liquidity requirements were imposed on them so they were less likely to run out of money in a crisis and, if they did, less likely to need bailing out by taxpayers.
 <br/>
 <br/>
-2008년의 위기에 대한 즉각적인 반응은 은행들을 결박하는 것이었고 전 세계를 거의 폭발 직전까지 가게 했습니다. 은행들의 역할을 제한하는 새로운 규칙들이 만들어졌습니다. 너무 위험한 행위를 막고 그들의 행동을 감시하는 기관들이 만들어졌습니다. 자본과 유동성에 대한 새로운 조건들을 준수하므로써 위기에서 돈이 덜 고갈되도록 하고, 그렇게 되더라도 (납세자들이 내는) 세금으로 구제하지 않아도 되도록 했습니다.
+2008년의 위기에 대한 즉각적인 반응은 전 세계를 거의 폭발 직전까지 가게 한 은행들을 결박하는 것이었습니다. 은행들의 역할을 제한하는 새로운 규칙들이 만들어졌습니다. 너무 위험한 행위를 막고 그들의 행동을 감시하는 기관들이 만들어졌습니다. 자본과 유동성에 대한 새로운 조건들을 준수하므로써 위기에서 돈이 덜 고갈되도록 하고, 그렇게 되더라도 (납세자들이 내는) 세금으로 구제하지 않아도 되도록 했습니다.
 <br/>
 <br/>
 But preventing banks from crashing the financial system and wrecking sovereign finances didn’t necessarily mean making them safer for their customers. In 2014, the government of Cyprus, egged on by the International Monetary Fund and the European Central Bank, imposed losses of more than 50% on uninsured bank deposits in the island’s two largest banks. The shockwave from this reverberates around the world to this day. 
