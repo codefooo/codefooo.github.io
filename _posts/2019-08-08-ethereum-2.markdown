@@ -43,7 +43,7 @@ ETH와 "BETH"의 가치는 이더리움 2.0의 성공과 그에 따른 대중의
 이를 참조하여 검증단 후보군, "validator pool(set)"을 구성하고 여기에서 검증자들을 랜덤하게 선택하게 됩니다. 32 이더보다 더 많은 이더를 staking하는 경우에는 후보군에서
 자리를 여러 개 차지하는 셈이 되므로 검증단으로 선택될 확률이 높아질 수는 있겠습니다.
 
-참고로 ["deposit 컨트랙트"](https://github.com/ethereum/eth2.0-specs/tree/dev/deposit_contract)는 2019년 10월로 예정된 Devcon 5에서 공개되고 검증단 후보 "모집"이 시작될 것이라고 합니다(그러나 미확정된 사항들로 인하여 연기됨). 네트워크의 안정성을 보장할 수준으로 이더가(약 300만 이더를 예상) staking 되면
+참고로 "deposit 컨트랙트"는 2019년 10월로 예정된 Devcon 5에서 공개되고 검증단 후보 "모집"이 시작될 것이라고 합니다(그러나 미확정된 사항들로 인하여 연기됨). 네트워크의 안정성을 보장할 수준으로 이더가(약 300만 이더를 예상) staking 되면
 비콘 체인을 오픈할 계획이라고 합니다. 순조롭게 진행된다면 2020년 초에는 이더리움 2.0 Phase 0의 모습을 보게될 것으로 기대합니다.
 
 >The plan is to deploy the contract in a ceremony at DevCon V in early October this year. Once the deposit contract has received around two million ether, representing sixty-five thousand validators, we can start the beacon chain with confidence that it will be secure against attack.
