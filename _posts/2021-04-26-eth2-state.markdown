@@ -65,9 +65,7 @@ class ExecutableData(Container):
 
 ### Rayonism
 
-이더리움 클라이언트 개발자들은 이러한 개념을 구체화시키기 위해, 즉 Merge된 테스트넷을 구성해보기로 했습니다. [블로그](https://blog.ethereum.org/2021/04/02/finalized-no-25/)의 
-내용에 의하면 다소 단순화한 스펙 "Rayonism"을 가지고 테스트넷을 만들어보는 것 같습니다. 이렇게 Merge를 위해서는 eth1과 eth2 클라이언트의 수정이 
-필요합니다. 이러한 내용들은 아직 연구 중이기 때문에 변경될 부분들이 많을 것입니다. 좀 더 구체적인 사항들은 다음 링크들을 참조하기 바랍니다.
+이더리움 클라이언트 개발자들은 이러한 개념을 구체화시키기 위해, 즉 Merge된 테스트넷을 구성해보기로 했습니다. [블로그](https://blog.ethereum.org/2021/04/02/finalized-no-25/)의 내용에 의하면 "Rayonism"이라고 명명한 단순화한 스펙을 가지고 테스트넷을 만들어보려는 것 같습니다. 이렇게 Merge를 위해서는 eth1과 eth2 클라이언트의 수정이 필요합니다. 이러한 내용들은 아직 연구 중이기 때문에 변경될 부분들이 많을 것입니다. 좀 더 구체적인 사항들은 다음 링크들을 참조하기 바랍니다.
 
 [https://notes.ethereum.org/m9IX3OkkTveXCCOSzGkUiw](https://notes.ethereum.org/m9IX3OkkTveXCCOSzGkUiw)
 
