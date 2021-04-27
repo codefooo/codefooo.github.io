@@ -2,7 +2,7 @@
 layout: post
 title: "The State of Eth2"
 date: 2021-04-26
-img: bicycle.jpg # Add image post (optional)
+img: exits.jpg # Add image post (optional)
 description: # Add post description (optional)
 tag: [etherum]
 ---
@@ -70,7 +70,6 @@ eth1 체인에 그대로 남는다는 것입니다.
 비콘 블록을 제안하는 검증자가 지정한 주소(coinbase 주소)로 
 트랜잭션 수수료가 전송되는 형태입니다(적용 예정인 EIP-1559은 그대로).
 
-
 ### Rayonism
 
 이더리움 클라이언트 개발자들은 이러한 개념을 구체화시키기 위해, 즉 Merge된 테스트넷을 구성해보기로 했습니다. 
@@ -81,4 +80,3 @@ eth1 체인에 그대로 남는다는 것입니다.
 [https://notes.ethereum.org/m9IX3OkkTveXCCOSzGkUiw](https://notes.ethereum.org/m9IX3OkkTveXCCOSzGkUiw)
 
 [https://hackmd.io/@n0ble/ethereum_consensus_upgrade_mainnet_perspective](https://hackmd.io/@n0ble/ethereum_consensus_upgrade_mainnet_perspective)
-
