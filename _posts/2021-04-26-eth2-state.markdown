@@ -51,7 +51,9 @@ Geth를 비롯한 이더리움 1.0 개발팀과
 
 ["Executable Beacon chain"](https://ethresear.ch/t/executable-beacon-chain/8271)의 주요 제안은 다음과 같습니다.
 
->"We propose to get rid of this complexity by embedding eth1 data (transactions, state root, etc) into beacon blocks and obligating beacon proposers to produce executable eth1 data. This enshrines eth1 execution and validity as a first class citizen at the core of the consensus."
+>"We propose to get rid of this complexity by embedding eth1 data (transactions, state root, etc) into beacon blocks 
+and obligating beacon proposers to produce executable eth1 data. This enshrines eth1 execution and validity 
+as a first class citizen at the core of the consensus."
 
 한마디로 비콘 체인에 eth1 데이터를 기록하고 검증하게 한다는 것입니다. 비콘 체인의 슬롯에서 블록을 제안하는 검증자가 
 부가적인 eth1 데이터를 만들어 기록을 하고 검증단은 그것을 검증하는 것입니다. 여기서 "eth1 데이터"라는 것은 PoW의 블록 정보입니다. 
@@ -60,14 +62,11 @@ Geth를 비롯한 이더리움 1.0 개발팀과
 
 비콘 체인에서 eth1 데이터를 사용하는 것은 전혀 어색한 일이 아닙니다. 검증자들의 32 이더 예치 컨트랙트는 eth1에 존재하고 
 이미 비콘 체인은 예치 컨트랙트를 읽어서 검증자 풀에 검증자들을 추가하기 때문에 eth1의 트랜잭션을 처리하는 것은 다소 부하가 있겠지만 
-어려운 일이 아니라는 것입니다. 물론 비콘 블록의 크기가 커져서 다소 부담이 될 수 있고 
-또 비콘 노드를 실행하는 검증자는 eth1 full 노드(Geth와 같은 클라이언트)를 함께 운용해야 
-할 수도 있습니다(coinbase 주소로 수수료를 받을 수 있습니다).
+어려운 일이 아니라는 것입니다. 물론 비콘 블록의 크기가 커져서 다소 부담이 될 수 있고 또 비콘 노드를 실행하는 검증자는 eth1 full 
+노드(Geth와 같은 클라이언트)를 함께 운용해야 할 수도 있습니다(coinbase 주소로 수수료를 받을 수 있습니다).
 
-트랜잭션 수수료 역시 비콘 블록을 생성하는 검증자가 받습니다. 특이한 점은 이렇게 받은 수수료는 
-eth1 체인에 그대로 남는다는 것입니다.
-즉 지금 유통되는 이더와 마찬가지로 얼마든지 사용 가능하다는 말이 되겠습니다. 
-비콘 블록을 제안하는 검증자가 지정한 주소(coinbase 주소)로 
+트랜잭션 수수료 역시 비콘 블록을 생성하는 검증자가 받습니다. 특이한 점은 이렇게 받은 수수료는 eth1 체인에 그대로 남는다는 것입니다.
+즉 지금 유통되는 이더와 마찬가지로 얼마든지 사용 가능하다는 말이 되겠습니다. 비콘 블록을 제안하는 검증자가 지정한 주소(coinbase 주소)로 
 트랜잭션 수수료가 전송되는 형태입니다(적용 예정인 EIP-1559은 그대로).
 
 ### Rayonism
