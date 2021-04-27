@@ -2,7 +2,7 @@
 layout: post
 title: "The State of Eth2"
 date: 2021-04-26
-img: exits.jpg # Add image post (optional)
+img: bicycle.jpg # Add image post (optional)
 description: # Add post description (optional)
 tag: [etherum]
 ---
