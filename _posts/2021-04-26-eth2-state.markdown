@@ -47,17 +47,6 @@ tag: [etherum]
 
 한마디로 비콘 체인에 eth1 데이터를 기록하고 검증하게 한다는 것입니다. 비콘 체인의 슬롯에서 블록을 제안하는 검증자가 부가적인 eth1 데이터를 만들어 기록을 하고 검증단은 그것을 검증하는 것입니다. 여기서 "eth1 데이터"라는 것은 PoW의 블록 정보입니다. 이렇게 하면 현재 PoW 채굴자들은 비콘 체인의 검증자들로 대체할 수 있게 됩니다. 채굴자들은 이제 해고되는 것입니다(그동안 많이 벌었지! 😛).
 
-```
-class ExecutableData(Container):
-    coinbase: bytes20  # Eth1 address that collects txs fees
-    state_root: bytes32
-    gas_limit: uint64
-    gas_used: uint64
-    transactions: [Transaction, MAX_TRANSACTIONS]
-    receipts_root: bytes32
-    logs_bloom: ByteList[LOGS_BLOOM_SIZE]
-```
-
 비콘 체인에서 eth1 데이터를 사용하는 것은 전혀 어색한 일이 아닙니다. 검증자들의 32 이더를 예치하는 예치 컨트랙트는 eth1에 존재하고 이미 비콘 체인은 예치 컨트랙트를 읽어서 검증자 풀에 검증자들을 추가하기 때문에 eth1의 트랜잭션을 처리하는 것은 다소 부하가 있겠지만 어려운 일이 아니라는 것입니다. 물론 비콘 블록의 크기가 커져서 다소 부담이 될 수 있고 또 비콘 노드를 실행하는 검증자는 eth1 full 노드(Geth와 같은 클라이언트)를 함께 운용해야 할 수도 있습니다(coinbase 주소로 수수료를 받을 수 있습니다).
 
 트랜잭션 수수료 역시 비콘 블록을 생성하는 검증자가 받습니다. 특이한 점은 이렇게 받은 수수료는 eth1 체인에 그대로 남는다는 것입니다.
