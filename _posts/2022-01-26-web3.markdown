@@ -113,11 +113,11 @@ Web 3가 인터넷을 탈중앙화시키고 혁신을 가져올 것이라는 주
 
 >Given the history of why web1 became web2, what seems strange to me about web3 is that technologies like ethereum have been built with many of the same implicit trappings as web1. To make these technologies usable, the space is consolidating around… platforms. Again. People who will run servers for you, and iterate on the new functionality that emerges. Infura, OpenSea, Coinbase, Etherscan.
 
-Web 3 프로토콜 역시 다양한 애플리케이션의 출현을 따라갈 수 없고 결국 Web 1.0에서 Web 2.0으로 전환되는 과정에서 일어난 것들이 반복(iteration), 즉 탈중앙화 프로토콜이 먼저 등장하지만 결국 애플리케이션들은 여러 중앙화된 플랫폼들이 제공하는 서비스들을 바탕으로 개발될 수 밖에 없고 이미 그렇게 진행되고 있다는 것입니다.
+Web 3 프로토콜 역시 다양한 애플리케이션의 출현을 따라갈 수 없고 결국 Web 1.0에서 Web 2.0으로 전환되는 과정에서 일어난 것들이 반복(iteration), 즉 탈중앙화 프로토콜이 먼저 등장하지만 결국 애플리케이션들은 중앙화된 플랫폼들이 제공하는 "clinet-server" 형태의 서비스들을 바탕으로 개발될 수 밖에 없고 이미 그렇게 진행되고 있다는 것입니다.
 
 >Iterating quickly on centralized platforms is already outpacing the distributed protocols and consolidating control into platforms.
 
-Web 3는 아직 초기 단계라는 주장에 대해서는, 블록체인 초기에 성능 문제에 대한 반응처럼, 이미 10여년이 지난 지금도(비트코인) 성능은 여전히 느린 것처럼 결국 Web 3도 그렇게 될 것이라고 생각하는 듯 합니다. 정보기술 분야에서 10년이라는 세월은(이더리움의 5년을 포함해서) 상당히 긴 시간입니다. 어쩌면 초기 단계이기 때문에 Web 3의 지향점과 반대되더라도 거부감 없이 중앙화된 서비스 기반 위에 그것을 구현하려고 하는 지도 모릅니다. 이런 경향은 탈중앙화 자체가 실제로 현실적이지도 않고 결국에는 탈중앙화의 중요성이 최소화되면서 시간이 흐를수록 Web 3의 이상으로부터 멀어지게 만들 것입니다. 
+Web 3는 아직 초기 단계라는 주장에 대해서는, 블록체인 초기에 성능 문제에 대한 반응처럼, 이미 10여년이 지난 지금도(비트코인) 성능은 여전히 느린 것처럼 결국 Web 3도 그렇게 될 것이라고 생각하는 듯 합니다. 정보기술 분야에서 10년이라는 세월은(이더리움의 +5년을 포함해서) 상당히 긴 시간입니다. 어쩌면 초기 단계이기 때문에 Web 3의 지향점과 반대되더라도 거부감 없이 중앙화된 서비스 기반 위에 그것을 구현하려고 하는 지도 모릅니다. 이런 경향은 탈중앙화 자체가 실제로 현실적이지도 않고 결국에는 탈중앙화의 중요성이 최소화되면서 시간이 흐를수록 Web 3의 이상으로부터 멀어지게 만들 것입니다. 
 
 >This might suggest that decentralization itself is not actually of immediate practical or pressing importance to the majority of people downstream, that the only amount of decentralization people want is the minimum amount required for something to exist, and that if not very consciously accounted for, these forces will push us further from rather than closer to the ideal outcome as the days become less early.
 
