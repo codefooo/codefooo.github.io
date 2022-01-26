@@ -1,0 +1,130 @@
+---
+layout: post
+title: "What is Web 3?"
+date: 2022-01-26
+img: bicycle.jpg # Add image post (optional)
+description: # Add post description (optional)
+tag: [web3]
+---
+
+
+최근 인터넷에서 글로벌 IT 기업들의 리더들과 블록체인 창립자들이 서로 "Web 3"에 대해 논쟁을 벌이고 있습니다. Web 3는 탈중앙화 웹 또는 차세대 웹, 그러니까 현재 인터넷의 다음 버전에 해당하는 것으로 받아들이기 때문에 현재의 인터넷을 혁신할 다음 기술은 어떤 모습이 되어야 하는가에 대해 저마다 자신들의 백그라운드에 기반한 "확신"을 가지고 있는 것 같습니다. 코인데스크의 기사를 중심으로 어떤 이야기들이 있는지 살펴보도록 하겠습니다.
+
+
+우선 Web 3 논쟁을 촉발시킨 것은 일론 머스크("Tesla" 대표)와 잭 도시(전 트위터 대표, 현 "Block" 대표)의 소셜 미디어의 언급이었습니다. 두 사람 모두 Web 3에 대해 실체없는 마케팅 용어라는 의견을 가지고 있는 듯 보입니다.  
+
+
+["What Jack Dorsey’s Beef With ‘Web 3′ Is Really About"][coindesk1]
+
+잭 도시는 비트코인의 열렬한 지지를 보내는 유명인사 중 한 명인데, Web 3에 관해서는 부정적인 견해를 가지고 있습니다. 암호화폐, 블록체인 그리고 탈중앙화 웹으로 이어지는 "의식의 흐름"을 가지고 있는 것이 블록체인 지자들의 일반적인 성향임을 감안하면 잭 도시의 비판적인 입장은 선뜻 납득이 가지 않는 부분이 있긴 합니다.
+
+잭 도시는 Web 3가 단지  "nothing more than a venture capitalist (VC) enrichment scheme"이라고 규정합니다. 즉 벤처 캐피탈이 자신들의 이익을 위해 만들어낸 허상이라고 말합니다. 잭 도시의 맥락을 이해하려면 비트코인 "Maximalist"들이 비트코인 이외의 코인들, 즉 알트 코인에 대해 보여온 부정적인 시각을 다시 생각해볼 필요가 있습니다. 
+
+잭 도시는 유일한 암호화폐는 비트코인이어야 한다는 확고한 전제를 가지고 있습니다. 즉 비트코인 이외의 암호화폐들은 질서를 교란시키는 방해물에 불과한 것입니다. 하지만 우리가 말하는 블록체인 기술이란 비트코인이 가진 송금 기능과 약간의 스크립트 지원을 넘어 소위 말하는 "스마트 컨트랙트"를 떠올리는 것이 일반적입니다. 최근 몇 년간의 디파이 붐과 또 NFT에 대한 많은 관심은 그것이 특정 기업의 서비스가 아니라 퍼블릭 블록체인에서 실행되는스마트 컨트랙트에 기반하고 있기 때문일 것입니다. 그리고 그 중심에 이더리움이 있습니다.
+
+하지만 잭 도시는 비트코인 지지자이고 거꾸로 말하면 경쟁관계에 있는 이더리움에 대한 열렬한 비판자라고 할 수 있습니다. Web 3는 블록체인 기술, 스마트 컨트랙트, 그리고 이더리움이 이루려고 하는 모든 것들과 사실상 맥락이 같습니다. 따라서 잭도시는 암호화폐 == 비트코인은 옹호하지만 그 외의 것들은 모두 부정하는 입장을 취하는 것입니다.
+
+>Maximalists (though not all Bitcoiners) also believe that other cryptos are a threat to that vision (“an attack on Bitcoin,” as they often put it), primarily because of their compromises on decentralization.
+
+사실 비트코인 지지자들은 비트코인의 PoW가 진정한 탈중앙화이고 이더리움의 장기적인 목표인 PoS는 탈중앙화의 가치를 희생시키는 것이라고 주장합니다. 또 이더리움을 비롯한 알트 코인들은 결과적으로 탈중앙화의 생태계를 분열시킬 것이라는 생각을 가지고 있는 것 같습니다.
+
+"탈중앙화 극장(decentralization theater)"이라는 표현이 있습니다. 비트코인 지지자들이 무늬만 탈중앙화인 블록체인을 조롱할 때 쓰는 표현입니다. 영화는 검열될 수 있고 극장에서 상영을 중단할 수도 있습니다. 비트코이너들이 다른 블록체인을 보는 관점은 "진짜" 블록체인이 아니라 영화같은(연출되고 규제될 수 있는) 블록체인이라는 의미도 담고 있습니다.
+
+
+>But basically all Bitcoiners are extremely skeptical of the involvement of for-profit entities in creating new tokens, arguing in part that such a role inherently compromises the decentralization of systems because there’s either a centralized entity able to make their own changes to the system, or a clear target for government pressure to censor a system. See for example the stablecoins USDT and USDC, whose administrators, Tether and Circle respectively, have the power to block any blacklisted user, or seize their funds.
+
+비트코이너들의 주장은 나름 일리가 있습니다. 이더리움과 같은 블록체인에서 발행하는 토큰은 그 발행주체가 분명한 중앙화된 구조이고 또 블록체인을 규제하는 정부의 타겟(증권법이나 자금세탁)이 될 수 있기 때문에 비트코인 외의 블록체인들(스마트 컨트랙트가 가능한 블록체인)에 대해 회의적인 시각을 가질 수 밖에 없다는 것입니다.
+
+글로벌 기술 기업들의 독점에서 벗어나자는 Web 3의 기본 취지에 대해서는 모두 공감하지만 문제는 잭 도시가 비판한 것처럼 Web 3를 뒷받침하고 있는 거대 벤처 캐피털(VC backer)의 자본입니다.  VC의 지원을 받는 Web 3 프로젝트들은 특정 집단의 이익을 향해서 움직일 수 밖에 없을 것입니다. 더구나 VC들이 토큰의 급등시키고 다시 팔아치우는 행태는 비판을 받아 마땅합니다.
+
+그러나 현실적으로 비트코인을 중심으로 하는 Web 3는 여러가지 측면에서 한계를 가질 수 밖에 없습니다. 비트코인의 근본적인 한계, 확정성의 문제, 채굴방식의 문제 등이 Web 3가 발전할 수 있는 기반으로는 부족하다는 것입니다. 
+
+우리가 지금 취해야 할 포지션은 무엇일까요? 가장 현명한 행동은 성급한 판단을 뒤로 좀 미루고 지켜볼 수 밖에 없다는 것입니다(suspending judgment). 왜냐하면 Web 3는 너무 너무 새로운 영역이기 때문입니다.
+
+근래에 Web 3가 유행어처럼 회자되고 있지만 이전부터 Web 3에 대한 이야기는 계속 진행되어 왔습니다. 이더리움 창립 멤버 중 한 명인 가빈 우드는  Web 3 재단을 만들고 폴카닷 프로젝트를 이끌고 있습니다. 가빈 우드는 이미 2014년 코인데스크에 기고한 글에서 Web 3에 대해 조금 더 구체적인 사항들을 제시했습니다.
+
+
+["What Is Web 3?"][coindesk2]
+
+가빈 우드는 Web 3를 trustless, zero-trust를 기반으로 하는 네트워크로 정의하는 것 같습니다. 현재의 인터넷, 흔히 "Web 2.0"이라고 하는 인터넷은 거의 대부분의 애플리케이션 서비스가 가입과 로그인 과정을 거칩니다. 더구나 개별 서비스의 가입하는 것도 번거롭기 때문에 인터넷 포탈 서비스의 아이디를 연계하여 사용하기도 합니다. 구글이나 페이스북과 같은 글로벌 IT기업들의 데이터베이스에 전세계 인터넷 사용자 정보들이 저장되어 있고 인터넷을 사용하면서 발생하는 모든 행위들이 기록되고 있다고 해도 과언이 아닙니다. 이러한 서비스 이용방식은 나의 정보를 누군가(arbitrary entities)에게 맡기는, 즉 상대를 신뢰한다는 것을 전제를 합니다.  
+
+그러나 개인 정보들이 당사자의 허락없이 기업이 마음대로 활용하거나, 심지어 정부기관이 개인의 사생활을 들여다보고 감시하는 체제를 구축하는데 이용될 수도 있다는 사실이 에드워드 스노든에 의해 폭로되기도 했습니다. 스노든의 내부고발은 그동안 마치 음모론으로 치부되던 것들이 실제로 일어났다는 것에 주목할 필요가 있습니다. 미국의 국가안보국(NSA)이 전세계 사람들의 정보(국가 원수들 간의 통화를 포함하여)를 수집한다는 것은 정도의 차이는 있어도 어느 정도는 사실로 밝혀진 것입니다. 
+
+가빈 우드는 Web 3가 스노든 이후의 인터넷이라고 말합니다. 현재 인터넷과는 근본적으로 다르고, 모든 데이터가 공개되고 그 데이터의 진위에 대해 검증하고 합의할 수 있고, 개인 정보는 철저하게 보호되는 인터넷이라고 할 수 있습니다. 우리가 아무 근거 없이 믿었던 대기업이나 정부 기관에 의존하지 않고도 데이터를 주고 받을 수 있도록 인터넷을 바꾸는 일입니다. 결국 블록체인이 말하는 탈중앙화가 Web 3의 기반이 되어야 한다는 것을 의미하는 것으로 볼 수 있습니다. 
+
+>Web 3.0, or as might be termed the “post-Snowden” web, is a re-imagination of the sorts of things we already use the web for, but with a fundamentally different model for the interactions between parties. Information that we assume to be public, we publish. Information we assume to be agreed upon, we place on a consensus ledger. Information that we assume to be private, we keep secret and never reveal. Communication always takes place over encrypted channels and only with pseudonymous identities as endpoints; never with anything traceable (such as IP addresses)
+
+가빈 우드는 4가지 영역에 걸쳐서 Web 3.0이 어떻게 구성되어야 하는지 말합니다. 현재 인터넷 표준들이새롭게 리엔지니어링될 필요가 있다는 것입니다.
+
+>However, going into the future, much of these protocols and technologies will have to be re-engineered according to our new understandings of the interaction between society and technology.
+
+대략 다음과 같은 개념으로 정리할 수 있을 것 같습니다.
+
+
+### Publication  
+데이터를 공유하는 방식은 토렌트를 예로 들고 있는데 토렌트 파일 자체에 P2P 방식으로 파일을 다운로드할 수 있는 정보가 있기 때문에 특정 서버에 접속해서 받아오는 현재의 방식과는 차이가 있습니다. 파일 공유를 함으로써 인센티브를 주는 메커니즘도 적용될 수 있습니다.
+
+### Messaging  
+개인 간 메시지는 P2P로 이루어집니다. 그리고 수신자만이 그 메시지를 볼 수 있도록 공개키 방식으로 암호화됩니다. 이메일처럼 중앙의 메일 서버에 저장되는 방식이 아닌 어떤 TTL을 가지고 지속될 수 있는 메시징 방식을 의미하는 것 같습니다.
+
+### Consensus  
+Web 3.0에서는 누군가를 일방적으로 신뢰하지 않는 탈중앙화 웹이기 때문에 합의 메커니즘이 필요합니다. 합의란 직접 데이터를 검증하고 데이터가 위변조되지 않았음을 확인할 수 있는 trustless의 조건이 됩니다. 비트코인이 좋은 예가 되겠습니다. 
+그런데 컨센서스는 다소 추상적인 느낌이 있습니다. 비트코인처럼 프로토콜과 코드에 의한 합의 뿐만 아니라 사람들 사이에서 일어나는 신뢰 구축을  포괄하여 말하는 것 같기도 합니다. 
+
+>It is effectively an all-encompassing social contract and draws its strength from the network effect of consensus.
+
+어떤 사람을 믿을 수 있다고 말하는 것은 그동안 그가 보여준 행적과 관련이 있을 것입니다. 다수가 그 사람에 대한 평판에 합의한다면 그것을 바탕으로 앞으로 그 사람과의 "사회적인 계약(social contract)"이 어떻게 지켜질 수 있는지 판단 근거가 될 수 있을 것입니다. 이것은 탈중앙화된 trustless의 조건이 될 수도 있습니다. 기존의 방식, 즉 특정 기관이 그 사람에 대해 인증해주는 것과는 분명히 다른 방식입니다. 그 사람에 대한 다수의 평가보다는 중앙 기관(centralized trust of authorities)의 판단을 더 믿는 것이기 때문에 Web 3.0의 방향과는 맞지 않는다고 보는 것 같습니다. 어떻게 보면 Web 3.0을 현실의 "사회적 계약"의 영역까지 확장시키고 있는 것 같습니다.
+
+>The traditional web does not fundamentally address consensus, instead falling back on centralized trust of authorities, such as ICANN, Verisign and Facebook, and reducing to private and government websites together with the software upon which they are built.
+
+
+### Front end  
+
+프론트 엔드는 Web 3.0의 애플리케이션과 관련된 부분입니다. 인터넷 기반 애플리케이션의 사용자 인터페이스는 대부분 웹브라우저입니다.  앞서 언급된 파일 공유 방식으로 정적 컨텐츠가 다운로드되면서 프론트 엔드 애플리케이션을 사용할 수 있습니다. 현재 우리가 알고 있는 프론트 엔드 애플리케이션의 개념과 크게 다르지는 많습니다.
+
+공적인 데이터들은 위변조할 수 없는 (블록체인과 같은) 저장소에 기록되고 그 외의 사적인 데이터들, 동적으로 생산하는 데이터는 저장되지 않습니다. 또 암호화된  P2P로 개인간 메시지를 주고 받습니다.
+
+>For gathering and submitting dynamic but publicly available content whose provenance needs to be absolutely determined and which must be held immutably forever (“set in stone”), such as reputation, balances and so forth, there is a Javascript-based API for interacting with the consensus engine. For gathering and submitting dynamic, potentially private content that is necessarily volatile and subject to annihilation or lack of availability, the p2p-messaging engine is used.
+
+Web 3.0에서는 데이터를 주고받을 때는 익명을 보장하는 환경에서 이루어지고(pseudonymously)  부득이하게 중개자(3rd party)가 필요할 때는 단일 중개자를 가능한 배제하고 서로 경쟁하는 다수의 주체들이 분산된 신뢰 시스템을 구축합니다. 이것은 마치 체인링크가 외부의 데이터를 오라클해서 블록체인으로 끌어오는 방식을 연상하게 하는 대목입니다.  
+
+>For a user of Web 3.0, all interactions will be carried out pseudonymously, securely, and for many services, trustlessly. Those that require a third party or parties, the tools will give the users and App-developers the ability to spread the trust among multiple different, possibly competing, entities, massively reducing the amount of trust one must place in the hands of any given single entity.
+
+가빈 우드는 아무래도 블록체인, 이더리움, 그리고 폴카닷 설립자를 넘어 탈중앙화의 이상주의자 같습니다.  탈중앙화 유토피아에서는 블록체인이 자유와 공정, 정의를 실현할 수 있는 만능 플랫폼이 될 것 같지만 분명히 한계는 있습니다. 
+
+최근에는 이러한 한계를 지적한 "목시 말린스파이크(Moxie Marlinspike, Matthew Rosenfeld)"의 "[My first impressions of web3][moxie]"라는 글이 주목을 끌었습니다. Web 3.0가 이슈가 되면서 뭐라도 한마디 해야 하는 분위기에서 그의 회의적인 견해는 블록체인 커뮤니티 상에서 반향을 일으키기에 충분했습니다.
+
+목시는 전 트위터의 보안 책임자였으며 암호 기술자이기도 합니다. 하지만 현재의 "암호-크립토" 화폐가 정말 암호 기술과 깊은 관련이 있다고 생각하지는 않는 것 같습니다. 오히려 "크립토"라는 단어가 어떻게 포장되어 마치 "Pepperidge Farm Remembers"처럼 사용되는지 지켜보는 쪽이라고 말합니다.
+ 
+>I’m much more likely to click on Pepperidge Farm Remembers flavored memes about how “crypto” used to mean “cryptography” than I am the latest NFT drop.
+
+Web 3가 인터넷을 탈중앙화시키고 혁신을 가져올 것이라는 주장에 대해, 어떻게 보면 다시 초기 인터넷이 추구했던 본래의 모습으로 돌아가려는 움직임으로 해석하는 의견에 대해 목시의 견해는 다릅니다. 인터넷 인프라가 플랫폼 기업들을 중심으로, 흔히 말하는 클라우드 컴퓨팅으로 중앙화되는 것은 그럴만한 이유가 있기 때문이라고 말합니다.
+
+첫 번째 이유는 사람들은 직접 서버를 운영하기를 원하지 않는다는 것입니다. 기업이 직접 데이터 센터를 만들거나 임대하여 하드웨어를 구매하고 운영인력을 유지하면서 변화무쌍한 IT 환경에 대응하는 것은 여러 측면에서 비효율적인 일은 맞습니다. 더구나 비전문가인 개인들이 블록체인 노드를 직접 운영하면서 네트워크에 참여하는 일은 
+거의 없을 것이라고 생각하는 것 같습니다. 
+
+두 번째는 프로토콜은 느리게, 거의 정체되어 있다시피 하고 상대적으로 응용 애플리케이션들이 더 빠르게 발전하므로  프로토콜이 변화를 따라잡을 수 없고 그래서 탈중앙화에 기반한 블록체인 프로토콜은 그런 변화에 대응하기 어렵다는 것입니다. 예를 들어 인터넷 채팅 프로그램 IRC와 슬랙을 비교하면 그 차이가 상당히 크다는 것을 알 수 있습니다. 결국 시간이 갈수록 중앙화되고 특화된 플랫폼들의 출현은 필연적이라고 할 수 있겠습니다. 
+
+>This isn’t a funding issue. If something is truly decentralized, it becomes very difficult to change, and often remains stuck in time. That is a problem for technology, because the rest of the ecosystem is moving very quickly, and if you don’t keep up you will fail.
+
+이와 같은 현상은 목시 자신이 직접 이더리움 Dapp을 개발하면서 경험하게 되는데, 결국 탈중앙화의 가치를 내세우는 이더리움에서도 동일한 흐름이 나타나고 있음을 근거로 제시합니다. 즉 곳곳에 산재된 중앙화된 서버와 서비스를 기반으로 Dapp이 실행되는 것을 직접 경험한 사실을 바탕으로 이야기합니다. 
+
+이더리움 지갑 메타마스크 역시 인퓨라나 알케미 API를 통해 데이터를 처리하고 NFT를 나타내는 메타데이터의 이미지가 삭제될 수도 있다는 점 등을 예시하면서 결국 Web 3(이더리움을 Web 3와같은 맥락으로 보는 것 같습니다)는 마치 현재의 웹 애플리케이션을 그대로 답습하고 있다고 주장합니다.
+
+>Given the history of why web1 became web2, what seems strange to me about web3 is that technologies like ethereum have been built with many of the same implicit trappings as web1. To make these technologies usable, the space is consolidating around… platforms. Again. People who will run servers for you, and iterate on the new functionality that emerges. Infura, OpenSea, Coinbase, Etherscan.
+
+Web 3 프로토콜 역시 다양한 애플리케이션의 출현을 따라갈 수 없고 결국 Web 1.0에서 Web 2.0으로 전환되는 과정에서 일어난 것들이 반복(iteration), 즉 탈중앙화 프로토콜이 먼저 등장하지만 결국 애플리케이션들은 여러 중앙화된 플랫폼들이 제공하는 서비스들을 바탕으로 개발될 수 밖에 없다는 것이고 이미 그렇게 진행되고 있다는 것입니다.
+
+>Iterating quickly on centralized platforms is already outpacing the distributed protocols and consolidating control into platforms.
+
+Web 3는 아직 초기 단계라는 주장에 대해서는, 블록체인 초기에 성능 문제에 대한 반응처럼, 이미 10여년이 지난 지금도(비트코인) 성능은 여전히 느린 것에 비교하고 있습니다. 
+정보기술 분야에서 10년이라는 세월은(이더리움의 5년을 포함해서) 상당히 긴 시간입니다. 어쩌면 초기 단계이기 때문에 Web 3의 지향점과 반대되더라도 부정적인 느낌없이 중앙화된 서비스 기반 위에 그것을 구현하려고 하는 지도 모릅니다. 이런 경향은 탈중앙화 자체가 실제로 현실적이지도 않고 결국에는 탈중앙화의 중요성이 최소화되면서 시간이 흐를수록 Web 3의 이상으로부터 멀어지게 만들 것입니다. 
+
+>This might suggest that decentralization itself is not actually of immediate practical or pressing importance to the majority of people downstream, that the only amount of decentralization people want is the minimum amount required for something to exist, and that if not very consciously accounted for, these forces will push us further from rather than closer to the ideal outcome as the days become less early.
+
+목시는 오히려 현재의 탈중앙화, Web 3가 사용자들을 가로막고 있다고 말합니다. 왜냐하면 높은 수수료 때문에 이용을 꺼려하기 때문입니다. 물론 "크립토"가 아니었다면 NFT 같은 
+유행도 없었을 테지만 말입니다. 
+
+[coindesk1]: https://www.coindesk.com/layer2/2021/12/23/what-jack-dorseys-beef-with-web-3-is-really-about/
+[coindesk2]: https://www.coindesk.com/layer2/2022/01/04/what-is-web-3-heres-how-future-polkadot-founder-gavin-wood-explained-it-in-2014/
+[moxie]: https://moxie.org/2022/01/07/web3-first-impressions.html
