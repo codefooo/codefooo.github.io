@@ -123,7 +123,7 @@ Web 3가 아직 초기 단계라는 주장에 대해서는, 블록체인 초기�
 
 목시는 OpenSea의 NFT 구매 비용(이더리움의 가스비)을 예로 들면서 현재의 탈중앙화, Web 3가 높은 수수료를 유발하기 때문에 오히려 사용자들의 접근성을 저해한다고 말합니다. 물론 "크립토"가 아니었다면 지금의 NFT 같은 관심과 유행을 끌 수 없었을 테지만 말입니다. 또 NFT는 "골드 러쉬"같은 것이 아니라 그저 암호화폐 투기의 수단일 뿐이라고 평가절하합니다. 
 
-탈중앙화라는 허상을 덜어낸다면 오히려 NFT 발행자들에게는 더 이익이 될 것입니다. 더 많은 사람들이 지금보다는 저렴한 비용으로 NFT를 거래할 수 있기 때문입니다. 또 Web 3의 지향점이 현재 인터넷을 개혁하는 것이라면 이 새로운 프로토콜이 가져올 미래는 도대체 무엇일까 고민해야 할 수도 있습니다. 지금도 이더리움의 높은 가스비는 사실상 부자들만 이더리움을 사용할 수 있게 만드는 요인이 되는 것을 보면 일리는 있는 말입니다.
+탈중앙화라는 허상을 덜어낸다면 오히려 NFT 발행자들에게는 더 이익이 될 것입니다. 더 많은 사람들이 지금보다는 저렴한 비용으로 NFT를 거래할 수 있기 때문입니다. 또 Web 3의 지향점이 현재 인터넷을 개혁하는 것이라면 이 새로운 프로토콜이 가져올 미래는 도대체 무엇일까 고민해야 할 수도 있습니다. 지금도 이더리움의 높은 가스비는 사실상 부자들만 이더리움을 사용할 수 있게 만드는 요인이 되므로 일리는 있는 말입니다.
 
 >At the end of the stack, NFT artists are excited about this kind of progression because it means more speculation/investment in their art, but it also seems like if the point of web3 is to avoid the trappings of web2, we should be concerned that this is already the natural tendency for these new protocols that are supposed to offer a different future.
 
@@ -133,17 +133,17 @@ Web 3가 아직 초기 단계라는 주장에 대해서는, 블록체인 초기�
 
 >So I think the properly authenticated decentralized blockchain world is coming, and is much closer to being here than many people think. Of course, it's always possible that all this tech will get built and many people will not care. But I'm more optimistic.
 
-부테린은 일단 블록체인의 탈중앙화가 개인이 "서버"를 24/7로 유지해야 한다는 것을 의미하는 것은 아니라고 말합니다. "서버"라는 용어 대신 "클라이언트"가 더 적합한 용어이며 각 클라이언트가 유지되어야 하는 비율은 95%정도라 해도 문제 없다는 것입니다(아마 비콘체인을 의미하는 것 같습니다. 검증 노드를 잠시 중지해도 그렇게 큰 손실은 없습니다). 1년을 365일로 생각하면 18일 정도는 클라이언트를 중지해도 되는 것입니다. 하지만 중앙화된 서버가 95%만 가용하다면 그것은 큰 문제일 것입니다.
+부테린은 일단 블록체인의 탈중앙화가 개인이 "서버"를 24/7로 유지해야 한다는 것을 의미하는 것은 아니라고 말합니다. "서버"라는 용어 대신 "클라이언트"가 더 적합한 용어이며 각 클라이언트가 유지되어야 하는 비율은 95% 정도라 해도 문제 없다는 것입니다(아마 비콘체인을 의미하는 것 같습니다. 검증 노드를 잠시 중지해도 그렇게 큰 손실은 없습니다). 1년을 365일로 생각하면 18일 정도는 클라이언트를 중지해도 되는 것입니다. 하지만 중앙화된 서버가 95%만 가용하다면 그것은 큰 문제일 것입니다.
 
-현실적인 한계때문에 애플리케이션들이 중앙화된 부분에 의존할 수 밖에 없다는 것은 분명합니다. 하지만 전체적인 그림을 놓고 보면 그런 것들을 대체할 수 있는 기술이 연구되고 있다고 말합니다. 이를테면 경량 노드(light client)에 대한 연구가 진행되고 있으며 또 "크립토"가 단순히 상징적인 위치에 있지 않고 버클 트리, ZK-SNARK, BLS 서명 등 이더리움에서 핵심적인 역할을 하고 있습니다. 
+현실적인 한계때문에 애플리케이션들이 중앙화된 시스템에 의존할 수 밖에 없다는 것은 분명합니다. 하지만 전체적인 그림을 놓고 보면 그런 것들을 대체할 수 있는 기술이 연구되고 있다고 말합니다. 이를테면 경량 노드(light client)에 대한 연구가 진행되고 있으며 또 "크립토"가 단순히 상징적인 위치에 있지 않고 버클 트리, ZK-SNARK, BLS 서명 등 이더리움에서 핵심적인 역할을 하고 있습니다. 
 
-블록체인 프로토콜 자체의 수정이나 개선은 목시 주장대로 시간이 오래 걸리고 어려운 것이 사실인 듯 합니다. 그리고 탈중앙화에 걸맞는 환경이 만들어지기 위해서는 우선적으로 프로토콜의 개선이 선행되어야 하기 때문에 현재 PoS 전환(merge)에 집중하기 때문에 리소스가 충분하지 않다는 변명아닌 변명도 합니다. 
+블록체인 프로토콜 자체의 수정이나 개선은 목시 주장대로 시간이 오래 걸리고 어려운 것이 사실인 듯 합니다. 그리고 탈중앙화에 걸맞는 환경이 만들어지기 위해서는 우선적으로 프로토콜의 개선이 선행되어야 하고, 지금은 PoS 전환(merge)에 집중하는 시기이기 때문에 리소스가 충분하지 않다는 변명아닌 변명도 합니다. 
 
 >One thing that makes the ramp up even slower is the chain of dependencies: in order to have light clients, we need to have a light client friendly chain, which is a deep change to the protocol, and so the only realistic opportunity to implement it is the switch to PoS, and we're only now at the point where we have the PoS, and full integration with the merge is coming soon. 
 
 전체적으로 보면 목시의 견해가 맞는 것처럼 보입니다. 탈중앙화의 과정은 느립니다. 성능을 말하는 것이 아니라 이더리움 프로젝트를 보면 다양한 연구자들과 개발자들이 노력하고 있지만 이들이 해결하려고 하는 문제는 근원적이고 본질적인 문제들이기 때문에 가시적인 결과가 나타나려면 꽤 오랜 시간이 필요할 것 같습니다. 어떻게 생각하면 이것은 앞서 잭 도시가 말한 것과는 반대로 오히려 자본에 편입된 이해 관계자에 의해 방향이 결정되는 것이 아니라 함께 모여 토론하고 고민하고 무엇이 가장 올바른 길인지 탐색하기 때문에 더디게 느껴지는 것일 수도 있습니다.
 
-코인데스크 마이클 케이시의 기고문을 보면 지금까지 언급된 Web 3의 상반된 여러 의견들이 종합되어 있습니다. 솔직히 인정할 수 밖에 없는 비판에도 불구하고 현재 Web 2.0의 독점과 종속의 늪에서 빠져나오기 위해서는 Web 3는 가치가 있습니다. 
+코인데스크 마이클 케이시의 기고문을 보면 지금까지 언급된 Web 3의 상반된 여러 의견들이 종합되어 있습니다. 솔직히 인정할 수 밖에 없는 비판에도 불구하고 현재 Web 2.0의 독점과 종속의 늪에서 빠져나오기 위해서는 Web 3가 가치있는 투쟁이 될 것입니다. 
 
 ["Web 3 Is a Long Fight Worth Fighting"][coindesk3]
 
