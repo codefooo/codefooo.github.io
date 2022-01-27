@@ -28,7 +28,7 @@ tag: [web3]
 
 사실 비트코인 지지자들은 비트코인의 PoW가 진정한 탈중앙화이고 이더리움의 장기적인 목표인 PoS는 탈중앙화의 가치를 희생시키는 것이라고 주장합니다. 또 이더리움을 비롯한 알트 코인들은 결과적으로 탈중앙화의 생태계를 분열시킬 것이라는 생각을 가지고 있는 것 같습니다.
 
-"탈중앙화 극장(decentralization theater)"이라는 표현이 있습니다. 비트코인 지지자들이 무늬만 탈중앙화인 블록체인을 조롱할 때 쓰는 표현입니다. 영화는 현실이 아닙니다. 편집되고 검열될 수 있으며 흥행이 실패할 수도, 또 종국에는 상영이 끝나게 됩니다. 비트코이너들이 다른 블록체인을 보는 관점은 "진짜" 블록체인이 아니라 영화같은(연출되고 규제될 수 있는) 블록체인이라는 의미를 내포합니다.
+"탈중앙화 극장(decentralization theater)"이라는 표현이 있습니다. 비트코인 지지자들이 무늬만 탈중앙화인 블록체인을 조롱할 때 쓰는 표현입니다. 영화는 현실이 아닙니다. 편집되고 검열될 수 있으며 흥행이 실패할 수도, 또 결국에는 상영이 끝나게 됩니다. 비트코이너들이 다른 블록체인을 보는 관점은 "진짜" 블록체인이 아니라 영화같은(연출되고 규제될 수 있는) 블록체인이라는 의미를 내포합니다.
 
 
 >But basically all Bitcoiners are extremely skeptical of the involvement of for-profit entities in creating new tokens, arguing in part that such a role inherently compromises the decentralization of systems because there’s either a centralized entity able to make their own changes to the system, or a clear target for government pressure to censor a system. See for example the stablecoins USDT and USDC, whose administrators, Tether and Circle respectively, have the power to block any blacklisted user, or seize their funds.
