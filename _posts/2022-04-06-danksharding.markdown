@@ -24,7 +24,7 @@ that rollups could use. However, data sharding will still take a considerable am
 현재 레이어 2의 수수료는 일반 사용자들에게 여전히 높고, 또 장기적으로 보면 레이어 2 만으로는 충분한 성능 개선이 이루어지기 어렵기 때문에 
 앞으로 도입될 데이터 샤딩의 저장 영역(블록당 16 MB)에 롤업 데이터를 저장하여 레이어 2의 활용도를 높이겠다는 의미가 되겠습니다. 
 
-원래 이더리움 PoS의 로드맵 Phase 1 샤딩의 목적은 현재 단일 체인을 64개로 분할해서 각 샤드 체인에서 거래를 나누어 처리하는 것이었습니다. 비콘 체인의 검증자들로 구성된 committee를 다수의 샤드에 각각 배치하여 샤드 블록을 만들고 비콘 체인에 그 서명을 기록하는 방식입니다. 트랜잭션은 실행 레이어에서 이루어지기 때문에 샤드 체인에서는 데이터만 저장합니다. 그래서 샤드 체인을 "데이터 레이어"로 표현합니다.
+원래 이더리움 PoS의 로드맵 Phase 1 샤딩의 목적은 현재 단일 체인을 64개의 샤드 체인으로 분할해서 거래를 나누어 처리하는 것이었습니다. 비콘 체인의 검증자들로 구성된 committee를 다수의 샤드에 각각 배치하여 샤드 블록을 만들고 비콘 체인에 그 서명을 기록하는 방식입니다. 트랜잭션은 실행 레이어에서 이루어지기 때문에 샤드 체인에서는 데이터만 저장합니다. 그래서 샤드 체인을 "데이터 레이어"로 표현합니다.
 
 각 샤드는 실행 레이어를 가지고 있게 되고 현재 이더리움도 EVM 실행 엔진이 달린 한 샤드가 될 수 있습니다. 지금과 비교해보면 실행 레이어는 현재 레이어 2가 담당하고 (데이터 레이어에 해당하는 샤드 체인은 아직 없으므로) 이더리움 블록에 롤업 데이터(calldata)를 저장하는 구조로 생각할 수 있겠습니다.
 
@@ -39,8 +39,8 @@ and is fully downloaded by all consensus nodes (but can be deleted after only a 
 Compared to full data sharding, this EIP has a reduced cap on the number of these transactions that can be included, 
 corresponding to a target of 1 MB per block and a limit of 2 MB.
 
-앞에서 언급한 것처럼 샤딩 데이터의 저장 영역을 롤업 데이터 전용 저장 공간으로 활용하자는 것입니다. 물론 이것은 향후 샤딩의 구현과도 
-호환되는(forwards-compatible)하게 구현되고 또 블록 당 약 1 MB에서 최대 2 MB로 제한한다는 것입니다.
+앞에서 언급한 것처럼 샤딩 데이터의 저장 영역을 롤업 데이터 전용 저장 공간으로 활용하자는 것입니다. 향후 샤딩의 설계와도 호환(forwards-compatible)되도록 
+구현하고 또 블록 당 약 1 MB에서 최대 2 MB로 제한한다는 것입니다.
 
 여기서 "shard blob transaction"은 트랜잭션 타입을 0x05로 지정한 통상적인 L1 트랜잭션으로 취급하여 비콘 체인에 저장하게 됩니다. 지금은 롤업 데이터는 콜데이터를 의미하는 것이지만 나중에 샤딩이 구현되면 롤업 데이터는 "shard blob"이 되어야 합니다. 
 
@@ -52,7 +52,7 @@ corresponding to a target of 1 MB per block and a limit of 2 MB.
 - Builder: Independent actor that builds blobs and bids for proposal slots via fee-paying blob-headers, responsible for availability.  
 - Shard proposer: Validator taking bids from blob builders for shard data opportunity, co-signs with builder to propose the blob.  
 
-EIP-4844는 기존의 샤딩 설계를 대신하는 [Danksharding][danksharding]과 관련이 있습니다.
+EIP-4844는 새로운 샤딩 방식인 [Danksharding][danksharding]과 관련이 있습니다.
 
 >Here is an alternative proposal: Add a new type of transaction that can contain additional sharded data as calldata. 
 The block is then constructed by a single block builder (which can be different from the proposer using proposer builder separation), 
@@ -60,11 +60,10 @@ and includes normal transactions as well as transactions with sharded calldata.
 This is efficient because it means that tight integrations between rollups and L1 become possible, 
 and it is expected that this “super-block-builder” strategy will emerge in practice anyway in order to maximize MEV extraction.
 
-새로 제안된 설계에서는 각 샤드에 배치된 committee에서 블록을 만드는 대신 새로운 타입의 트랜잭션, 즉 "blob transaction"을 정의하고 
-블록 생성자 한 명이 블록을 만드는 역할을 하도록 합니다. 그러나 "The Merge"가 완료되면 비콘 체인 검증자들이 기존 이더리움(EL)의 트랜잭션과 
-샤드 blob 트랜잭션까지 처리하게 되는 셈인데, 상당한 부하를 처리할 수 있는 하드웨어가 필요할 수도 있습니다. 그래서 “super-block-builder” 라는 표현을 썼는지도 모르겠습니다.
+새로 제안된 설계에서는 각 샤드에 배치된 committee에서 샤드 블록을 만드는 대신 새로운 타입의 트랜잭션, 즉 "blob transaction"을 정의하고 
+블록 생성자 하나가 이 트랜잭션을 비콘 블록에 저장하도록 하는 것입니다. 그러나 "The Merge"가 완료되면 비콘 체인 검증자들이 기존 이더리움(EL)의 트랜잭션과 샤드 blob 트랜잭션까지 처리하게 되는 셈인데, 상당한 부하를 처리할 수 있는 하드웨어가 필요할 수도 있습니다. 그래서 “super-block-builder” 라는 표현을 썼는지도 모르겠습니다.
 
-하지만 Danksharding에서는 PBS(Proposer-Builder Separation)을 도입하여 블록 바디를 만드는 생성자(Builder)와 블록헤더를 만들어서 최종 블록을 
+그래서 PBS(Proposer-Builder Separation)라는 방식을 도입하여 블록 바디를 만드는 생성자(Builder)와 블록헤더를 만들어서 최종 블록을 
 네트워크에 전파하는 제안자(Proposer)를 분리합니다. 즉 실제 트랜잭션을 모으는 것은 생성자의 역할이고 제안자(현재 비콘 체인 검증자들)는 그렇게 만들어진 블록 바디들 중에 하나를 선택(생성자가 블록을 비딩하고 제안자가 선택)하는 것입니다.
 
 그런데 "수퍼" 블록 생성자는 누구나 될 수 있기 때문에 검열의 문제가 발생할 수 있습니다(honest minority, 소수가 정직한 노드). 이를 방지하기 위해 검열 저항 목록(crList)를 제안자가 만들어서 브로드캐스팅합니다. crList는 결국 트랜잭션 풀에 있는 임의의 트랙잭션들입니다. 블록 생성자는 crList에 있는 트랜잭션들을 포함시켜서 블록을 만들어야 합니다. 이렇게 되면 생성자 블록에 저장되는 트랜잭션을 임의로 제외할 수 없게 됩니다.
@@ -89,12 +88,6 @@ just data).
 
 여기서 언급된 데이터 가용성의 문제는 다소 복잡합니다. 현재 "2차원 KZG commitment scheme"이라는 아이디어가 제안되어 있습니다. 이렇게 합의 레이어에 데이터를 저장해놓으면 
 누구든지 그 데이터를 받아서 다시 확인하는 것이 가능합니다(그러나 이들 데이터를 영구히 저장하는 것은 아니고 약 30일 후에는 삭제할 수 있습니다).
-
-
-
-
-
-
 
 
 
