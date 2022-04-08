@@ -13,16 +13,16 @@ tag: [ethereum, danksharding]
 그런데 기대가 커진 만큼 실망 역시 그에 비례하는 것 같습니다. 생각처럼 레이어 2가 활성화되지 못하고 있다는 비판이 있습니다. 
 높은 가스비로 인하여 거래 데이터, 즉 롤업 데이터를 합의 레이어인 이더리움에 기록하는 비용이 증가하기 때문입니다.
 
-[레이어 2][l2fee]의 거래 비용을 보면(2022년 4월) 이더 송금의 경우 약 3-6배의 비용 절감 효과를 가지고 있습니다. 오래 전 비탈릭 부테린은 수수료가 5센트를 넘어가면 
+[레이어 2의 거래 비용][l2fee]을 보면(2022년 4월) 이더 송금의 경우 약 3-6배의 비용 절감 효과를 가지고 있습니다. 오래 전 비탈릭 부테린은 수수료가 5센트를 넘어가면 
 안된다고 말한 적이 있습니다. 지금 수준과 비교하면 아직도 10배 이상 저렴해야 합니다.
 
-이더리움의 성능 개선을 위한 샤딩(Sharding)에 대해 비탈릭 부테린이 쓴 [글][blob-tx]을 살펴보겠습니다.  
+이더리움의 성능 개선은 샤딩(Sharding)으로 실현됩니다. 비탈릭 부테린이 쓴 [글][blob-tx]을 살펴보겠습니다.  
 
 >However, even these fees are too expensive for many users. The long-term solution to the long-term inadequacy of rollups by themselves has always been data sharding, which would add ~16 MB per block of dedicated data space to the chain 
 that rollups could use. However, data sharding will still take a considerable amount of time to finish implementing and deploying. 
 
 현재 레이어 2의 수수료는 일반 사용자들에게 여전히 높고, 또 장기적으로 보면 레이어 2 만으로는 충분한 성능 개선이 이루어지기 어렵기 때문에 
-앞으로 도입될 데이터 샤딩의 저장 영역(블록당 16 MB)에 롤업 데이터를 저장하여 레이어 2의 활용도를 높여보자는 의미가 되겠습니다. 
+앞으로 도입될 데이터 샤딩의 저장 영역(블록당 16 MB)에 롤업 데이터를 저장하여 레이어 2의 활용도를 높여보자는 취지입니다. 
 
 원래 이더리움 PoS의 로드맵 Phase 1 샤딩의 목적은 현재 단일 체인을 64개의 샤드 체인으로 분할해서 거래를 나누어 처리하는 것이었습니다. 비콘 체인의 검증자들로 구성된 committee를 다수의 샤드에 각각 배치하여 샤드 블록을 만들고 비콘 체인에 그 서명을 기록하는 방식입니다. 트랜잭션은 실행 레이어에서 이루어지기 때문에 샤드 체인에서는 데이터만 저장합니다. 그래서 샤드 체인을 "데이터 레이어"로 표현합니다.
 
@@ -60,8 +60,8 @@ and includes normal transactions as well as transactions with sharded calldata.
 This is efficient because it means that tight integrations between rollups and L1 become possible, 
 and it is expected that this “super-block-builder” strategy will emerge in practice anyway in order to maximize MEV extraction.
 
-Danksharding은 샤딩의 본래 목적에서 다소 이탈한 샤딩이라고 말할 수 있을 것 같습니다. 왜냐하면 샤딩이란 각 샤드에서 트랜잭션을 나누어 처리하는 것인데 Danksharding은 
-데이터 가용성(Data Availability)만을 보장하고 사실상 실제 트랜잭션 실행은 오프-체인, 레이어 2에서 하는 것을 전제로 하는 경우가 많기 때문입니다.
+사실 Danksharding은 샤딩의 본래 목적에서 다소 이탈한 샤딩이라고 말할 수 있을 것 같습니다. 왜냐하면 샤딩이란 각 샤드에서 트랜잭션을 나누어 (병렬)처리하는 것인데 
+Danksharding은 데이터 가용성(Data Availability)만을 보장하고 실행은 오프-체인, 레이어 2에서 하는 것을 전제로 하기 때문입니다.
 
 이 제안에서는 각 샤드에 배치된 committee에서 샤드 블록을 만드는 대신 새로운 타입의 트랜잭션, 즉 "blob transaction"을 정의하고 
 블록 생성자 하나가 이 트랜잭션으로 전송된 데이터를 비콘 블록에 저장하도록 하는 것입니다. blob 트랜잭션은 거래 트랜잭션이 아니라 데이터를 저장하는 트랜잭션입니다. 그런데 "The Merge"가 완료되면 비콘 체인 검증자들이 기존 이더리움(EL)의 트랜잭션과 샤드 blob 트랜잭션까지 처리하게 되는 셈인데, 이렇레 되면 상당한 부하를 처리할 수 있는 
@@ -88,10 +88,10 @@ to use third-party decentralized oracle protocols to implement a distributed blo
 all other validators and users can verify the blocks very efficiently through data availability sampling (remember: the “big” part of the block is 
 just data).
 
-Danksharding의 설계는 아직 논의가 필요하고 스펙이 정해지더라도 구현 과정에서 문제점들이 나타날 수 있으므로 변경 가능성이 있습니다.
+Danksharding의 설계는 아직 논의가 더 필요하고 스펙이 정해지더라도 구현 과정에서 문제점들이 나타날 수 있으므로 변경 가능성이 있습니다.
 그래서 일단 프로토타입을 먼저 구현하는 방식도 생각하고 있는 것 같습니다. 그것이 [proto-Danksharding][proto-dank]입니다. 
 
-앞서 말한 것처럼 blob 데이터를 저장하는 이유는 데이터 가용성을 해결하기 위함입니다. 거래의 결과(상태 전이)가 올바른지 검증하기 위해서는 그 과정을 확인할 필요가 있고 이를 위해서 중간 과정의 데이터를 일정 기간 저장할 필요가 있는 것입니다.  
+앞서 말한 것처럼 blob 데이터를 저장하는 이유는 데이터 가용성을 제공하기 위함입니다. 거래의 결과(상태 전이)가 올바른지 검증하기 위해서는 그 과정을 확인할 필요가 있고 이를 위해서 중간 과정의 데이터를 일정 기간 저장할 필요가 있는 것입니다.  
 
 블록체인에서 거래 데이터가 올바르게 저장되었는지 확인하는 방법 중 하나는 머클 트리를 이용하는 것입니다. 어떤 블록에 저장된 거래를 확인하려면 머클 증명과 머클 루트를 사용하여 확인할 수 있습니다. 샤딩에서는 머클 트리 대신 "KZG commitment"라는 암호학적으로 검증가능한 데이터가 추가되어 있습니다. 
 
