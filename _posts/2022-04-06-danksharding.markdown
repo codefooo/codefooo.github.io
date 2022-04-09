@@ -22,16 +22,16 @@ tag: [ethereum, danksharding]
 that rollups could use. However, data sharding will still take a considerable amount of time to finish implementing and deploying. 
 
 현재 레이어 2의 수수료는 일반 사용자들에게 여전히 높고, 또 장기적으로 보면 레이어 2 만으로는 충분한 성능 개선이 이루어지기 어렵기 때문에 
-앞으로 도입될 데이터 샤딩의 저장 영역(블록당 16 MB)에 롤업 데이터를 저장하여 레이어 2의 활용도를 높여보자는 취지입니다. 
+앞으로 도입될 데이터 샤딩의 저장 영역(블록당 16 MB)에 롤업 데이터를 저장하여 레이어 2의 활용도를 끌어올리자는 취지입니다. 
 
-원래 이더리움 PoS의 로드맵 Phase 1 샤딩의 목적은 현재 단일 체인을 64개의 샤드 체인으로 분할해서 거래를 나누어 처리하는 것이었습니다. 비콘 체인의 검증자들로 구성된 committee를 다수의 샤드에 각각 배치하여 샤드 블록을 만들고 비콘 체인에 그 서명을 기록하는 방식입니다. 트랜잭션은 실행 레이어에서 이루어지기 때문에 샤드 체인에서는 데이터만 저장합니다. 그래서 샤드 체인을 "데이터 레이어"로 표현합니다.
+원래 이더리움 PoS의 로드맵 Phase 1 샤딩의 목적은 현재 단일 체인을 64개의 샤드 체인으로 분할해서 거래를 나누어 처리하는 것이었습니다. 비콘 체인의 검증자들로 구성된 committee를 다수의 샤드에 각각 배치하여 샤드 블록을 만들고 비콘 체인에 그 내역을 기록하는 방식입니다. 트랜잭션은 실행 레이어에서 이루어지기 때문에 샤드 체인에서는 데이터만 저장합니다. 그래서 샤드 체인을 "데이터 레이어"로 표현합니다.
 
 각 샤드는 실행 레이어를 가지고 있게 되고 현재 이더리움도 EVM 실행 엔진이 달린 한 샤드로 볼 수 있습니다. 지금과 비교해보면 실행 레이어는 현재 레이어 2가 담당하고 (데이터 레이어에 해당하는 샤드 체인은 아직 없으므로) 이더리움 블록에 롤업 데이터(calldata)를 저장하는 구조로 생각할 수 있겠습니다.
 
 그런데 레이어 2의 비용을 체감적으로 크게 낮출 수 없는 이유 중 하나는 롤업 데이터를 저장하는 트랜잭션은 어차피 이더리움에 전송하기 위해 가스비를 내야 하므로 
 가스비가 매우 높은 상황에서는 레이어 2의 효과가 감소한다는 문제가 있습니다.
 
-비탈릭 부테린은 [EIP-4844][eip-4844]에서 다음과 같은 "stop-gap" 솔루션을 제안합니다.
+비탈릭 부테린은 두 가지 정도의 제안을 내놓은 상태입니다. [EIP-4488][eip-4488]과 [EIP-4844][eip-4844]인데 장기적인 방향과 일치하는 것은 EIP-4484입니다. 여기서는 다음과 같은 "stop-gap" 솔루션을 제안합니다.
 
 >This EIP provides a stop-gap solution until that point by implementing the transaction format that would be used in sharding, 
 but not actually sharding those transactions. Instead, the data from this transaction format is simply part of the beacon chain 
@@ -42,7 +42,7 @@ corresponding to a target of 1 MB per block and a limit of 2 MB.
 앞에서 언급한 것처럼 샤딩 데이터의 저장 영역을 롤업 데이터 전용 저장 공간으로 활용하자는 것입니다. 향후 샤딩의 설계와도 호환(forwards-compatible)되도록 
 구현하고 또 블록 당 약 1 MB에서 최대 2 MB로 제한한다는 것입니다.
 
-여기서 "shard blob transaction"은 트랜잭션 타입을 0x05로 지정한 통상적인 L1 트랜잭션으로 취급하여 트랜잭션으로 전송된 데이터를 비콘 체인에 저장하게 됩니다. 지금은 롤업 데이터는 calldata를 의미하는 것이지만 나중에 샤딩이 구현되면 롤업 데이터는 "shard blob"으로 랩핑하여 전송해야 합니다. 
+여기서 "shard blob transaction"은 트랜잭션 타입을 0x05로 지정한 통상적인 L1 트랜잭션으로 취급하여 트랜잭션으로 전송된 데이터를 비콘 체인에 저장하게 됩니다. 지금 롤업 데이터는 calldata를 의미하는 것이지만 나중에 샤딩이 구현되면 롤업 데이터는 "shard blob"으로 래핑하여 전송해야 합니다. 
 
 여기서 "blob"이라고 표현한 것은 샤딩 [스펙][shard-spec]에 따르면 "Data with commitments and meta-data, like a flattened bundle of L2 transactions"으로 정의합니다.
 앞으로 다음과 같은 용어의 정의를 기억하면 이해하는데 도움이 될 것 같습니다.
@@ -68,7 +68,7 @@ Danksharding은 데이터 가용성(Data Availability)만을 보장하고 실행
 하드웨어가 필요할 수도 있습니다("super-block-builder" 라고 표현한 이유).
 
 그래서 PBS(Proposer/Builder Separation)라는 방식을 도입하여 블록 바디를 만드는 생성자(Builder)와 블록헤더를 만들어서 최종 블록을 
-네트워크에 전파하는 제안자(Proposer)를 분리합니다. 마치 채굴자처럼 실제 트랜잭션을 모으는 것은 생성자의 역할이고 제안자(현재 비콘 체인 검증자들)는 그렇게 만들어진 블록 바디들 중에 하나를 선택(생성자가 블록을 비딩하고 제안자가 선택)하는 방식입니다.
+네트워크에 전파하는 제안자(Proposer)를 분리합니다. 마치 채굴자처럼 실제 트랜잭션을 모으는 것은 생성자의 역할이고 제안자(현재 비콘 체인 검증자들)는 그렇게 만들어진 블록 바디들 중에 하나를 선택하는 방식입니다(생성자가 블록을 비딩하고 제안자가 선택).
 
 이러한 "수퍼 블록" 생성자는 누구나 될 수 있기 때문에 검열의 문제가 발생할 수 있습니다(honest minority, 소수가 정직한 노드). 이를 방지하기 위해 검열 저항 목록(crList)를 제안자가 만들어서 브로드캐스팅합니다. crList는 트랜잭션 풀에 있는 임의의 트랙잭션들입니다. 블록 생성자는 crList에 있는 트랜잭션들을 포함시켜서 블록을 만들어야 하므로 생성자가 블록에 저장되는 트랜잭션을 임의로 제외할 수 없게 됩니다.
 
@@ -119,7 +119,7 @@ blob_kzgs는 벡터로 변환된 blob들의 KZG commitment를 나타냅니다. �
 데이터들이 L1에 저장되어 "available" 하다는 것을 암호학적으로 증명하는 것이라고 할 수 있겠습니다. Prover에 해당하는 롤업 오퍼레이터들이 보낸 데이터를 
 Verifier 즉 검증자나 사용자들이 언제든지 "f(z) = y"임을 확인할 수 있는 메커니즘이라고 이해하면 될 것 같습니다.
 
-옵티미스틱 롤업과 ZK 롤업에서는 위와 같은 KZG commitment에 의해서 보장된 데이터를 각각 fraud proof와 validity proof를 수행하는 과정에서 이용할 수 있도록 
+옵티미스틱 롤업과 ZK 롤업에서 KZG commitment에 의해서 보장된 데이터를 각각 fraud proof와 validity proof를 수행하는 과정에서 이용할 수 있도록 
 "프리컴파일"을 제공하는 것도 EIP-4484에 포함되어 있습니다. 아마 온체인에서 데이터 가용성을 확인할 수 있는 기능을 제공한다는 의미가 될 것 같습니다.
 
 proto-Danksharding은 아직 연구 단계에 있습니다. 또 "The Merge"라는 중요한 PoS 전환 이후에 적용될 가능성이 많습니다. 최소 1년 정도는 더 기다려야 구체적인 
@@ -128,6 +128,7 @@ proto-Danksharding은 아직 연구 단계에 있습니다. 또 "The Merge"라�
 
 [l2fee]: https://l2fees.info/
 [blob-tx]: https://notes.ethereum.org/@vbuterin/blob_transactions_simple
+[eip-4488]: https://eips.ethereum.org/EIPS/eip-4488
 [eip-4844]: https://eips.ethereum.org/EIPS/eip-4844
 [shard-spec]: https://github.com/ethereum/consensus-specs/blob/dev/specs/sharding/beacon-chain.md
 [danksharding]: https://notes.ethereum.org/@dankrad/new_sharding
