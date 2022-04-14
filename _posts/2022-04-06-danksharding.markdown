@@ -31,7 +31,7 @@ that rollups could use. However, data sharding will still take a considerable am
 그런데 레이어 2의 비용을 체감적으로 크게 낮출 수 없는 이유 중 하나는 롤업 데이터를 저장하는 트랜잭션은 어차피 이더리움에 전송하기 위해 가스비를 내야 하므로 
 가스비가 매우 높은 상황에서는 레이어 2의 효과가 감소한다는 문제가 있습니다.
 
-비탈릭 부테린은 두 가지 정도의 제안을 내놓은 상태입니다. [EIP-4488][eip-4488]과 [EIP-4844][eip-4844]인데 장기적인 방향과 일치하는 것은 EIP-4484입니다. 여기서는 다음과 같은 "stop-gap" 솔루션을 제안합니다.
+비탈릭 부테린은 두 가지 정도의 제안을 내놓은 상태입니다. [EIP-4488][eip-4488]과 [EIP-4844][eip-4844]인데 장기적인 방향과 일치하는 것은 EIP-4844입니다. 여기서는 다음과 같은 "stop-gap" 솔루션을 제안합니다.
 
 >This EIP provides a stop-gap solution until that point by implementing the transaction format that would be used in sharding, 
 but not actually sharding those transactions. Instead, the data from this transaction format is simply part of the beacon chain 
@@ -103,7 +103,7 @@ Danksharding 세미나에서 Dankrad Feist의 설명을 인용하면 KZG commitm
 - Verifier는 C, π, y, z를 사용하여 f(z) = y 임을 확인 
 
 
-EIP-4484에 있는 blob 트랜잭션은 현재 다음과 같이 정의되어 있습니다. 이더리움의 트랜잭션은 EIP-2718에 의해 트랜잭션 타입을 지정할 수 있으므로 blob 트랜잭션 타입을 별도로 지정하여 처리할 수 있습니다. `SignedBlobTransaction`은 일반 트랜잭션처럼 calldata를 운반합니다(추가적으로 "blob_versioned_hashes"라는 항목은 EVM의 32바이트 워드의 길이와 맞추려는 목적). 트랜잭션에 KZG commitment가 같이 들어갑니다.
+EIP-4844에 있는 blob 트랜잭션은 현재 다음과 같이 정의되어 있습니다. 이더리움의 트랜잭션은 EIP-2718에 의해 트랜잭션 타입을 지정할 수 있으므로 blob 트랜잭션 타입을 별도로 지정하여 처리할 수 있습니다. `SignedBlobTransaction`은 일반 트랜잭션처럼 calldata를 운반합니다(추가적으로 "blob_versioned_hashes"라는 항목은 EVM의 32바이트 워드의 길이와 맞추려는 목적). 트랜잭션에 KZG commitment가 같이 들어갑니다.
 
 ```
 class BlobTransactionNetworkWrapper(Container):
@@ -120,7 +120,7 @@ blob_kzgs는 벡터로 변환된 blob들의 KZG commitment를 나타냅니다. �
 Verifier 즉 검증자나 사용자들이 언제든지 "f(z) = y"임을 확인할 수 있는 메커니즘이라고 이해하면 될 것 같습니다.
 
 옵티미스틱 롤업과 ZK 롤업에서 KZG commitment에 의해서 보장된 데이터를 각각 fraud proof와 validity proof를 수행하는 과정에서 이용할 수 있도록 
-"프리컴파일"을 제공하는 것도 EIP-4484에 포함되어 있습니다. 아마 온체인에서 데이터 가용성을 확인할 수 있는 기능을 제공한다는 의미가 될 것 같습니다.
+"프리컴파일"을 제공하는 것도 EIP-4844에 포함되어 있습니다. 아마 온체인에서 데이터 가용성을 확인할 수 있는 기능을 제공한다는 의미가 될 것 같습니다.
 
 proto-Danksharding은 아직 연구 단계에 있습니다. 또 "The Merge"라는 중요한 PoS 전환 이후에 적용될 가능성이 많습니다. 최소 1년 정도는 더 기다려야 구체적인 
 세부 내용들이 나올 것 같다는 생각이 듭니다.
