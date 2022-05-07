@@ -95,11 +95,11 @@ Danksharding의 설계는 아직 논의가 더 필요하고 스펙이 정해지�
 
 블록체인에서 거래 데이터가 올바르게 저장되었는지 확인하는 방법 중 하나는 머클 트리를 이용하는 것입니다. 어떤 블록에 저장된 거래를 확인하려면 머클 증명과 머클 루트를 사용하여 확인할 수 있습니다. 샤딩에서는 머클 트리 대신 "KZG commitment"라는 암호학 이론을 적용합니다. 
 
-Danksharding 세미나에서 Dankrad Feist의 설명을 인용하면 KZG commitment는 다항식 commitment의 한 종류로 다음과 같은 수학적 특성을 가지고 있습니다.
+[Danksharding 세미나][danksharding-webinar]에서 Dankrad Feist의 설명을 인용하면 KZG commitment는 다항식 commitment의 한 종류로 다음과 같은 수학적 특성을 가지고 있습니다.
 
 - 다항식 f에 대한 commitment(commitment to polynomial) = C 
 - 어떤 z에 대한 다항식의 값 y = f(z)
-- Prover는 이 다항식을 이용하여 z의 proof를 계산 = π(f,z)
+- Prover는 z의 proof를 계산 = π(f,z)
 - Verifier는 C, π, y, z를 사용하여 f(z) = y 임을 확인 
 
 
@@ -133,3 +133,4 @@ proto-Danksharding은 아직 연구 단계에 있습니다. 또 "The Merge"라�
 [shard-spec]: https://github.com/ethereum/consensus-specs/blob/dev/specs/sharding/beacon-chain.md
 [danksharding]: https://notes.ethereum.org/@dankrad/new_sharding
 [proto-dank]: https://notes.ethereum.org/@vbuterin/proto_danksharding_faq
+[danksharding-webinar]: https://www.youtube.com/watch?v=e9oudTr5BE4
