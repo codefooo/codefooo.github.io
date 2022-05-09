@@ -61,7 +61,8 @@ This is efficient because it means that tight integrations between rollups and L
 and it is expected that this “super-block-builder” strategy will emerge in practice anyway in order to maximize MEV extraction.
 
 사실 Danksharding은 샤딩의 본래 목적에서 다소 이탈한 샤딩이라고 말할 수 있을 것 같습니다. 왜냐하면 샤딩이란 각 샤드에서 트랜잭션을 나누어 (병렬)처리하는 것인데 
-Danksharding은 데이터 가용성(Data Availability)만을 보장하고 실행은 오프-체인, 레이어 2에서 하는 것을 전제로 하기 때문입니다.
+Danksharding은 데이터 가용성(Data Availability)만을 보장하고 실행은 오프-체인, 레이어 2에서 하는 것을 전제로 하기 때문입니다. 말하자면 성능 개선을 위한 샤딩은 
+검증용 데이터 저장과 EVM 실행 측면에서 처리 속도는 레이어 2에서 높이고 수수료는 데이터 샤딩을 통해 낮추려는 것이라고 할 수 있겠습니다.
 
 이 제안에서는 각 샤드에 배치된 committee에서 샤드 블록을 만드는 대신 새로운 타입의 트랜잭션, 즉 "blob transaction"을 정의하고 
 블록 생성자 하나가 이 트랜잭션으로 전송된 데이터를 비콘 블록에 저장하도록 하는 것입니다. blob 트랜잭션은 거래 트랜잭션이 아니라 데이터를 저장하는 트랜잭션입니다. 그런데 "The Merge"가 완료되면 비콘 체인 검증자들이 기존 이더리움(EL)의 트랜잭션과 샤드 blob 트랜잭션까지 처리하게 되는 셈인데, 이렇게 되면 상당한 부하를 처리할 수 있는 
