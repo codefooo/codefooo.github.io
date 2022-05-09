@@ -44,7 +44,8 @@ corresponding to a target of 1 MB per block and a limit of 2 MB.
 
 여기서 "shard blob transaction"은 트랜잭션 타입을 0x05로 지정한 통상적인 L1 트랜잭션으로 취급하여 트랜잭션으로 전송된 데이터를 비콘 체인에 저장하게 됩니다. 지금 롤업 데이터는 calldata를 의미하는 것이지만 나중에 샤딩이 구현되면 롤업 데이터는 "shard blob"으로 래핑하여 전송해야 합니다. 
 
-여기서 "blob"이라고 표현한 것은 샤딩 [스펙][shard-spec]에 따르면 "Data with commitments and meta-data, like a flattened bundle of L2 transactions"으로 정의합니다.
+여기서 "blob"이라고 표현한 것은 샤딩 [스펙][shard-spec]에 따르면 "Data with commitments and meta-data, like a flattened bundle of L2 transactions"으로 정의합니다. "blob"이라는 용어를 사용한 것은 현재 단일 체인의 전체 블록체인 데이터와 비교하여 샤딩된(나누어진, 부분) 데이터라는 의미를 내포하는 것으로, 그 자체로 검증 가능한 정보도 함께 가지고 있다고 이해할 수 있지 않을까 싶습니다.  
+
 앞으로 다음과 같은 용어의 정의를 기억하면 이해하는데 도움이 될 것 같습니다.
 
 - Data: A list of KZG points, to translate a byte string into  
@@ -104,7 +105,28 @@ Danksharding의 설계는 아직 논의가 더 필요하고 스펙이 정해지�
 - Verifier는 C, π, y, z를 사용하여 f(z) = y 임을 확인 
 
 
-EIP-4844에 있는 blob 트랜잭션은 현재 다음과 같이 정의되어 있습니다. 이더리움의 트랜잭션은 EIP-2718에 의해 트랜잭션 타입을 지정할 수 있으므로 blob 트랜잭션 타입을 별도로 지정하여 처리할 수 있습니다. `SignedBlobTransaction`은 일반 트랜잭션처럼 calldata를 운반합니다(추가적으로 "blob_versioned_hashes"라는 항목은 EVM의 32바이트 워드의 길이와 맞추려는 목적). 트랜잭션에 KZG commitment가 같이 들어갑니다.
+EIP-4844에 있는 blob 트랜잭션은 현재 다음과 같이 정의되어 있습니다. 이더리움의 트랜잭션은 EIP-2718에 의해 트랜잭션 타입을 지정할 수 있으므로 blob 트랜잭션 타입을 별도로 지정하여 처리할 수 있습니다. 
+
+```
+class SignedBlobTransaction(Container):
+    message: BlobTransaction
+    signature: ECDSASignature
+
+class BlobTransaction(Container):
+    chain_id: uint256
+    nonce: uint64
+    priority_fee_per_gas: uint256
+    max_basefee_per_gas: uint256
+    gas: uint64
+    to: Union[None, Address] # Address = Bytes20
+    value: uint256
+    data: ByteList[MAX_CALLDATA_SIZE]
+    access_list: List[AccessTuple, MAX_ACCESS_LIST_SIZE]
+    blob_versioned_hashes: List[VersionedHash, MAX_VERSIONED_HASHES_LIST_SIZE]
+```    
+
+`BlobTransaction`은 일반 트랜잭션처럼 data 필드에 calldata를 운반합니다. MAX_CALLDATA_SIZE는 16M(2**24)로 지정되어 있습니다. L2에서 발생한 거래 데이터들이 
+저장될 수 있을 것 같습니다. 
 
 ```
 class BlobTransactionNetworkWrapper(Container):
