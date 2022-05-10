@@ -42,11 +42,9 @@ corresponding to a target of 1 MB per block and a limit of 2 MB.
 앞에서 언급한 것처럼 샤딩 데이터의 저장 영역을 롤업 데이터 전용 저장 공간으로 활용하자는 것입니다. 향후 샤딩의 설계와도 호환(forwards-compatible)되도록 
 구현하고 또 블록 당 약 1 MB에서 최대 2 MB로 제한한다는 것입니다.
 
-여기서 "shard blob transaction"은 트랜잭션 타입을 0x05로 지정한 통상적인 L1 트랜잭션으로 취급하여 트랜잭션으로 전송된 데이터를 비콘 체인에 저장하게 됩니다. 지금 롤업 데이터는 calldata를 의미하는 것이지만 나중에 샤딩이 구현되면 롤업 데이터는 "shard blob"으로 래핑하여 전송해야 합니다. 
+여기서 "shard blob transaction"은 트랜잭션 타입을 0x05로 지정한 통상적인 L1 트랜잭션으로 취급하여 전송된 데이터를 비콘 체인에 저장하게 됩니다. 지금 롤업 데이터는 calldata를 의미하는 것이지만 나중에 샤딩이 구현되면 롤업 데이터는 "shard blob"에 해당되는 것입니다. 
 
-여기서 "blob"이라고 표현한 것은 샤딩 [스펙][shard-spec]에 따르면 "Data with commitments and meta-data, like a flattened bundle of L2 transactions"으로 정의합니다. "blob"이라는 용어를 사용한 것은 현재 단일 체인의 전체 블록체인 데이터와 비교하여 샤딩된(나누어진, 부분) 데이터라는 의미를 내포하는 것으로, 그 자체로 검증 가능한 정보도 함께 가지고 있다고 이해할 수 있지 않을까 싶습니다.  
-
-앞으로 다음과 같은 용어의 정의를 기억하면 이해하는데 도움이 될 것 같습니다.
+"blob"이라고 표현한 것은 샤딩 [스펙][shard-spec]에 따르면 "Data with commitments and meta-data, like a flattened bundle of L2 transactions"으로 정의합니다. "blob"이라는 용어를 사용한 것은 현재 단일 체인의 전체 데이터를 각 노드들이 가지고 있는 것과 비교하여 샤딩된(나누어진, 부분) 데이터라는 의미로, 그 자체로 검증 가능한 정보(commitment)도 함께 가지고 있는 형태로 이해할 수 있을 것 같습니다.  
 
 - Data: A list of KZG points, to translate a byte string into  
 - Blob: Data with commitments and meta-data, like a flattened bundle of L2 transactions.  
@@ -61,20 +59,21 @@ and includes normal transactions as well as transactions with sharded calldata.
 This is efficient because it means that tight integrations between rollups and L1 become possible, 
 and it is expected that this “super-block-builder” strategy will emerge in practice anyway in order to maximize MEV extraction.
 
-사실 Danksharding은 샤딩의 본래 목적에서 다소 이탈한 샤딩이라고 말할 수 있을 것 같습니다. 왜냐하면 샤딩이란 각 샤드에서 트랜잭션을 나누어 (병렬)처리하는 것인데 
-Danksharding은 데이터 가용성(Data Availability)만을 보장하고 실행은 오프-체인, 레이어 2에서 하는 것을 전제로 하기 때문입니다. 말하자면 성능 개선을 위한 샤딩은 
-검증용 데이터 저장과 EVM 실행 측면에서 처리 속도는 레이어 2에서 높이고 수수료는 데이터 샤딩을 통해 낮추려는 것이라고 할 수 있겠습니다.
+사실 Danksharding은 샤딩의 본래 목적에서 다소 이탈한 샤딩이라고 말할 수 있습니다. 왜냐하면 샤딩이란 각 샤드에서 트랜잭션을 나누어 (병렬)처리하는 것인데 
+Danksharding은 데이터 가용성(Data Availability)만을 보장하고 실행은 오프-체인, 즉 레이어 2에서 하는 것을 전제로 하기 때문입니다. 말하자면 성능 개선의 두 가지 측면에서, 
+처리 속도는 레이어 2에서 올리고 수수료는 데이터 샤딩을 통해 낮추려는 의도라고 볼 수 있겠습니다.
 
 이 제안에서는 각 샤드에 배치된 committee에서 샤드 블록을 만드는 대신 새로운 타입의 트랜잭션, 즉 "blob transaction"을 정의하고 
-블록 생성자 하나가 이 트랜잭션으로 전송된 데이터를 비콘 블록에 저장하도록 하는 것입니다. blob 트랜잭션은 거래 트랜잭션이 아니라 데이터를 저장하는 트랜잭션입니다. 그런데 "The Merge"가 완료되면 비콘 체인 검증자들이 기존 이더리움(EL)의 트랜잭션과 샤드 blob 트랜잭션까지 처리하게 되는 셈인데, 이렇게 되면 상당한 부하를 처리할 수 있는 
+블록 생성자 하나가 이 트랜잭션들을 비콘 블록에 저장하도록 하는 것입니다. blob 트랜잭션은 거래 트랜잭션이 아니라 데이터를 저장하는 트랜잭션입니다. "The Merge"가 완료되면 비콘 체인 검증자들이 기존 이더리움(EL)의 트랜잭션과 샤드 blob 트랜잭션까지 처리하게 되는 셈인데, 이렇게 되면 상당한 부하를 처리할 수 있는 
 하드웨어가 필요할 수도 있습니다("super-block-builder" 라고 표현한 이유).
 
 그래서 PBS(Proposer/Builder Separation)라는 방식을 도입하여 블록 바디를 만드는 생성자(Builder)와 블록헤더를 만들어서 최종 블록을 
 네트워크에 전파하는 제안자(Proposer)를 분리합니다. 마치 채굴자처럼 실제 트랜잭션을 모으는 것은 생성자의 역할이고 제안자(현재 비콘 체인 검증자들)는 그렇게 만들어진 블록 바디들 중에 하나를 선택하는 방식입니다(생성자가 블록을 비딩하고 제안자가 선택).
 
-이러한 "수퍼 블록" 생성자는 누구나 될 수 있기 때문에 검열의 문제가 발생할 수 있습니다(honest minority, 소수가 정직한 노드). 이를 방지하기 위해 검열 저항 목록(crList)를 제안자가 만들어서 브로드캐스팅합니다. crList는 트랜잭션 풀에 있는 임의의 트랙잭션들입니다. 블록 생성자는 crList에 있는 트랜잭션들을 포함시켜서 블록을 만들어야 하므로 생성자가 블록에 저장되는 트랜잭션을 임의로 제외할 수 없게 됩니다.
+이러한 "수퍼 블록" 생성자는 누구나 될 수 있기 때문에 검열의 문제가 발생할 수 있습니다(생성자는 honest minority에 의존). 이를 방지하기 위해 검열 저항 목록(crList)를 제안자가 만들어서 브로드캐스팅합니다. crList는 트랜잭션 풀에 있는 임의의 트랙잭션들입니다. 블록 생성자는 crList에 있는 트랜잭션들을 포함시켜서 블록을 만들어야 하므로 생성자가 블록에 저장되는 트랜잭션을 임의로 제외할 수 없게 됩니다.
 
-다시 말해서 블록을 만드는 일, 즉 데이터를 처리하는 일은 다소 높은 하드웨어 성능을 요구할 수 있기 때문에 컴퓨팅 리소스가 충분한 사람들에게 일임하는 방향으로 가는 느낌이 있습니다. 하지만 그것을 검증하는 것은 불특정 다수, 즉 현재 비콘 체인의 검증자들이 수행하도록 하므로써 탈중앙화를 유지할 수 있다는 생각인듯 싶습니다.
+다시 말해서 블록을 만드는 일, 즉 데이터를 처리하는 일은 다소 높은 하드웨어 성능을 요구할 수 있기 때문에 컴퓨팅 리소스가 충분한 사람들에게 일임하려는 의도를 가지고 
+있는 것 같습니다. 하지만 그것을 검증하는 것은 불특정 다수(honest majority에 의존), 즉 현재 비콘 체인의 검증자들이 수행하도록 하므로써 탈중앙화를 유지할 수 있습니다.
 
 원래 각 샤드에서 거래가 처리되면 샤드마다 수수료가 달라질 수 있는데, Danksharding에서는 blob 트랜잭션의 타입을 하나 더 추가할 뿐이므로 좀더 간소화된 수수료 처리가 
 가능합니다(일반 트랜잭션과 다른 수수료를 적용하는 것도 가능). 이것을 "merged fee market"이라고 말할 수 있습니다.
@@ -91,21 +90,22 @@ all other validators and users can verify the blocks very efficiently through da
 just data).
 
 Danksharding의 설계는 아직 논의가 더 필요하고 스펙이 정해지더라도 구현 과정에서 문제점들이 나타날 수 있으므로 변경 가능성이 있습니다.
-그래서 일단 프로토타입처럼 일부 기능을 먼저 구현하는 방식도 생각하고 있는 것 같습니다. 그것이 [proto-Danksharding][proto-dank]입니다. 
+그래서 일단 프로토타입처럼 일부 기능을 먼저 구현하는 방식도 생각하고 있습니다. 그것이 [proto-Danksharding][proto-dank]입니다. 
 
-앞서 말한 것처럼 blob 데이터를 저장하는 이유는 데이터 가용성을 제공하기 위함입니다. 거래의 결과(상태 전이)가 올바른지 검증하기 위해서는 그 과정을 확인할 필요가 있고 이를 위해서 중간 과정의 데이터를 일정 기간 저장할 필요가 있는 것입니다.  
+앞서 말한 것처럼 데이터를 저장하는 이유는 데이터 가용성을 제공하기 위함입니다. 거래의 결과(상태 전이)가 올바른지 검증하기 위해서는 그 과정에서 발생한 데이터를 일정 기간 저장할 필요가 있는 것입니다.  
 
-블록체인에서 거래 데이터가 올바르게 저장되었는지 확인하는 방법 중 하나는 머클 트리를 이용하는 것입니다. 어떤 블록에 저장된 거래를 확인하려면 머클 증명과 머클 루트를 사용하여 확인할 수 있습니다. 샤딩에서는 머클 트리 대신 "KZG commitment"라는 암호학 이론을 적용합니다. 
+블록체인에서 거래 데이터가 올바르게 저장되었는지 확인하는 방법 중 하나는 머클 트리를 이용하는 것입니다. 어떤 블록에 저장된 거래를 확인하려면 머클 증명과 머클 루트를 사용하여 확인할 수 있습니다. Danksharding에서는 머클 트리 대신 "KZG commitment"라는 암호학 이론을 적용합니다. 
 
-[Danksharding 세미나][danksharding-webinar]에서 Dankrad Feist의 설명을 인용하면 KZG commitment는 다항식 commitment의 한 종류로 다음과 같은 수학적 특성을 가지고 있습니다.
+[Danksharding 세미나][danksharding-webinar]에서 Dankrad Feist의 설명을 인용하면 KZG commitment는 polynomial commitment의 한 종류로 다음과 같은 수학적 특성을 가지고 있습니다.
 
-- 다항식 f에 대한 commitment(commitment to polynomial) = C 
-- 어떤 z에 대한 다항식의 값 y = f(z)
+- 다항식 f에 대한 commitment(commitment to polynomial) = C(f)
 - Prover는 z의 proof를 계산 = π(f,z)
 - Verifier는 C, π, y, z를 사용하여 f(z) = y 임을 확인 
 
+머클 트리에서는 데이터들을 차례로 해시하여 머클 루트로 표현할 수 있는데, polynomial commitment에서는 이들 데이터가 어떤 다항식의 값이 된다고 생각합니다. 
 
-EIP-4844에 있는 blob 트랜잭션은 현재 다음과 같이 정의되어 있습니다. 이더리움의 트랜잭션은 EIP-2718에 의해 트랜잭션 타입을 지정할 수 있으므로 blob 트랜잭션 타입을 별도로 지정하여 처리할 수 있습니다. 
+
+EIP-4844에 있는 `BlobTransaction`은 현재 다음과 같이 정의되어 있습니다. 이더리움의 트랜잭션은 EIP-2718에 의해 트랜잭션 타입을 지정할 수 있으므로 트랜잭션 타입을 별도로 지정하여 일반 트랜잭션과 구분합니다. 
 
 ```
 class SignedBlobTransaction(Container):
@@ -125,8 +125,7 @@ class BlobTransaction(Container):
     blob_versioned_hashes: List[VersionedHash, MAX_VERSIONED_HASHES_LIST_SIZE]
 ```    
 
-`BlobTransaction`은 일반 트랜잭션처럼 data 필드에 calldata를 운반합니다. MAX_CALLDATA_SIZE는 16M(2**24)로 지정되어 있습니다. L2에서 발생한 거래 데이터들이 
-저장될 수 있을 것 같습니다. 
+BlobTransaction은 일반 트랜잭션처럼 data 필드에 calldata를 운반합니다. MAX_CALLDATA_SIZE는 16M(2**24)로 지정되어 있습니다(한 슬롯에서 저장할 수 있는 샤드 데이터의 최대 크기는 16MB). 이 트랜잭션은 다시 아래와 같은 네트워크 래퍼로 전송됩니다.
 
 ```
 class BlobTransactionNetworkWrapper(Container):
@@ -137,13 +136,10 @@ class BlobTransactionNetworkWrapper(Container):
     blobs: List[Vector[BLSFieldElement, FIELD_ELEMENTS_PER_BLOB], LIMIT_BLOBS_PER_TX]
 ```
 
-blob_kzgs는 벡터로 변환된 blob들의 KZG commitment를 나타냅니다. 데이터와 그 데이터에 대한 commitment라고 할 수 있는데, 결국 blob 트랜잭션에는 
-데이터와 그것을 검증할 수 있는 암호학적 검증 데이터들이 함께 래핑되어 있습니다(수학적으로 정확하게 이해하는 것이 어렵지만🤔). 다시 말해서 L2에서 발생한 
-데이터들이 L1에 저장되어 "available" 하다는 것을 암호학적으로 증명하는 것이라고 할 수 있겠습니다. Prover에 해당하는 롤업 오퍼레이터들이 보낸 데이터를 
-Verifier 즉 검증자나 사용자들이 언제든지 "f(z) = y"임을 확인할 수 있는 메커니즘이라고 이해하면 될 것 같습니다.
+`blob_kzgs`는 blobs에 대한 각각의 KZG commitment 리스트입니다. blobs는 "유한체 위의 다항식(polynomial over finite field)"으로 4096개의 원소(BLSFieldElement)로 이루어진 벡터입니다. KZG commitment는 이것에 대한 commitment를 계산한 값이 됩니다. 요약하면 데이터와 그것을 검증할 수 있는 암호학적 검증 데이터들이 함께 래핑되어 있습니다(수학적으로 정확하게 이해하는 것이 어렵지만🤔).
 
-옵티미스틱 롤업과 ZK 롤업에서 KZG commitment에 의해서 보장된 데이터를 각각 fraud proof와 validity proof를 수행하는 과정에서 이용할 수 있도록 
-"프리컴파일"을 제공하는 것도 EIP-4844에 포함되어 있습니다. 아마 온체인에서 데이터 가용성을 확인할 수 있는 기능을 제공한다는 의미가 될 것 같습니다.
+옵티미스틱 롤업과 ZK 롤업에서 `blob_kzg`와 `blobs`를 각각 validity proof와 fraud proof를 수행하는 과정에서 이용할 수 있도록 
+"precompile"을 제공하는 것도 EIP-4844에 포함되어 있습니다(point evaluation precompile, blob verification precompile). 온체인에서 데이터 가용성을 확인할 수 있는 기능을 제공한다는 의미가 될 것 같습니다.
 
 proto-Danksharding은 아직 연구 단계에 있습니다. 또 "The Merge"라는 중요한 하드포크 이후에 적용될 가능성이 많습니다. 최소 1년 정도는 더 기다려야 구체적인 
 세부 내용들이 나올 것 같다는 생각이 듭니다.
