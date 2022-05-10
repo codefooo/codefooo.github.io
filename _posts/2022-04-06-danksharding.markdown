@@ -138,7 +138,7 @@ class BlobTransactionNetworkWrapper(Container):
     blobs: List[Vector[BLSFieldElement, FIELD_ELEMENTS_PER_BLOB], LIMIT_BLOBS_PER_TX]
 ```
 
-blob_kzgs는 blobs에 대한 각각의 KZG commitment 리스트입니다. blobs는 "유한체 위의 다항식(polynomial over finite field)"으로 4096개의 원소(BLSFieldElement)로 이루어진 벡터입니다. 다항식에서 타원 곡선 위의 점 s에 대한 각 항이라고 생각하면 될 것 같습니다. KZG commitment는 이것에 대한 commitment를 계산한 값이 됩니다(수학적으로 정확하게 이해하는 것이 어렵지만🤔).
+blob_kzgs는 blobs에 대한 각각의 KZG commitment 리스트입니다. blobs는 "유한체 위의 다항식(polynomial over finite field)"으로 4096개의 원소(BLSFieldElement)로 이루어진 벡터입니다(이 데이터가 무엇을 나타내는지는 아직 모르겠습니다🤔). KZG commitment는 이것에 대한 commitment를 계산한 값이 됩니다.
 
 옵티미스틱 롤업과 ZK 롤업에서 blob_kzg와 blobs를 각각 validity proof와 fraud proof를 수행하는 과정에서 이용할 수 있도록 
 "precompile"을 제공하는 것도 EIP-4844에 포함되어 있습니다(point evaluation precompile, blob verification precompile). 온체인에서 이들을 활용할 수 있는 기능을 제공한다는 의미가 될 것 같습니다.
