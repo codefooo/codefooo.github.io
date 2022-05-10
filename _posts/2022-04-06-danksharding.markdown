@@ -101,11 +101,11 @@ Danksharding의 설계는 아직 논의 중이고 스펙이 정해지더라도 �
 - Prover는 z의 proof를 제공 = π(f,z)
 - Verifier는 C, π, y, z를 사용하여 f(z) = y 임을 확인 
 
-머클 트리에서는 데이터들을 차례로 해시하여 머클 루트로 만들 수 있는데, polynomial commitment에서는 이들 데이터가 어떤 다항식의 값으로 표현할 수 있다고 생각합니다(값을 가지고 다항식을 만들어내는 것을 "인터폴레이션"이라고 합니다). 그런데 다항식이라고 하는 것은, 예를 들어 a + bx + cx^2 + ... + gx^6의 형태입니다. 다항식에 대한 commitment는 타원 곡선의 성질을 이용합니다. 타원 곡선 상의 어떤 난수 s에 대해 f(s)의 값을 계산하면 a + bs + cs^2 + ... 의 값이 되는데 s를 알지 못해도 "trusted setup"이라는 과정에서 s^i의 값들을 가지고 있기 때문에 f(s)의 값을 알 수 있습니다.
+머클 트리에서는 데이터들을 차례로 해시하여 머클 루트로 만들 수 있는데, polynomial commitment에서는 이들 데이터가 어떤 다항식의 값으로 표현할 수 있다고 생각합니다(값을 가지고 다항식을 만들어내는 것을 "인터폴레이션"이라고 합니다). 
 
-다시 말해서 s는 Prover와 Verifier 모두 알 수 없는 값이지만(trusted setup에서 MPC로 생성) f(s)의 값을 계산할 수 있게 됩니다. 바로 이 값을 다항식 f의 commitment라고 하고 동일한 commitment가 나오는 다른 다항식을 찾는 것은 확률적으로 매우 어렵기 때문에 Prover와 Verifier는 유일한 다항식 f를 약속할 수 있습니다. 
+그런데 다항식이라고 하는 것은, 예를 들어 a + bx + cx^2 + ... + gx^6의 형태입니다. 다항식에 대한 commitment인 f(s)\*G는 타원 곡선의 성질을 이용합니다. 어떤 난수 s(trusted setup에서 MPC로 생성)에 대해 f(s)\*G 의 값을 계산하면 (a + bs + cs^2 + ...)\*G 의 값이 되는데 s를 알지 못해도 G*(s^i)의 값들을 가지고 있기 때문에 f(s)\*G의 값을 알 수 있습니다.
 
-Verifier가 확인하려는 "f(z) = y"는 Prover가 제공하는 π(f,z)와 C(f)를 사용하여 타원 곡선 "페어링(pairing)"을 통해서 검증할 수 있게 됩니다(Prover가 구체적인 다항식을 제공할 필요가 없습니다). 
+다시 말해서 s는 Prover와 Verifier 모두 알 수 없는 값이지만 다항식 f의 commitment를 만들 수 있고 동일한 commitment가 나오는 다른 다항식을 찾는 것이 확률적으로 매우 어렵기 때문에 Prover와 Verifier는 유일한 다항식 f를 약속할 수 있습니다. 어느 시점에 Verifier가 "f(z) = y"임을 확인하려면 Prover가 제공하는 π(f,z)와 C(f)를 사용하여 타원 곡선 "페어링(pairing)"을 통해서 검증할 수 있게 됩니다(Prover가 구체적인 다항식을 제공할 필요가 없습니다). 
 
 EIP-4844에 있는 `BlobTransaction`은 현재 다음과 같이 정의되어 있습니다. 이더리움의 트랜잭션은 EIP-2718에 의해 트랜잭션 타입을 지정할 수 있으므로 트랜잭션 타입을 별도로 지정하여 일반 트랜잭션과 구분합니다. 
 
@@ -138,7 +138,7 @@ class BlobTransactionNetworkWrapper(Container):
     blobs: List[Vector[BLSFieldElement, FIELD_ELEMENTS_PER_BLOB], LIMIT_BLOBS_PER_TX]
 ```
 
-blob_kzgs는 blobs에 대한 각각의 KZG commitment 리스트입니다. blobs는 "유한체 위의 다항식(polynomial over finite field)"으로 4096개의 원소(BLSFieldElement)로 이루어진 벡터입니다(이 데이터가 무엇을 나타내는지는 아직 모르겠습니다🤔). KZG commitment는 이것에 대한 commitment를 계산한 값이 됩니다.
+blob_kzgs는 blobs에 대한 각각의 KZG commitment 리스트입니다. blobs는 "유한체 위의 다항식(polynomial over finite field)"으로 4096개의 원소(BLSFieldElement)로 이루어진 벡터입니다(이 데이터가 무엇을 나타내는지는 아직 모르겠지만 다항식을 벡터로 표현한 것 같습니다🤔). 각 벡터에 대한 commitment가 KZG commitment 입니다.
 
 옵티미스틱 롤업과 ZK 롤업에서 blob_kzg와 blobs를 각각 validity proof와 fraud proof를 수행하는 과정에서 이용할 수 있도록 
 "precompile"을 제공하는 것도 EIP-4844에 포함되어 있습니다(point evaluation precompile, blob verification precompile). 온체인에서 이들을 활용할 수 있는 기능을 제공한다는 의미가 될 것 같습니다.
