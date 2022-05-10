@@ -64,16 +64,15 @@ Danksharding은 데이터 가용성(Data Availability)만을 보장하고 실행
 처리 속도는 레이어 2에서 올리고 수수료는 데이터 샤딩을 통해 낮추려는 의도라고 볼 수 있겠습니다.
 
 이 제안에서는 각 샤드에 배치된 committee에서 샤드 블록을 만드는 대신 새로운 타입의 트랜잭션, 즉 "blob transaction"을 정의하고 
-블록 생성자 하나가 이 트랜잭션들을 비콘 블록에 저장하도록 하는 것입니다. blob 트랜잭션은 거래 트랜잭션이 아니라 데이터를 저장하는 트랜잭션입니다. "The Merge"가 완료되면 비콘 체인 검증자들이 기존 이더리움(EL)의 트랜잭션과 샤드 blob 트랜잭션까지 처리하게 되는 셈인데, 이렇게 되면 상당한 부하를 처리할 수 있는 
+블록 생성자 하나가 이 트랜잭션들을 비콘 블록에 저장하도록 하는 것입니다. "blob transaction"은 거래 트랜잭션이 아니라 데이터를 저장하는 트랜잭션입니다. "The Merge"가 완료되면 비콘 체인 검증자들이 기존 이더리움(EL)의 트랜잭션과 샤드 blob 트랜잭션까지 처리하게 되는 셈인데, 이렇게 되면 상당한 부하를 처리할 수 있는 
 하드웨어가 필요할 수도 있습니다("super-block-builder" 라고 표현한 이유).
 
 그래서 PBS(Proposer/Builder Separation)라는 방식을 도입하여 블록 바디를 만드는 생성자(Builder)와 블록헤더를 만들어서 최종 블록을 
 네트워크에 전파하는 제안자(Proposer)를 분리합니다. 마치 채굴자처럼 실제 트랜잭션을 모으는 것은 생성자의 역할이고 제안자(현재 비콘 체인 검증자들)는 그렇게 만들어진 블록 바디들 중에 하나를 선택하는 방식입니다(생성자가 블록을 비딩하고 제안자가 선택).
 
-이러한 "수퍼 블록" 생성자는 누구나 될 수 있기 때문에 검열의 문제가 발생할 수 있습니다(생성자는 honest minority에 의존). 이를 방지하기 위해 검열 저항 목록(crList)를 제안자가 만들어서 브로드캐스팅합니다. crList는 트랜잭션 풀에 있는 임의의 트랙잭션들입니다. 블록 생성자는 crList에 있는 트랜잭션들을 포함시켜서 블록을 만들어야 하므로 생성자가 블록에 저장되는 트랜잭션을 임의로 제외할 수 없게 됩니다.
+이러한 "수퍼 블록" 생성자는 특별한 자격없이 될 수 있기 때문에 검열의 문제가 발생할 수 있습니다(생성자는 honest minority에 의존). 이를 방지하기 위해 검열 저항 목록(crList)를 제안자가 만들어서 브로드캐스팅합니다. crList는 트랜잭션 풀에 있는 임의의 트랙잭션들입니다. 블록 생성자는 crList에 있는 트랜잭션들을 포함시켜서 블록을 만들어야 하므로 생성자가 블록에 저장되는 트랜잭션을 임의로 제외할 수 없게 됩니다.
 
-다시 말해서 블록을 만드는 일, 즉 데이터를 처리하는 일은 다소 높은 하드웨어 성능을 요구할 수 있기 때문에 컴퓨팅 리소스가 충분한 사람들에게 일임하려는 의도를 가지고 
-있는 것 같습니다. 하지만 그것을 검증하는 것은 불특정 다수(honest majority에 의존), 즉 현재 비콘 체인의 검증자들이 수행하도록 하므로써 탈중앙화를 유지할 수 있습니다.
+다시 말해서 블록을 만드는 일, 즉 데이터를 처리하는 일은 다소 높은 하드웨어 성능을 요구할 수 있기 때문에 컴퓨팅 리소스가 충분한 사람들에게 일임하고 그것을 검증하는 것은 불특정 다수(honest majority에 의존), 즉 현재 비콘 체인의 검증자들이 수행하도록 하므로써 탈중앙화를 유지할 수 있습니다.
 
 원래 각 샤드에서 거래가 처리되면 샤드마다 수수료가 달라질 수 있는데, Danksharding에서는 blob 트랜잭션의 타입을 하나 더 추가할 뿐이므로 좀더 간소화된 수수료 처리가 
 가능합니다(일반 트랜잭션과 다른 수수료를 적용하는 것도 가능). 이것을 "merged fee market"이라고 말할 수 있습니다.
@@ -89,14 +88,14 @@ to use third-party decentralized oracle protocols to implement a distributed blo
 all other validators and users can verify the blocks very efficiently through data availability sampling (remember: the “big” part of the block is 
 just data).
 
-Danksharding의 설계는 아직 논의가 더 필요하고 스펙이 정해지더라도 구현 과정에서 문제점들이 나타날 수 있으므로 변경 가능성이 있습니다.
+Danksharding의 설계는 아직 논의 중이고 스펙이 정해지더라도 구현 과정에서 문제점들이 나타날 수 있으므로 변경 가능성이 있습니다.
 그래서 일단 프로토타입처럼 일부 기능을 먼저 구현하는 방식도 생각하고 있습니다. 그것이 [proto-Danksharding][proto-dank]입니다. 
 
 앞서 말한 것처럼 데이터를 저장하는 이유는 데이터 가용성을 제공하기 위함입니다. 거래의 결과(상태 전이)가 올바른지 검증하기 위해서는 그 과정에서 발생한 데이터를 일정 기간 저장할 필요가 있는 것입니다.  
 
 블록체인에서 거래 데이터가 올바르게 저장되었는지 확인하는 방법 중 하나는 머클 트리를 이용하는 것입니다. 어떤 블록에 저장된 거래를 확인하려면 머클 증명과 머클 루트를 사용하여 확인할 수 있습니다. Danksharding에서는 머클 트리 대신 "KZG commitment"라는 암호학 이론을 적용합니다. 
 
-[Danksharding 세미나][danksharding-webinar]에서 Dankrad Feist의 설명을 인용하면 KZG commitment는 polynomial commitment의 한 종류로 다음과 같은 수학적 특성을 가지고 있습니다.
+[Danksharding 세미나][danksharding-webinar]에서 Dankrad Feist의 설명을 인용하면 KZG commitment는 polynomial commitment의 한 종류로 다음과 같은 절차로 진행됩니다. 
 
 - 다항식 f에 대한 commitment(commitment to polynomial) = C(f)
 - Prover는 z의 proof를 제공 = π(f,z)
@@ -104,9 +103,9 @@ Danksharding의 설계는 아직 논의가 더 필요하고 스펙이 정해지�
 
 머클 트리에서는 데이터들을 차례로 해시하여 머클 루트로 만들 수 있는데, polynomial commitment에서는 이들 데이터가 어떤 다항식의 값으로 표현할 수 있다고 생각합니다(값을 가지고 다항식을 만들어내는 것을 "인터폴레이션"이라고 합니다). 그런데 다항식이라고 하는 것은, 예를 들어 a + bx + cx^2 + ... + gx^6의 형태입니다. 다항식에 대한 commitment는 타원 곡선의 성질을 이용합니다. 타원 곡선 상의 어떤 난수 s에 대해 f(s)의 값을 계산하면 a + bs + cs^2 + ... 의 값이 되는데 s를 알지 못해도 "trusted setup"이라는 과정에서 s^i의 값들을 가지고 있기 때문에 f(s)의 값을 알 수 있습니다.
 
-다시 말해서 s는 Prover나 Verifier 모두 알 수 없는 값이지만(trusted setup에서 MPC로 생성) f(s)의 값을 계산할 수 있게 됩니다. 바로 이 값을 다항식 f의 commitment라고 하고 동일한 commitment가 나오는 다른 다항식을 찾는 것은 확률적으로 매우 어렵기 때문에 Prover와 Verifier는 유일한 다항식 f를 약속할 수 있습니다. 
+다시 말해서 s는 Prover와 Verifier 모두 알 수 없는 값이지만(trusted setup에서 MPC로 생성) f(s)의 값을 계산할 수 있게 됩니다. 바로 이 값을 다항식 f의 commitment라고 하고 동일한 commitment가 나오는 다른 다항식을 찾는 것은 확률적으로 매우 어렵기 때문에 Prover와 Verifier는 유일한 다항식 f를 약속할 수 있습니다. 
 
-Verifier가 확인하려는 "f(z) = y"는 Prover가 제공하는 π(f,z)와 commitment를 사용하여 타원 곡선 "페어링(pairing)"을 통해서 검증할 수 있게 됩니다(Prover가 구체적인 다항식을 제공할 필요가 없습니다). 
+Verifier가 확인하려는 "f(z) = y"는 Prover가 제공하는 π(f,z)와 C(f)를 사용하여 타원 곡선 "페어링(pairing)"을 통해서 검증할 수 있게 됩니다(Prover가 구체적인 다항식을 제공할 필요가 없습니다). 
 
 EIP-4844에 있는 `BlobTransaction`은 현재 다음과 같이 정의되어 있습니다. 이더리움의 트랜잭션은 EIP-2718에 의해 트랜잭션 타입을 지정할 수 있으므로 트랜잭션 타입을 별도로 지정하여 일반 트랜잭션과 구분합니다. 
 
@@ -142,7 +141,7 @@ class BlobTransactionNetworkWrapper(Container):
 `blob_kzgs`는 blobs에 대한 각각의 KZG commitment 리스트입니다. blobs는 "유한체 위의 다항식(polynomial over finite field)"으로 4096개의 원소(BLSFieldElement)로 이루어진 벡터입니다. 다항식에서 타원 곡선 위의 점 s에 대한 각 항이라고 생각하면 될 것 같습니다. KZG commitment는 이것에 대한 commitment를 계산한 값이 됩니다(수학적으로 정확하게 이해하는 것이 어렵지만🤔).
 
 옵티미스틱 롤업과 ZK 롤업에서 `blob_kzg`와 `blobs`를 각각 validity proof와 fraud proof를 수행하는 과정에서 이용할 수 있도록 
-"precompile"을 제공하는 것도 EIP-4844에 포함되어 있습니다(point evaluation precompile, blob verification precompile). 온체인에서 데이터 가용성을 확인할 수 있는 기능을 제공한다는 의미가 될 것 같습니다.
+"precompile"을 제공하는 것도 EIP-4844에 포함되어 있습니다(point evaluation precompile, blob verification precompile). 온체인에서 이들을 활용할 수 있는 기능을 제공한다는 의미가 될 것 같습니다.
 
 proto-Danksharding은 아직 연구 단계에 있습니다. 또 "The Merge"라는 중요한 하드포크 이후에 적용될 가능성이 많습니다. 최소 1년 정도는 더 기다려야 구체적인 
 세부 내용들이 나올 것 같다는 생각이 듭니다.
