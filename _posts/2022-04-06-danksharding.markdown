@@ -26,9 +26,9 @@ that rollups could use. However, data sharding will still take a considerable am
 
 원래 이더리움 PoS의 로드맵 Phase 1 샤딩의 목적은 현재 단일 체인을 64개의 샤드 체인으로 분할해서 거래를 나누어 처리하는 것이었습니다. 비콘 체인의 검증자들로 구성된 검증단(committee)를 다수의 샤드에 각각 배치하여 샤드 블록을 만들고 비콘 체인에 그 내역을 기록하는 방식입니다. 트랜잭션은 실행 레이어에서 이루어지기 때문에 샤드 체인에서는 데이터만 저장합니다. 그래서 샤드 체인을 "데이터 레이어"로 표현합니다.
 
-각 샤드는 실행 레이어를 가지고 있게 되고 현재 이더리움도 EVM 실행 엔진이 달린 한 샤드로 볼 수 있습니다. 지금과 비교해보면 실행 레이어는 현재 레이어 2가 담당하고 (데이터 레이어에 해당하는 샤드 체인은 아직 없으므로) 이더리움 블록에 롤업 데이터(calldata)를 저장하는 구조로 생각할 수 있겠습니다.
+각 샤드는 실행 레이어를 가지고 있게 되고 현재 이더리움도 EVM 실행 엔진이 달린 샤드로 볼 수 있습니다. 지금과 비교해보면 실행 레이어는 현재 레이어 2가 담당하고 (데이터 레이어에 해당하는 샤드 체인은 아직 없으므로) 이더리움 블록에 롤업 데이터(calldata)를 저장하는 구조로 생각할 수 있겠습니다.
 
-그런데 레이어 2의 비용을 체감적으로 크게 낮출 수 없는 이유 중 하나는 롤업 데이터를 저장하는 트랜잭션은 어차피 이더리움에 전송하기 위해 가스비를 내야 하므로 
+앞서 언급한 것처럼 레이어 2의 비용을 체감적으로 크게 낮출 수 없는 이유 중 하나는 롤업 데이터를 저장하는 트랜잭션은 어차피 이더리움에 전송하기 위해 가스비를 내야 하므로 
 가스비가 매우 높은 상황에서는 레이어 2의 효과가 감소한다는 문제가 있습니다.
 
 비탈릭 부테린은 두 가지 정도의 제안을 내놓은 상태입니다. [EIP-4488][eip-4488]과 [EIP-4844][eip-4844]인데 장기적인 방향과 일치하는 것은 EIP-4844입니다. 여기서는 다음과 같은 "stop-gap" 솔루션을 제안합니다.
@@ -39,12 +39,12 @@ and is fully downloaded by all consensus nodes (but can be deleted after only a 
 Compared to full data sharding, this EIP has a reduced cap on the number of these transactions that can be included, 
 corresponding to a target of 1 MB per block and a limit of 2 MB.
 
-앞에서 언급한 것처럼 샤딩 데이터의 저장 영역을 롤업 데이터 전용 저장 공간으로 활용하자는 것입니다. 향후 샤딩의 설계와도 호환(forwards-compatible)되도록 
-구현하고 또 블록 당 약 1 MB에서 최대 2 MB로 제한한다는 것입니다.
+요약하면 샤딩 데이터의 저장 영역을 롤업 데이터 전용 저장 공간으로 활용하자는 것입니다. 향후 샤딩의 설계와도 호환(forwards-compatible)되도록 
+구현하고 또 블록 당 약 1 MB에서 최대 2 MB로 제한하자는 주장입니다.
 
 여기서 "shard blob transaction"은 트랜잭션 타입을 0x05로 지정한 통상적인 L1 트랜잭션으로 취급하여 전송된 데이터를 비콘 체인에 저장하게 됩니다. 지금 롤업 데이터는 calldata를 의미하는 것이지만 나중에 샤딩이 구현되면 롤업 데이터는 "shard blob"에 해당되는 것입니다. 
 
-"blob"이라고 표현한 것은 샤딩 [스펙][shard-spec]에 따르면 "Data with commitments and meta-data, like a flattened bundle of L2 transactions"으로 정의합니다. "blob"이라는 용어를 사용한 것은 현재 단일 체인의 전체 데이터를 각 노드들이 가지고 있는 것과 비교하여 샤딩된(나누어진, 부분) 데이터라는 의미로, 그 자체로 검증 가능한 정보(commitment)도 함께 가지고 있는 형태로 이해할 수 있을 것 같습니다.  
+"blob"이라고 표현한 것은 샤딩 [스펙][shard-spec]에 따르면 "Data with commitments and meta-data, like a flattened bundle of L2 transactions"으로 정의합니다. "blob"이라는 용어를 사용한 이유는 그 자체로 검증 가능한 정보(commitment)도 함께 가지고 있는 형태임을 의미하는 것으로 이해할 수 있을 것 같습니다.  
 
 - Data: A list of KZG points, to translate a byte string into  
 - Blob: Data with commitments and meta-data, like a flattened bundle of L2 transactions.  
