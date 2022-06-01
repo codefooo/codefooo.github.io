@@ -89,7 +89,7 @@ all other validators and users can verify the blocks very efficiently through da
 just data).
 
 Danksharding의 설계는 아직 논의 중이고 스펙이 정해지더라도 구현 과정에서 문제점들이 나타날 수 있으므로 변경 가능성이 있습니다.
-그래서 일단 프로토타입처럼 일부 기능을 먼저 구현하는 방식도 생각하고 있습니다. 그것이 [proto-Danksharding][proto-dank]입니다. 
+그래서 일단 일부 기능을 먼저 구현하는 방식도 생각하고 있습니다. 그것이 [proto-Danksharding][proto-dank]입니다. 
 
 앞서 말한 것처럼 데이터를 저장하는 이유는 데이터 가용성을 제공하기 위함입니다. 거래의 결과(상태 전이)가 올바른지 검증하기 위해서는 그 과정에서 발생한 데이터를 일정 기간 저장할 필요가 있는 것입니다.  
 
@@ -127,7 +127,7 @@ class BlobTransaction(Container):
     blob_versioned_hashes: List[VersionedHash, MAX_VERSIONED_HASHES_LIST_SIZE]
 ```    
 
-BlobTransaction은 일반 트랜잭션처럼 data 필드에 calldata를 운반합니다. MAX_CALLDATA_SIZE는 16M(2**24)로 지정되어 있습니다(한 슬롯에서 저장할 수 있는 샤드 데이터의 최대 크기는 16MB). 이 트랜잭션은 다시 아래와 같은 네트워크 래퍼로 전송됩니다.
+BlobTransaction은 일반 트랜잭션처럼 data 필드에 calldata를 운반할 수 있습니다. MAX_CALLDATA_SIZE는 16M(2**24)로 지정되어 있습니다(한 슬롯에서 저장할 수 있는 샤드 데이터의 최대 크기는 16MB). 이 트랜잭션은 다시 아래와 같은 네트워크 래퍼로 전송됩니다.
 
 ```
 class BlobTransactionNetworkWrapper(Container):
