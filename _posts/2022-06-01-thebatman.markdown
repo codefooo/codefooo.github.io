@@ -45,7 +45,7 @@ You'll see.
 >Our scars can destroy us, even after the physical wounds have healed. But if we survive them, they can transform us. They can give us the power to endure, and the strength to fight.
 
 
-영화는 캣우먼과의 작별 장면으로 조용히 마무리된다. 어스름한 저녁 각자의 길을 향해 달리는 두 사람의 운명이 어떻게 될지, 또 아캄 정신병동을 갇힌 조커의 웃음소리는 어떻게 고담시를 혼란에 빠뜨릴지 속편을 예고하는 엔딩아닌 엔딩인 것이다.  
+영화는 캣우먼과의 작별 장면으로 조용히 마무리된다. 어스름한 저녁 각자의 길을 향해 달리는 두 사람의 운명이 어떻게 될지, 또 아캄 정신병동에 갇힌 조커의 웃음소리는 어떻게 고담시를 혼란에 빠뜨릴지 속편을 예고하는 엔딩아닌 엔딩인 것이다.  
 
 배트맨은 더 어두워져야 한다.
 
