@@ -38,7 +38,9 @@ You'll see.
 >You'll be there, waiting. It's time for the lies to finally end. False promises of renewal? CHANGE? We'll give them real, real change now. We've spent our lives in this wretched place, SUFFERING! Wondering, "Why us?" Now they will spend their last moments wondering, "Why them?"
 
 
+영화의 결말은 전형적인 방향으로 흘러간다. 고담시의 위기는 새로운 시장의 리더쉽과 시민들의 참여로 극복될 수 있다는 상투적이고 희망적인 메시지를 전한다. 브루스 웨인 역시 고담시에서의 자신의 역할을 재정립하는 과정을 보여준다. 붉은 조명탄을 들고 시민들을 이끄는 장면은 다소 신파적인 느낌이 들긴 해도 배트맨이 고담시의 "어둠의 기사"로 거듭나게 될 것이라는 암시를 주는 것으로 볼 수 있다. 
 
+캣우먼과의 작별 장면으로 영화는 조용히 마무리한다. 어스름한 저녁 각자의 길을 향해 달리는 두 사람의 운명이 어떻게 될지, 속편을 위한 엔딩아닌 엔딩인 것이다.
 
 
 
