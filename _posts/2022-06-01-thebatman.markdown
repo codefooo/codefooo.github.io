@@ -40,7 +40,7 @@ You'll see.
 >You'll be there, waiting. It's time for the lies to finally end. False promises of renewal? CHANGE? We'll give them real, real change now. We've spent our lives in this wretched place, SUFFERING! Wondering, "Why us?" Now they will spend their last moments wondering, "Why them?"
 
 
-영화의 결말은 흔한 방향으로 흘러간다. 고담시의 위기는 새로운 시장의 리더쉽과 시민들의 참여로 극복될 수 있다는 상투적이고 희망적인 메시지를 전한다. 배트맨-브루스 웨인도 고담시에서의 자신의 역할을 재정립하는 과정을 보여준다. 붉은 조명을 높이 들어 사람들을 이끄는 장면은 다소 신파적인 느낌이 들긴 해도 배트맨이 "고담의 기사"로 거듭나게 될 것을 암시하고 있다.
+영화의 결말은 흔한 방향으로 흘러간다. 고담시의 위기는 새로운 시장의 리더쉽과 시민들의 참여로 극복될 수 있다는 희망적이지만 상투적인 메시지를 전한다. 배트맨-브루스 웨인도 고담시에서의 자신의 역할을 재정립하는 과정을 보여준다. 붉은 조명을 높이 들어 사람들을 이끄는 장면은 다소 신파적인 느낌이 들긴 해도 배트맨이 "고담의 기사"로 거듭나게 될 것을 암시하고 있다.
 
 >Our scars can destroy us, even after the physical wounds have healed. But if we survive them, they can transform us. They can give us the power to endure, and the strength to fight.
 
