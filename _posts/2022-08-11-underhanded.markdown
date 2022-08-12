@@ -19,7 +19,10 @@ tag: [solidity]
 생성된 입찰건은 다음과 같은 mapping 타입의 장부에 저장됩니다.
 
 ```
-mapping(address => mapping(uint160 => mapping(uint256 => uint256))) bids;
+mapping(
+        address => mapping(
+                    uint160 => mapping(
+                                uint256 => uint256))) bids;
 ```
 
 조금 복잡한 구조를 지니고 있지만 입찰자의 계정을 key로 하고, 두 토큰 컨트랙트의 주소를 XOR 연산한 uint160의 값, 그리고 NFT토큰 ID와 제시한 가격을 저장합니다. 해당되는 NFT 토큰을 
@@ -71,12 +74,12 @@ Santiago Palladino는 오픈제펠린에서 잘 알려진 개발자입니다. �
 
 ```
 struct Order {
-    address referrer;     // optional referrer field that takes a 1% of the amount paid in ETH
-    address token;        // token being offered in this order
-    uint128 rate;         // amount of tokens per eth sold (times RATE_DENOMINATOR)
-    uint24 nonce;         // nonce for differentiating two otherwise identical orders
-    uint256 amount;       // amount of tokens offered in this order
-    uint8 orderType;      // type of order (see constants above)
+    address referrer;
+    address token;
+    uint128 rate;
+    uint24 nonce;
+    uint256 amount;
+    uint8 orderType;
 }
 ```
 레퍼러(referrer)는 중개 수수료에 해당하고 1%를 정했습니다. 솔리디티에서는 소수점 연산이 불가능하므로 1%, 즉 0.01을 분수로 표현합니다. 
@@ -126,7 +129,6 @@ const packed = ethers.utils.solidityPack(
      "10000000000000000", 
      0]
 );
-
 ```
 
 해시 하기 전에 encodePacked 된 데이터는 다음과 같습니다. Order 구조체의 각 항목에 해당되는 값들로 나누어서 볼 수 있습니다. 이 형태를 잘 눈여겨 보도록 합시다. 
@@ -142,7 +144,7 @@ ad36301e8c66bb2af80c63da5a99bdf2c202c9a1
 00
 ```
 
-전자서명은 이 값을 해시한 것에 합니다.
+이 값을 해시한 것을 전자서명합니다.
 
 ```
 const orderHash = ethers.utils.keccak256(packed);
@@ -153,8 +155,7 @@ s = 0x6ecc4efd77d0534480d5624abae0b8d72db08b30a733d15c22fcba6277a0ef00
 v = 28
 ```
 
-이와 같은 절차는 정상적인 주문에 대한 서명인데, 만약에 이와 동일한 구조의 가짜 주문에 대해 이미 서명된 데이터를 얻을 수 
-있다면 매도인의 의사와 상관없이 토큰을 가져갈 수 있을 것입니다. 하지만 그게 가능할까요? 어떻게 서명이 포함된 가짜 주문을 만들 수 있을까요?
+만약에 이와 동일한 구조의 가짜 주문에 대해 이미 서명된 데이터를 얻을 수 있다면 매도인의 의사와 상관없이 토큰을 가져갈 수 있을 것입니다. 하지만 그게 가능할까요? 어떻게 서명이 포함된 가짜 주문을 만들 수 있을까요?
 
 
 
