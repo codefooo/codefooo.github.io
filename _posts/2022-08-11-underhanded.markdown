@@ -54,16 +54,22 @@ acceptBid(
 
 원래 ERC721 토큰 컨트랙트와 ERC20 토큰 컨트랙트 주소를 바꾸어서 호출하는 것입니다. 그리고 price에는 B가 소유한 NFT 토큰 아이디를 넣습니다. transferFrom은 동일하므로 오류없이 실행이 될 것입니다. 그러나 결과는 전혀 다릅니다. 컨트랙트 주소가 바뀌었기 때문에 다음 코드는 NFT 아이디 666번을 A에게 전송하게 됩니다.
 
-```
+<font size="2">
+{% highlight javascript %}
 erc20Token.safeTransferFrom(B, A, 666);
-```
+{% endhighlight %}
+</font>
+
 
 그리고 반대로 B에게는 420 wei에 해당하는 ERC20 토큰만이 전송됩니다. 원래 B는 자신이 입찰한 NFT를 기대하고 있겠지만 오히려 NFT 666번을 도난당하고 소량의 ERC20 토큰만을 
 수령하게 되는 것입니다.
 
-```
+<font size="2">
+{% highlight javascript %}
 erc721Token.transferFrom(A, B, 420);
-```
+{% endhighlight %}
+</font>
+
 
 각 토큰 컨트랙트 주소 자체를 파라미터로 받을 수 있도록 한 것이 문제일 수도 있고 또 스토리지를 절약하기 위해 두 컨트랙트를 XOR했는데 이 경우에 두 컨트랙트가 서로 바뀌어도 동일한 값이 나오므로 주소를 교환하여 호출하는 것이 가능했습니다.
 
@@ -137,7 +143,9 @@ const order = [referrer, token, rate, nonce, amount, orderType];
 <font size="1">
 {% highlight javascript %}
 const packed = ethers.utils.solidityPack(
-    ["address", "address", "uint128", "uint24", "address", "uint256", "uint8"], 
+    ["address", "address", 
+     "uint128", "uint24", "address", 
+     "uint256", "uint8"], 
     ["0xAd36301E8C66bB2Af80c63DA5a99BdF2c202c9a1", 
      "0x5FbDB2315678afecb367f032d93F642f64180aa3", 
      100, 
@@ -171,7 +179,7 @@ ad36301e8c66bb2af80c63da5a99bdf2c202c9a1
 <font size="1">
 {% highlight javascript %}
 const orderHash = ethers.utils.keccak256(packed);
-const { v, r, s } = new ethers.utils.SigningKey(sellerPrivateKey).signDigest(orderHash);
+const {v,r,s} = new ethers.utils.SigningKey(sellerPrivateKey).signDigest(orderHash);
 
 r = 0x20ee...fcb4
 s = 0x6ecc...ef00
