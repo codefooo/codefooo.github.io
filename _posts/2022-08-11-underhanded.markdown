@@ -156,7 +156,7 @@ const packed = ethers.utils.solidityPack(
 </font>
 
 해시 하기 전에 encodePacked 된 데이터는 다음과 같습니다. Order 구조체의 각 항목에 해당되는 값들로 나누어서 볼 수 있습니다. 이 형태를 잘 눈여겨 보도록 합시다. 
-0x63ee...c849는 배포된(Görli) 컨트랙트의 주소입니다. 
+0x63ee...c849는 배포된(Görli) 컨트랙트의 [주소][exchange]입니다. 
 
 <font size="1">
 {% highlight shell %}
@@ -204,5 +204,5 @@ v = 28
 [3rd]: https://github.com/ethereum/solidity-underhanded-contest/tree/master/2022/submissions_2022/submission17_MichaelZhu
 [2nd]: https://github.com/ethereum/solidity-underhanded-contest/tree/master/2022/submissions_2022/submission10_SantiagoPalladino
 [1st]: https://github.com/ethereum/solidity-underhanded-contest/tree/master/2022/submissions_2022/submission9_TynanRichards
-
+[exchange]: https://goerli.etherscan.io/address/0x63ee5864f7fa0becfcee56093d654120e7e3c849
 
