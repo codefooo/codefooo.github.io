@@ -120,8 +120,8 @@ payable(seller).transfer(msg.value - fee);
 <font size="1">
 {% highlight javascript %}
 
-const referrer = "0xAd36301E8C66bB2Af80c63DA5a99BdF2c202c9a1";
-const token = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const referrer = "0xAd36...c9a1";
+const token = "0x5FbD...0aa3";
 const rate = 100;
 const nonce = 0;
 const amount = ethers.utils.parseEther("0.01");
@@ -173,8 +173,8 @@ ad36301e8c66bb2af80c63da5a99bdf2c202c9a1
 const orderHash = ethers.utils.keccak256(packed);
 const { v, r, s } = new ethers.utils.SigningKey(sellerPrivateKey).signDigest(orderHash);
 
-r = 0x20eec4a8bd81a8c5049438340b2b7eccb16045fe0c921f053e227ef83d7bfcb4
-s = 0x6ecc4efd77d0534480d5624abae0b8d72db08b30a733d15c22fcba6277a0ef00
+r = 0x20ee...fcb4
+s = 0x6ecc...ef00
 v = 28
 {% endhighlight %}
 </font>
