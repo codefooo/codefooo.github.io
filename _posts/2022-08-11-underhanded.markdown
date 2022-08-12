@@ -156,7 +156,7 @@ const packed = ethers.utils.solidityPack(
 </font>
 
 해시 하기 전에 encodePacked 된 데이터는 다음과 같습니다. Order 구조체의 각 항목에 해당되는 값들로 나누어서 볼 수 있습니다. 이 형태를 잘 눈여겨 보도록 합시다. 
-0x63ee5864f7fa0becfcee56093d654120e7e3c849는 배포된(Görli) 컨트랙트의 주소입니다. 
+0x63ee...c849는 배포된(Görli) 컨트랙트의 주소입니다. 
 
 <font size="1">
 {% highlight shell %}
@@ -175,9 +175,7 @@ ad363...c9a1
 <font size="1">
 {% highlight javascript %}
 const orderHash = ethers.utils.keccak256(packed);
-const {v,r,s} = new ethers.utils
-                .SigningKey(sellerPrivateKey)
-                .signDigest(orderHash);
+const {v,r,s} = new ethers.utils.SigningKey(sellerPrivateKey).signDigest(orderHash);
 
 r = 0x20ee...fcb4
 s = 0x6ecc...ef00
