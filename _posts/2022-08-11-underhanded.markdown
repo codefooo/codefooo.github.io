@@ -144,19 +144,44 @@ const order = [referrer, token, rate, nonce, amount, orderType];
 {% highlight javascript %}
 const packed = ethers.utils.solidityPack(
     ["address", "address", 
-     "uint128", "uint24", "address", 
-     "uint256", "uint8"], 
-    ["0xAd36301E8C66bB2Af80c63DA5a99BdF2c202c9a1", 
-     "0x5FbDB2315678afecb367f032d93F642f64180aa3", 
-     100, 
-     0, 
-     "0x63ee5864f7Fa0beCFCeE56093d654120E7E3C849", 
-     "10000000000000000", 
+     "uint128", "uint24", 
+     "address", "uint256", 
+     "uint8"], 
+    ["0xAd36...c9a1", "0x5FbD...0aa3", 
+     100, 0, 
+     "0x63ee...C849", "10000000000000000", 
      0]
 );
 {% endhighlight %}
 </font>
 
+해시 하기 전에 encodePacked 된 데이터는 다음과 같습니다. Order 구조체의 각 항목에 해당되는 값들로 나누어서 볼 수 있습니다. 이 형태를 잘 눈여겨 보도록 합시다. 
+0x63ee5864f7fa0becfcee56093d654120e7e3c849는 배포된(Görli) 컨트랙트의 주소입니다. 
+
+<font size="1">
+{% highlight shell %}
+ad363...c9a1
+5fbdb...0aa3
+00000000000000000000000000000064
+000000
+63ee...c849
+000000...0000000002386f26fc10000
+00
+{% endhighlight %}
+</font>
+
+이 값을 해시한 것을 전자서명합니다.
+
+<font size="1">
+{% highlight javascript %}
+const orderHash = ethers.utils.keccak256(packed);
+const {v,r,s} = new ethers.utils.SigningKey(sellerPrivateKey).signDigest(orderHash);
+
+r = 0x20ee...fcb4
+s = 0x6ecc...ef00
+v = 28
+{% endhighlight %}
+</font>
 
 
 
