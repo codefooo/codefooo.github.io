@@ -104,58 +104,6 @@ payable(seller).transfer(msg.value - fee);
 
 문제는 전자서명된 주문 데이터를 임의로 만들 수 있다는 것에 있습니다(사실 이것을 발견하기란 매우 어렵긴 하겠지만). 우선 정상적인 주문 데이터를 
 만들겠습니다(값 자체는 중요하지 않음).
- 
-```
-const referrer = "0xAd36301E8C66bB2Af80c63DA5a99BdF2c202c9a1";
-const token = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-const rate = 100;
-const nonce = 0;
-const amount = ethers.utils.parseEther("0.01");
-const orderType = 0;
-
-const order = [referrer, token, rate, nonce, amount, orderType];
-```
-이것을 컨트랙트의 `getOrderHash`에 전달하면 됩니다. 후에 매도인이 이 해시에 서명을 하게 됩니다. 서명 대상이 되는 데이터는 컨트랙트 주소가 다시 포함되므로 
-다음과 같은 형태의 데이터에 대한 해시에 대해 서명을 합니다.
-
-```
-const packed = ethers.utils.solidityPack(
-    ["address", "address", "uint128", "uint24", "address", "uint256", "uint8"], 
-    ["0xAd36301E8C66bB2Af80c63DA5a99BdF2c202c9a1", 
-     "0x5FbDB2315678afecb367f032d93F642f64180aa3", 
-     100, 
-     0, 
-     "0x63ee5864f7Fa0beCFCeE56093d654120E7E3C849", 
-     "10000000000000000", 
-     0]
-);
-```
-
-해시 하기 전에 encodePacked 된 데이터는 다음과 같습니다. Order 구조체의 각 항목에 해당되는 값들로 나누어서 볼 수 있습니다. 이 형태를 잘 눈여겨 보도록 합시다. 
-0x63ee5864f7fa0becfcee56093d654120e7e3c849는 배포된(Görli) 컨트랙트의 주소입니다. 
-
-```
-ad36301e8c66bb2af80c63da5a99bdf2c202c9a1
-5fbdb2315678afecb367f032d93f642f64180aa3
-00000000000000000000000000000064
-000000
-63ee5864f7fa0becfcee56093d654120e7e3c849
-000000000000000000000000000000000000000000000000002386f26fc10000
-00
-```
-
-이 값을 해시한 것을 전자서명합니다.
-
-```
-const orderHash = ethers.utils.keccak256(packed);
-const { v, r, s } = new ethers.utils.SigningKey(sellerPrivateKey).signDigest(orderHash);
-
-r = 0x20eec4a8bd81a8c5049438340b2b7eccb16045fe0c921f053e227ef83d7bfcb4
-s = 0x6ecc4efd77d0534480d5624abae0b8d72db08b30a733d15c22fcba6277a0ef00
-v = 28
-```
-
-만약에 이와 동일한 구조의 가짜 주문에 대해 이미 서명된 데이터를 얻을 수 있다면 매도인의 의사와 상관없이 토큰을 가져갈 수 있을 것입니다. 하지만 그게 가능할까요? 어떻게 서명이 포함된 가짜 주문을 만들 수 있을까요?
 
 
 
