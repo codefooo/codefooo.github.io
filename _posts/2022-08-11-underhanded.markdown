@@ -43,18 +43,18 @@ transferFrom(address _from, address _to, uint256 _tokenId)
 <font size="2">
 {% highlight javascript %}
 acceptBid(
-    B,          // bidder
-    ERC20,      // ERC721 contract
-    420,        // ERC721 token ID
-    ERC721,     // ERC20 contract
-    666         // price
+    B,      // bidder
+    ERC20,  // ERC721 contract
+    420,    // ERC721 token ID
+    ERC721, // ERC20 contract
+    666     // price
 )
 {% endhighlight %}
 </font>
 
 원래 ERC721 토큰 컨트랙트와 ERC20 토큰 컨트랙트 주소를 바꾸어서 호출하는 것입니다. 그리고 price에는 B가 소유한 NFT 토큰 아이디를 넣습니다. transferFrom은 동일하므로 오류없이 실행이 될 것입니다. 그러나 결과는 전혀 다릅니다. 컨트랙트 주소가 바뀌었기 때문에 다음 코드는 NFT 아이디 666번을 A에게 전송하게 됩니다.
 
-<font size="2">
+<font size="1">
 {% highlight javascript %}
 erc20Token.safeTransferFrom(B, A, 666);
 {% endhighlight %}
@@ -64,7 +64,7 @@ erc20Token.safeTransferFrom(B, A, 666);
 그리고 반대로 B에게는 420 wei에 해당하는 ERC20 토큰만이 전송됩니다. 원래 B는 자신이 입찰한 NFT를 기대하고 있겠지만 오히려 NFT 666번을 도난당하고 소량의 ERC20 토큰만을 
 수령하게 되는 것입니다.
 
-<font size="2">
+<font size="1">
 {% highlight javascript %}
 erc721Token.transferFrom(A, B, 420);
 {% endhighlight %}
@@ -136,6 +136,28 @@ const orderType = 0;
 const order = [referrer, token, rate, nonce, amount, orderType];
 {% endhighlight %}
 </font>
+
+이것을 컨트랙트의 `getOrderHash`에 전달하면 됩니다. 후에 매도인이 이 해시에 서명을 하게 됩니다. 서명 대상이 되는 데이터는 컨트랙트 주소가 다시 포함되므로 
+다음과 같은 형태의 데이터에 대한 해시에 대해 서명을 합니다.
+
+<font size="1">
+{% highlight javascript %}
+const packed = ethers.utils.solidityPack(
+    ["address", "address", 
+     "uint128", "uint24", "address", 
+     "uint256", "uint8"], 
+    ["0xAd36301E8C66bB2Af80c63DA5a99BdF2c202c9a1", 
+     "0x5FbDB2315678afecb367f032d93F642f64180aa3", 
+     100, 
+     0, 
+     "0x63ee5864f7Fa0beCFCeE56093d654120E7E3C849", 
+     "10000000000000000", 
+     0]
+);
+{% endhighlight %}
+</font>
+
+
 
 
 
