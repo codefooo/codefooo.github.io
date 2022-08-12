@@ -175,16 +175,15 @@ ad363...c9a1
 <font size="1">
 {% highlight javascript %}
 const orderHash = ethers.utils.keccak256(packed);
-const {v,r,s} = new ethers.utils.SigningKey(sellerPrivateKey).signDigest(orderHash);
+const {v,r,s} = new ethers.utils
+                .SigningKey(sellerPrivateKey)
+                .signDigest(orderHash);
 
 r = 0x20ee...fcb4
 s = 0x6ecc...ef00
 v = 28
 {% endhighlight %}
 </font>
-
-
-
 
 만약에 이와 동일한 구조의 가짜 주문에 대해 이미 서명된 데이터를 얻을 수 있다면 매도인의 의사와 상관없이 토큰을 가져갈 수 있을 것입니다. 하지만 그게 가능할까요? 어떻게 서명이 포함된 가짜 주문을 만들 수 있을까요?
 
