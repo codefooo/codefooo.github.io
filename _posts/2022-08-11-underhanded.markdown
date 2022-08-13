@@ -269,8 +269,8 @@ const { v, r, s } = new ethers.utils.SigningKey(sellerPk).signDigest(orderHash);
 
 ## 1위 Tynan Richards
 
-이 [컨트랙트][1st]는 정말 단순하면서도 솔리디티 언어 자체의 특징을 이용했는데 알고보면 1위를 할만 하다는 생각이 듭니다. 
-
+이 [컨트랙트][1st]는 유니스왑과 유사한 DEX 컨트랙트인데 솔리디티 언어 자체가 보안 취약점이될 수 있음을 보여주고 있습니다. 여기서 사용되는 풀은 페어로 이루어진 
+토큰의 곱이 상수로 유지되면서(constant product) 가격이 맞추어지는 일반적인 유동성 풀입니다. 
 
 
 
