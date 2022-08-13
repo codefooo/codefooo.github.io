@@ -157,12 +157,12 @@ const packed = ethers.utils.solidityPack(
 </font>
 
 해시 전의 encodePacked 된 데이터는 아래와 같습니다. Order 구조체의 각 항목에 해당되는 값들로 나누어서 볼 수 있습니다. 이 형태를 잘 눈여겨 보도록 합시다. 
-0x5fbdb...0aa3는 토큰 컨트랙트 주소이고, 0x63ee...c849는 Görli에 배포된 컨트랙트의 [주소][exchange]입니다. 
+0x5fbd...0aa3는 토큰 컨트랙트 주소이고, 0x63ee...c849는 Görli에 배포된 Exchange [컨트랙트][exchange] 입니다. 
 
 <font size="1">
 {% highlight shell %}
-ad363...c9a1
-5fbdb...0aa3
+ad36...c9a1
+5fbd...0aa3
 00000000000000000000000000000064
 000000
 63ee...c849
