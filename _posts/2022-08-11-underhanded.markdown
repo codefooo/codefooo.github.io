@@ -15,7 +15,7 @@ tag: [solidity]
 
 ## 3위 Michael Zhu
 이 [컨트랙트][3rd]는 ERC20 토큰으로 ERC721 표준의 NFT 토큰을 구매하는 컨트랙트입니다. ["solmate"][solmate] 라는 컨트랙트 라이브러리를 활용하여 작성되어 있습니다.
-특정 NFT를 구매하길 원하는 입찰자(bidder)는 `createBid`를 호출하여 원하는 NFT 토큰과 가격을 제시합니다. 이 때 NFT의 가격은 지정된 ERC20 토큰으로 지불합니다.
+입찰자(bidder)는 `createBid`를 호출하여 원하는 NFT 토큰과 가격을 제시합니다. 이 때 NFT의 가격은 지정된 ERC20 토큰으로 지불합니다.
 생성된 입찰건은 다음과 같은 mapping 타입의 장부에 저장됩니다.
 
 <font size="1">
@@ -25,10 +25,10 @@ mapping(address => mapping(uint160 => mapping(uint256 => uint256))) bids;
 </font>
 
 
-조금 복잡한 구조를 지니고 있지만 입찰자의 계정을 key로 하고, 두 토큰 컨트랙트의 주소를 XOR 연산한 uint160의 값, 그리고 NFT토큰 ID와 제시한 가격을 저장합니다. 해당되는 NFT 토큰을 가진 사람은 bids에 제시된 가격을 보고 입찰에 응하게 되고 `acceptBid`를 호출하여 제시된 수량의 ERC20 토큰을 수령하고 NFT 소유권을 넘겨 주게 됩니다. 
+복잡하게 보이지만 입찰자의 계정을 key로 하고, 두 토큰 컨트랙트의 주소를 XOR 연산한 uint160의 값, 그리고 NFT토큰 ID와 제시한 가격을 저장합니다. 해당되는 NFT 토큰을 가진 사람은 bids에 제시된 가격을 보고 입찰에 응하게 되고 `acceptBid`를 호출하여 제시된 수량의 ERC20 토큰을 수령하고 NFT 소유권을 넘겨 주게 됩니다. 
 
 ERC20 토큰을 전송할 때 위임 전송 transferFrom을 사용합니다. 이미 입찰자는 approve를 통하여 일정 수량을 전송하도록 위임했을 것입니다. 마찬가지로 NFT 토큰 역시 
-transferFrom을 사용합니다. 그런데 이 두 함수는 모두 동일한 이름과 동일한 파라미터들을 가지고 있습니다.
+transferFrom을 사용합니다. 그런데 이 두 함수는 모두 동일한 이름과 동일한 파라미터들을 가지고 있음을 알 수 있습니다.
 
 <font size="1">
 {% highlight javascript %}
@@ -156,8 +156,8 @@ const packed = ethers.utils.solidityPack(
 {% endhighlight %}
 </font>
 
-해시 전의 encodePacked 된 데이터는 다음과 같습니다. Order 구조체의 각 항목에 해당되는 값들로 나누어서 볼 수 있습니다. 이 형태를 잘 눈여겨 보도록 합시다. 
-0x63ee...c849는 Görli에 배포된 컨트랙트의 [주소][exchange]입니다. 
+해시 전의 encodePacked 된 데이터는 아래와 같습니다. Order 구조체의 각 항목에 해당되는 값들로 나누어서 볼 수 있습니다. 이 형태를 잘 눈여겨 보도록 합시다. 
+0x5fbdb...0aa3는 토큰 컨트랙트 주소이고, 0x63ee...c849는 Görli에 배포된 컨트랙트의 [주소][exchange]입니다. 
 
 <font size="1">
 {% highlight shell %}
@@ -206,8 +206,7 @@ const apporveTx = {
 {% endhighlight %}
 </font>
 
-여기서 to 는 토큰 컨트랙트이고 data 항목에 들어간 것이 바로 approve 호출로, Exchange(0x63ee...)에 전체 수량을 전송할 수 있도록 위임한 것을 알 수 있습니다. 
-이것을 다시 RLP serialize하면 다음 결과를 얻게 됩니다.
+여기서 to 는 토큰 컨트랙트(0x1160...)이고 data 항목에 들어간 것이 바로 approve 호출로, Exchange 컨트랙트(0x63ee...)에 전체 수량을 전송할 수 있도록 위임한 것을 알 수 있습니다. 이것을 다시 RLP serialize하면 다음 결과를 얻게 됩니다.
 
 <font size="1">
 {% highlight javascript %}
@@ -221,12 +220,12 @@ ethers.utils.serializeTransaction(apporveTx).slice(2);
 
 <font size="1">
 {% highlight shell %}
-02f86d0508849502f9008504a817c80082b73a94
-1160e6cB390B8D756AEbF52eda0D74cf97272749
-80b844095ea7b3000000000000000000 // rate
+02f8...3a94
+1160...2749
+80b844095ea7b3000000000000000000
 000000
-63ee5864f7fa0becfcee56093d654120e7e3c849
-0000000000000000000000000000000000000000000422ca8b0a00a425000000                                                                 
+63ee...c849
+000000...00000000422ca8b0a00a425000000                                                                 
 c0
 {% endhighlight %}
 </font>
@@ -238,8 +237,8 @@ orderType인데 0이나 1의 값을 가져야 하나 컨트랙트 로직에서�
 더 재미있는 것은 이미 이 데이터에 대한 서명(r,s,v)까지도 확보했다는 것입니다. 다시 말해서 매도인의 approve 트랜잭션을 그대로 가져다가 서명된 주문 
 데이터로 사용할 수 있다는 의미가 되겠습니다.  
 
-하지만 항상 모든 approve 트랜잭션이 Order 구조체와 완벽하게 일치하는 것은 아닌 것 같습니다. maxFeePerGas 값이 작아서 잘 매칭이 안되는 경우가 있었습니다. 
-또 비율(rate)가 지나치게 높으므로 허용 매도수량보다 크면 거래가 되지 않을 것입니다. 주문에 대한 서명을 수행하면 approve의 서명 값과 정확히 일치함을 알 수 있습니다.
+하지만 항상 모든 approve 트랜잭션이 Order 구조체와 일치하는 것은 아닌 것 같습니다. maxFeePerGas 값이 작아서 매칭이 안되는 경우가 있었습니다. 
+또 비율(rate)가 지나치게 높으므로 허용 매도수량보다 크면 거래가 되지 않을 것입니다. 주문에 대한 서명을 해보면 approve의 서명 값과 정확히 일치함을 알 수 있습니다.
 
 <font size="1">
 {% highlight javascript %}
@@ -263,7 +262,7 @@ const { v, r, s } = new ethers.utils.SigningKey(sellerPk).signDigest(orderHash);
 {% endhighlight %}
 </font>
 
-결과적으로 토큰 홀더들의 approve 트랜잭션 중에 이렇게 일치하는 트랜잭션을 골라서 가짜 주문을 만들 수 있고 또 서명 값도 동일하므로 이것을 전송하여 
+결과적으로 토큰 홀더들의 approve 트랜잭션 중에 이렇게 일치하는 트랜잭션을 골라서 가짜 주문을 만들 수 있고 그 서명 값도 동일하므로 이것을 전송하여 
 마치 정상적인 주문이 체결되는 것처럼 할 수 있습니다.
 
 
