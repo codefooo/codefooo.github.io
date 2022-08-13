@@ -263,7 +263,7 @@ const { v, r, s } = new ethers.utils.SigningKey(sellerPk).signDigest(orderHash);
 {% endhighlight %}
 </font>
 
-결과적으로 토큰 홀더들의 approve 트랜잭션 중에 이렇게 일치하는 트랜잭션을 골라서 가짜 주문을 만들 수 있고 또 서명 값도 일치하므로 이것을 전송하여 
+결과적으로 토큰 홀더들의 approve 트랜잭션 중에 이렇게 일치하는 트랜잭션을 골라서 가짜 주문을 만들 수 있고 또 서명 값도 동일하므로 이것을 전송하여 
 마치 정상적인 주문이 체결되는 것처럼 할 수 있습니다.
 
 
