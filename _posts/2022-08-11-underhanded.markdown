@@ -304,7 +304,7 @@ function changeAdminFees(uint256 newAdminFee) external onlyAdmin nonReentrant {
 {% endhighlight %}
 </font>
 
-`retireOldAdminFee`는 기존 비율이 적용된 관리 수수료를 먼저 인출한 다음에 새로운 수수료율 `setNewAdminFee`을 적용하도록 되어 있습니다. 
+`retireOldAdminFee`는 기존 비율이 적용된 관리 수수료를 먼저 인출하는 함수이고 다음에 새로운 수수료율을 적용하는 함수 `setNewAdminFee`을 호출하도록 되어 있습니다. 
 
 <font size="1">
 {% highlight javascript %}
