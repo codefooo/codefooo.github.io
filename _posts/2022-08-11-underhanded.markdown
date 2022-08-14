@@ -278,11 +278,79 @@ v = 27
 
 컨트랙트 관리자도 수수료를 받습니다. 이것을 관리수수료(admin fee)라고 하여 1%를 책정했는데, 만약 해당 풀의 유동성이 20% 증가했다면 관리자는 0.2%의 수수료를 
 가져갈 수 있습니다. 그런데 여기서 제약조건이 하나 추가됩니다. 관리 수수료를 인상하는 경우 유동성 공급자들은 인상 전에 자신들이 제공한 토큰들을 
-인출할 수 있습니다. 관리 수수료 인상이 되면 7일 후에 적용되므로 그 기간동안 인출할 수 있습니다.
+인출할 수 있습니다. 관리 수수료가 인상되면 7일 후에 적용되므로 수수료율이 높다고 생각되면 그 기간동안 인출하도록 하는 것입니다.
 
+<font size="1">
+{% highlight javascript %}
 
+uint256 feeAmount = (amountAccrued * adminFee) / ONE;
+uint256 liquidity = geometricMean(_balanceA, _balanceB);
+uint256 amountA = (feeAmount * _balanceA) / liquidity;
+uint256 amountB = (feeAmount * _balanceB) / liquidity;
 
+{% endhighlight %}
+</font>
 
+관리 수수료는 풀의 가장 최근 유동성(amountAccrued)에 대하여 수수료율을 적용합니다. 페어를 이루는 각 토큰의 잔량에 대해 `feeAmount/liquidity` 만큼 
+관리자 계정으로 전송합니다. 
+
+앞서 말한 것처럼 이 수수료율을 높이는 경우 7일 후에 적용이 됩니다. 수수료율을 변경하는 함수는 `changeAdminFee`입니다.
+
+<font size="1">
+{% highlight javascript %}
+function changeAdminFees(uint256 newAdminFee) external onlyAdmin nonReentrant {
+    emit AdminFeeChanged(retireOldAdminFee(), setNewAdminFee(newAdminFee));
+}
+{% endhighlight %}
+</font>
+
+`retireOldAdminFee`는 기존 비율이 적용된 관리 수수료를 먼저 인출한 다음에 새로운 수수료율 `setNewAdminFee`을 적용하도록 되어 있습니다. 
+
+<font size="1">
+{% highlight javascript %}
+
+function retireOldAdminFee() internal returns (uint256) {
+    // Claim admin fee before changing it
+    _claimAdminFees();
+    // Let people withdraw their funds if they don't like the new fee
+    nextFeeClaimTimestamp = block.timestamp + 7 days;
+
+    return adminFee;
+}
+{% endhighlight %}
+</font>
+
+그런데 문제는 여기에 있습니다. 이벤트 `AdminFeeChanged`를 발생시키면서 그 안에 인라인으로 수수료 인출과 수수료 설정 함수를 호출했습니다. 일반적으로, 그리고 당연히 
+순서대로 실행될 것이라고 생각합니다. 
+
+즉 먼저 `retireOldAdminFee`이 실행되고 그 다음에 `setNewAdminFee`이 실행될 것이라는 기대합니다. 하지만 과연 그럴까요? 물론 일반적으로 앞에 있는 것이 먼저 실행되고 그 다음이 실행되는 것은 맞습니다. 그러나 이벤트의 경우는 그 반대라는 사실을 미처 몰랐을 것입니다.
+
+`setNewAdminFee`이 먼저 실행되기 때문에 7일 후에 적용되는 로직은 아무 의미가 없습니다. 즉 관리자가 인상된 수수료율을 즉시 적용할 수 있다는 말이 되겠습니다. 만약 관리자가 터무니 없이 수수료를 높이는 경우, 컨트랙트 코드만 보고 7일의 유예 기간을 그대로 믿은 유동성 공급자들은 낭패를 볼 것입니다.
+
+좀 더 간단한 예를 들어보도록 하겠습니다. 솔리디티 기본 내장 함수에 `addmod(x,y,z)`가 있습니다. 이것은 `(x+y)%z` 입니다. 
+
+<font size="2">
+{% highlight javascript %}
+addmod(10,5,2); // 1
+{% endhighlight %}
+</font>
+
+만약 다음과 같은 경우는 어떻게 계산될까요?
+
+<font size="2">
+{% highlight javascript %}
+
+uint256 i = 5;
+uint256 result = addmod(i, 5, i++); 
+
+{% endhighlight %}
+</font>
+
+아마 대부분은 이렇게 계산할 것입니다. `addmod(5,5,6)` 그래서 결과는 4라고 말입니다(또는 (5+5)%5=0). 그러나 실제로는 `addmod(6,5,5)`가 되어 1이 나옵니다. 나머지 연산은 
+나누는 수가 0이 되면 의미가 없기 때문에 세번째 파라미터의 표현식부터 평가합니다. 따라서 5를 리턴하고 나서 하나를 증가시키고 그래서 첫번째 i에는 6이 들어갑니다.
+
+이것은 사실 버그도 아니고 단순히 솔리디티의 특징에 기인한 것으로 개발자들의 상식(?)을 잠깐 벗어나는 부분일 수 있습니다. 올해 "언더핸드" 컨테스트의 취지에 걸맞는 
+문제라고 할 수 있을 것 같습니다.
 
 
 [blog]: https://blog.soliditylang.org/2022/04/09/announcing-the-underhanded-contest-winners-2022/
