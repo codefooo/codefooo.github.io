@@ -7,7 +7,7 @@ description: # Add post description (optional)
 tag: [etherum, layer2]
 ---
 
-비탈릭 부테린은 "[롤업 중심의 로드맵][rollup-centric]"이라는 글에서 오랜 인내(?)가 필요한 이더리움 PoS 전환 과정에서 L2 솔루션이 중요한 역할을 담당해야 한다는 주장을 했습니다. L1에서 성능 문제가 확실히 개선되기까지는 아직 갈 길이 먼데, 최근 다양한 L2 솔루션들, "옵티미스틱 롤업", "Fuel", "Arbitrum", 
+비탈릭 부테린은 "[롤업 중심의 로드맵][rollup-centric]"이라는 글에서 오랜 인내(?)가 필요한 이더리움 PoS 전환 과정에서 L2 솔루션이 중요한 역할을 담당해야 한다는 주장을 했습니다. L1에서 성능 문제가 확실히 개선되기까지는 아직 갈 길이 먼데, 최근 다양한 L2 솔루션들, "Optimism", "Arbitrum", 
 "Loopring", "zkSync" 등의 롤업 기반 솔루션들이 큰 진전을 보이고 있으므로 이들 솔루션들이 원활하게 동작할 수 있도록 이더리움의 개발 로드맵의 우선 순위를 조정해야 한다는 취지의 의견을 내놓은 것입니다.
 
 >In a further twist of irony, eth2’s usability as a data availability layer for rollups comes in phase 1, long before eth2 becomes usable for 
