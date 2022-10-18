@@ -134,7 +134,7 @@ class BlobTransaction(Container):
     blob_versioned_hashes: List[VersionedHash, MAX_VERSIONED_HASHES_LIST_SIZE]
 ```    
 
-BlobTransaction은 일반 트랜잭션처럼 data 필드에 calldata를 운반할 수 있습니다. MAX_CALLDATA_SIZE는 16M(2**24)로 지정되어 있습니다(한 슬롯에서 저장할 수 있는 샤드 데이터의 최대 크기는 16MB). 이 트랜잭션은 다시 아래와 같은 네트워크 래퍼로 전송됩니다.
+BlobTransaction은 일반 트랜잭션처럼 data 필드에 calldata를 운반할 수 있습니다. 이 트랜잭션은 다시 아래와 같은 네트워크 래퍼로 전송됩니다.
 
 ```
 class BlobTransactionNetworkWrapper(Container):
