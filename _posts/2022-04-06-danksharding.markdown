@@ -102,13 +102,9 @@ Danksharding의 설계는 아직 논의 중이고 스펙이 정해지더라도 �
 
 머클 트리에서는 데이터들을 차례로 해시하여 머클 루트를 만들 수 있는 반면, polynomial commitment에서는 이들 데이터가 어떤 다항식의 값으로 표현할 수 있다고 생각합니다(값을 가지고 다항식을 만들어내는 것을 "인터폴레이션"이라고 합니다). 
 
-그런데 다항식이라고 하는 것은 a + bx + cx^2 + dx^3 + ...의 형태인데 이것을 서로 약속한다는 polynomial commitment는 어떤 의미일까요? 간단히 말해서 약속된 다항식을 통해 거래 검증을 위한 데이터가 가용함을 확인한다는 말이 될 것 같습니다.  
+다항식에 대한 commitment는 trusted setup을 통해(MPC로 생성) 얻은 값들을 사용하여 타원 곡선 위의 하나의 점으로 정합니다. 어떤 난수 s로부터  G*(s^i) 값들을 계산해 놓으면 s를 알지 못하더라도 다항식 f(s)의 값을 구할 수 있습니다. 
 
-
-다항식에 대한 commitment는 f(s)\*G인데 이것은 타원 곡선의 성질을 이용합니다. 
-f(s)\*G 의 값을 계산하려면 다항식에 s를 대입하여 (a + bs + cs^2 + ...)\*G 가 되는데, 어떤 난수 s로부터 trusted setup을 통해(MPC로 생성, 타원곡선의 개인키와 유사) G*(s^i) 값을 계산하면 s를 알지 못해도 f(s)\*G의 값을 계산할 수 있습니다(역으로 s를 알아내는 것은 불가능).
-
-그러니까 s는 Prover와 Verifier 모두 알 수 없는 값이지만 f(s)\*G은 알 수 있고 다항식 f의 commitment로 삼을 수 있습니다. 더구나 동일한 commitment가 나오는 다른 다항식을 찾는 것이 확률적으로 매우 어렵기 때문에 Prover와 Verifier는 유일한 다항식 f를 약속할 수 있습니다. 임의의 z에 대하여 Verifier가 f(z) = y임을 확인하려면 Prover가 제공하는 π(f,z)와 C(f)를 사용하여 타원 곡선 "페어링(pairing)"을 통해서 검증할 수 있게 됩니다(Prover가 다항식 자체를 제공할 필요가 없습니다).
+그러니까 s는 Prover와 Verifier 모두 알 수 없는 값이지만 f(s)를 계산할 수 있고 이것을 다항식 f의 commitment로 삼을 수 있습니다. 더구나 동일한 commitment가 나오는 다른 다항식을 찾는 것이 확률적으로 매우 어렵기 때문에 Prover와 Verifier는 유일한 다항식 f를 약속할 수 있습니다. 임의의 z에 대하여 Verifier가 f(z) = y임을 확인하려면 Prover가 제공하는 π(f,z)와 C(f)를 사용하여 타원 곡선 "페어링(pairing)"을 통해서 검증할 수 있게 됩니다(Prover가 다항식 자체를 제공할 필요가 없습니다).
 
 KZG commitment의 가장 큰 장점은 검증대상 데이터가 많아져도 commitment C(f)와 proof π(f,z)의 크기가 항상 일정하다는 것입니다. 물론 그것을 생성하는데 드는 비용은 증가하지만 
 PBS를 고려하면 blob 트랜잭션을 만드는 블록 생성자가 얼마든지 부담할 수 있는 수준으로 생각하고 있습니다. 그러나 난수 s가 알려지면 거짓 proof를 생성할 수 있으므로 trusted setup 과정이 필요하다는 단점이 있습니다. 또 타원곡선 암호는 양자 저항성이 없기 때문에 장기적인 해결책은 될 수 없다는 점도 문제입니다. 하지만 중단기적으로 KZG commitment를 
@@ -145,7 +141,7 @@ class BlobTransactionNetworkWrapper(Container):
     blobs: List[Vector[BLSFieldElement, FIELD_ELEMENTS_PER_BLOB], LIMIT_BLOBS_PER_TX]
 ```
 
-blob_kzgs는 blobs에 대한 각각의 KZG commitment 리스트입니다. blobs는 "유한체 위의 다항식(polynomial over finite field)"으로 4096개의 원소(BLSFieldElement)로 이루어진 벡터입니다(이것은 데이터를 벡터로 표현한 것 같습니다🤔). Prover가 이것을 전송하고 비콘체인의 샤드 데이터 영역에 저장합니다. Verifer는 이들 정보를 사용하여 데이터가 존재함을 암호학적으로 검증할 수 있게 됩니다.
+blob_kzgs는 blobs에 대한 각각의 KZG commitment 리스트입니다. blobs는 "유한체 위의 다항식(polynomial over finite field)"으로 4096개의 원소(BLSFieldElement)로 이루어진 벡터입니다(이것은 데이터를 벡터로 표현한 것 같습니다🤔). Prover가 blob과 commitment를 블롭 트랜잭션에 실어 전송하면 이것은 비콘체인의 샤드 데이터 영역에 저장합니다. Verifer는 이들 정보를 사용하여 데이터가 존재함을 암호학적으로 검증할 수 있게 됩니다.
 
 옵티미스틱 롤업과 ZK 롤업에서 blob_kzg와 blobs를 각각 validity proof와 fraud proof를 수행하는 과정에서 이용할 수 있도록 
 "precompile"을 제공하는 것도 EIP-4844에 포함되어 있습니다(point evaluation precompile, blob verification precompile). 온체인에서 이들을 활용할 수 있는 기능을 제공한다는 의미가 될 것 같습니다.
